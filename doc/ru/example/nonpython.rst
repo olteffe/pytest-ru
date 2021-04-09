@@ -1,29 +1,32 @@
 
 .. _`non-python tests`:
 
-Working with non-python tests
+Работа с тестами не на ``python``
 ====================================================
 
 .. _`yaml plugin`:
 
-A basic example for specifying tests in Yaml files
+Простой пример указания тестов в файлах Yaml
 --------------------------------------------------------------
 
 .. _`pytest-yamlwsgi`: http://bitbucket.org/aafshar/pytest-yamlwsgi/src/tip/pytest_yamlwsgi.py
 .. _`PyYAML`: https://pypi.org/project/PyYAML/
 
-Here is an example ``conftest.py`` (extracted from Ali Afshar's special purpose `pytest-yamlwsgi`_ plugin).   This ``conftest.py`` will  collect ``test*.yaml`` files and will execute the yaml-formatted content as custom tests:
+Вот пример файла ``conftest.py`` (полученного из плагина Ali Afshar-а `pytest-yamlwsgi`_ ).
+Этот ``conftest.py`` собирает файлы вида ``test*.yaml`` и выполнит содержимое в
+формате yaml как пользовательские тесты:
+
 
 .. include:: nonpython/conftest.py
     :literal:
 
-You can create a simple example file:
+Вы можете создать простой пример файла:
 
 .. include:: nonpython/test_simple.yaml
     :literal:
 
-and if you installed `PyYAML`_ or a compatible YAML-parser you can
-now execute the test specification:
+и если вы установите `PyYAML`_ или совместимый YAML-парсер, то сможете
+запустить тесты:
 
 .. code-block:: pytest
 
@@ -47,20 +50,20 @@ now execute the test specification:
 
 .. regendoc:wipe
 
-You get one dot for the passing ``sub1: sub1`` check and one failure.
-Obviously in the above ``conftest.py`` you'll want to implement a more
-interesting interpretation of the yaml-values.  You can easily write
-your own domain specific testing language this way.
+У нас получился один прошедший тест на проверку ``sub1: sub1`` и один упавший.
+Очевидно, что в приведенном выше файле ``conftest.py`` вы захотите реализовать более
+интересную интерпретацию значений yaml.  Таким образом вы можете легко написать свой
+собственный "язык тестирования" для конкретной предметной области.
 
 .. note::
 
-    ``repr_failure(excinfo)`` is called for representing test failures.
-    If you create custom collection nodes you can return an error
-    representation string of your choice.  It
-    will be reported as a (red) string.
+    ``repr_failure(excinfo)`` вызывается для представления упавших тестов.
+    Если вы сами будете генерировать узлы, то сможете возвращать
+    любое строковое представление ошибки по вашему выбору. В отчете
+    оно будет выделено красным.
 
-``reportinfo()`` is used for representing the test location and is also
-consulted when reporting in ``verbose`` mode:
+``reportinfo()`` используется для представления расположения теста, а также
+в режиме ``verbose``:
 
 .. code-block:: pytest
 
@@ -85,8 +88,8 @@ consulted when reporting in ``verbose`` mode:
 
 .. regendoc:wipe
 
-While developing your custom test collection and execution it's also
-interesting to just look at the collection tree:
+При разработке собственного поиска и выполнения тестов интересно
+будет взглянуть на дерево собранных тестов:
 
 .. code-block:: pytest
 

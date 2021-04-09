@@ -1,39 +1,38 @@
 
 .. _paramexamples:
 
-Parametrizing tests
+Параметризация тестов
 =================================================
 
 .. currentmodule:: _pytest.python
 
-``pytest`` allows to easily parametrize test functions.
-For basic docs, see :ref:`parametrize-basics`.
+``pytest`` позволяет легко параметризовать тестовые функции.
+Базовую документацию см. :ref:`parametrize-basics`.
 
-In the following we provide some examples using
-the builtin mechanisms.
+Ниже мы приводим несколько примеров с использованием встроенных механизмов.
 
-Generating parameters combinations, depending on command line
+Генерация комбинаций параметров в зависимости от командной строки
 ----------------------------------------------------------------------------
 
 .. regendoc:wipe
 
-Let's say we want to execute a test with different computation
-parameters and the parameter range shall be determined by a command
-line argument.  Let's first write a simple (do-nothing) computation test:
+Допустим, мы хотим выполнить тест с разными параметрами вычислений, и диапазон
+параметров должен определяться аргументом командной строки. Давайте сначала напишем
+простой (ничего не делающий) вычислительный тест:
 
 .. code-block:: python
 
-    # content of test_compute.py
+    # листинг test_compute.py
 
 
     def test_compute(param1):
         assert param1 < 4
 
-Now we add a test configuration like this:
+Теперь мы добавляем такую тестовую конфигурацию:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
 
 
     def pytest_addoption(parser):
@@ -48,7 +47,7 @@ Now we add a test configuration like this:
                 end = 2
             metafunc.parametrize("param1", range(end))
 
-This means that we only run 2 tests if we do not pass ``--all``:
+Это означает, что мы запускаем только 2 теста, если мы не используем ``--all``:
 
 .. code-block:: pytest
 
@@ -56,8 +55,8 @@ This means that we only run 2 tests if we do not pass ``--all``:
     ..                                                                   [100%]
     2 passed in 0.12s
 
-We run only two computations, so we see two dots.
-let's run the full monty:
+Мы запускаем только два вычисления, поэтому мы видим две точки.
+Давайте воспользуемся нашей опцией:
 
 .. code-block:: pytest
 
@@ -77,25 +76,26 @@ let's run the full monty:
     FAILED test_compute.py::test_compute[4] - assert 4 < 4
     1 failed, 4 passed in 0.12s
 
-As expected when running the full range of ``param1`` values
-we'll get an error on the last one.
+Как и ожидалось, при выполнении тестов по всему диапазону значений
+``param1``, мы получили ошибку на последнем тесте.
 
 
-Different options for test IDs
-------------------------------------
+Различные способы определения ID тестов
+----------------------------------------
 
-pytest will build a string that is the test ID for each set of values in a
-parametrized test. These IDs can be used with ``-k`` to select specific cases
-to run, and they will also identify the specific case when one is failing.
-Running pytest with ``--collect-only`` will show the generated IDs.
+``pytest`` конструирует строку, которая является идентификатором (ID) теста
+для каждого множества значений параметризованного теста. Эти идентификаторы
+можно использовать с опцией ``-k``, чтобы отобрать для выполнения определенные
+тесты, и они же идентифицируют конкретный упавший тест. Запустив
+``pytest --collect-only`` , можно посмотреть сгенерированные ID.
 
-Numbers, strings, booleans and None will have their usual string representation
-used in the test ID. For other objects, pytest will make a string based on
-the argument name:
+У чисел, строк, логических значений и значения None есть свои строковые
+представления, которые используются в ID тестов. Для остальных объектов
+``pytest`` генерирует ID на основании имен аргументов:
 
 .. code-block:: python
 
-    # content of test_time.py
+    # листинг test_time.py
 
     from datetime import datetime, timedelta
 
@@ -121,7 +121,7 @@ the argument name:
 
     def idfn(val):
         if isinstance(val, (datetime,)):
-            # note this wouldn't show any hours/minutes/seconds
+            # обратите внимание, здесь не будут отображаться часы/минуты/секунды
             return val.strftime("%Y%m%d")
 
 
@@ -146,15 +146,16 @@ the argument name:
         diff = a - b
         assert diff == expected
 
-In ``test_timedistance_v0``, we let pytest generate the test IDs.
+В ``test_timedistance_v0`` мы позволяем ``pytest`` самому генерировать ID.
 
-In ``test_timedistance_v1``, we specified ``ids`` as a list of strings which were
-used as the test IDs. These are succinct, but can be a pain to maintain.
+В ``test_timedistance_v1`` мы указали ``ids`` как список строк, которые были использованы
+в качестве ID. Они весьма кратки, но могут быть сложны для поддержания.
 
-In ``test_timedistance_v2``, we specified ``ids`` as a function that can generate a
-string representation to make part of the test ID. So our ``datetime`` values use the
-label generated by ``idfn``, but because we didn't generate a label for ``timedelta``
-objects, they are still using the default pytest representation:
+В ``test_timedistance_v2`` мы определяем ``ids`` как функции, которые могут генерировать
+строковое представление для включения в тестовый ID.
+Здесь обозначения наших ``datetime``-аргументов генерируются функцией ``idfn``,
+но из-за того, что мы не можем формировать представление для объектов ``timedelta``,
+для них все еще используется стандартное представление ``pytest``:
 
 .. code-block:: pytest
 
@@ -177,22 +178,21 @@ objects, they are still using the default pytest representation:
 
     ======================== 8 tests collected in 0.12s ========================
 
-In ``test_timedistance_v3``, we used ``pytest.param`` to specify the test IDs
-together with the actual data, instead of listing them separately.
+В ``test_timedistance_v3`` мы используем ``pytest.param`` для указания ID вместе
+с конкретными данными, вместо того, чтобы перечислять их по отдельности.
 
-A quick port of "testscenarios"
+Быстрый запуск "testscenarios"
 ------------------------------------
 
 .. _`test scenarios`: https://pypi.org/project/testscenarios/
 
-Here is a quick port to run tests configured with `test scenarios`_,
-an add-on from Robert Collins for the standard unittest framework. We
-only have to work a bit to construct the correct arguments for pytest's
-:py:func:`Metafunc.parametrize`:
+Вот быстрый способ запуска тестов, сконфигурированных с помощью `test scenarios`_,
+дополнения от Роберта Коллинза для стандартного фреймворка ``unittest``. Тут придется
+немного потрудиться с созданием корректных аргументов для :py:func:`Metafunc.parametrize`:
 
 .. code-block:: python
 
-    # content of test_scenarios.py
+    # листинг test_scenarios.py
 
 
     def pytest_generate_tests(metafunc):
@@ -219,7 +219,7 @@ only have to work a bit to construct the correct arguments for pytest's
         def test_demo2(self, attribute):
             assert isinstance(attribute, str)
 
-this is a fully self-contained example which you can run with:
+это полностью самодостаточный пример, который можно запустить:
 
 .. code-block:: pytest
 
@@ -234,7 +234,8 @@ this is a fully self-contained example which you can run with:
 
     ============================ 4 passed in 0.12s =============================
 
-If you just collect tests you'll also nicely see 'advanced' and 'basic' as variants for the test function:
+Если вы просто соберете тесты, то увидите 'advanced' и 'basic' в качестве
+переменных тестовой функции:
 
 .. code-block:: pytest
 
@@ -254,40 +255,42 @@ If you just collect tests you'll also nicely see 'advanced' and 'basic' as varia
 
     ======================== 4 tests collected in 0.12s ========================
 
-Note that we told ``metafunc.parametrize()`` that your scenario values
-should be considered class-scoped.  With pytest-2.3 this leads to a
-resource-based ordering.
+Обратите внимание: мы сообщили ``metafunc.parametrize()``, что значения
+вашего сценария должны рассматриваться как классово ограниченными. В pytest-2.3 это
+приводит к упорядочиванию на основе ресурсов.
 
-Deferring the setup of parametrized resources
+
+Отсрочка настройки параметризованных ресурсов
 ---------------------------------------------------
 
 .. regendoc:wipe
 
-The parametrization of test functions happens at collection
-time.  It is a good idea to setup expensive resources like DB
-connections or subprocess only when the actual test is run.
-Here is a simple example how you can achieve that. This test
-requires a ``db`` object fixture:
+Параметризация тестовой функции происходит во время сборки тестов.
+Рекомендуется настраивать затратные по ресурсам, такие как подключения к БД или
+подпроцессы, только при запуске фактического теста. Вот простой пример, как этого
+добиться. В этом тесте требуется объектовая фикстура ``db``:
+
 
 .. code-block:: python
 
-    # content of test_backends.py
+    # листинг test_backends.py
 
     import pytest
 
 
     def test_db_initialized(db):
-        # a dummy test
+        # макет теста
         if db.__class__.__name__ == "DB2":
             pytest.fail("deliberately failing for demo purposes")
 
-We can now add a test configuration that generates two invocations of
-the ``test_db_initialized`` function and also implements a factory that
-creates a database object for the actual test invocations:
+Теперь мы можем добавить тестовую конфигурацию, которая генерирует два вызова
+функции ``test_db_initialized`` и также реализует фабрику, которая создает
+объект базы данных для фактического вызова теста:
+
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
     import pytest
 
 
@@ -297,11 +300,11 @@ creates a database object for the actual test invocations:
 
 
     class DB1:
-        "one database object"
+        "первый объект базы данных"
 
 
     class DB2:
-        "alternative database object"
+        "альтернативный объект базы данных"
 
 
     @pytest.fixture
@@ -313,7 +316,7 @@ creates a database object for the actual test invocations:
         else:
             raise ValueError("invalid internal test config")
 
-Let's first see how it looks like at collection time:
+Давайте сначала посмотрим, как все это выглядит во время сборки:
 
 .. code-block:: pytest
 
@@ -330,7 +333,7 @@ Let's first see how it looks like at collection time:
 
     ======================== 2 tests collected in 0.12s ========================
 
-And then when we run the test:
+И затем, когда мы запустим тест:
 
 .. code-block:: pytest
 
@@ -352,14 +355,17 @@ And then when we run the test:
     FAILED test_backends.py::test_db_initialized[d2] - Failed: deliberately f...
     1 failed, 1 passed in 0.12s
 
-The first invocation with ``db == "DB1"`` passed while the second with ``db == "DB2"`` failed.  Our ``db`` fixture function has instantiated each of the DB values during the setup phase while the ``pytest_generate_tests`` generated two according calls to the ``test_db_initialized`` during the collection phase.
+Первый вызов с ``db == "DB1"`` прошел, в то время как второй с ``db == "DB2"`` - упал.
+Наша фикстура ``db`` создала экземпляр каждого из значений DB на этапе настройки, в
+то время как ``pytest_generate_tests`` сгенерировал два соответствующих вызова
+``test_db_initialized`` на этапе сборки.
 
-Indirect parametrization
+
+Косвенная(indirect) параметризация
 ---------------------------------------------------
 
-Using the ``indirect=True`` parameter when parametrizing a test allows to
-parametrize a test with a fixture receiving the values before passing them to a
-test:
+Использование параметра ``indirect=True`` при параметризации теста позволяет
+параметризовать тест фикстурой, получающей значения перед передачей их в тест:
 
 .. code-block:: python
 
@@ -375,24 +381,29 @@ test:
     def test_indirect(fixt):
         assert len(fixt) == 3
 
-This can be used, for example, to do more expensive setup at test run time in
-the fixture, rather than having to run those setup steps at collection time.
+Это можно использовать, например, для более подробной настройки во время выполнения
+теста в фикстуре, вместо того, чтобы выполнять эти шаги настройки во время сбора
+данных.
+
 
 .. regendoc:wipe
 
-Apply indirect on particular arguments
+Применение ``indirect`` к отдельному аргументу
 ---------------------------------------------------
 
-Very often parametrization uses more than one argument name. There is opportunity to apply ``indirect``
-parameter on particular arguments. It can be done by passing list or tuple of
-arguments' names to ``indirect``. In the example below there is a function ``test_indirect`` which uses
-two fixtures: ``x`` and ``y``. Here we give to indirect the list, which contains the name of the
-fixture ``x``. The indirect parameter will be applied to this argument only, and the value ``a``
-will be passed to respective fixture function:
+Очень часто при параметризации используется более одного аргумента.
+Существует возможность применить параметр ``indirect`` к конкретным аргументам.
+Это можно сделать, передав список или кортеж имен аргументов параметру ``indirect``.
+В нижеприведенном примере есть функция ``test_indirect``, которая
+использует две фикстуры: ``x`` и ``y``.
+Здесь мы передаем ``indirect`` список, который содержит имя фикстуры ``x``.
+Параметр ``indirect`` будет применен только к этому аргументу, а значение ``a``
+будет передано соответствующей функции фикстуры:
+
 
 .. code-block:: python
 
-    # content of test_indirect_list.py
+    # листинг test_indirect_list.py
 
     import pytest
 
@@ -412,7 +423,7 @@ will be passed to respective fixture function:
         assert x == "aaa"
         assert y == "b"
 
-The result of this test will be successful:
+Тест пройдет успешно:
 
 .. code-block:: pytest
 
@@ -429,24 +440,22 @@ The result of this test will be successful:
 
 .. regendoc:wipe
 
-Parametrizing test methods through per-class configuration
---------------------------------------------------------------
+Параметризация тестовых методов через конфигурацию для каждого класса
+-----------------------------------------------------------------------------
 
 .. _`unittest parametrizer`: https://github.com/testing-cabal/unittest-ext/blob/master/params.py
 
-
-Here is an example ``pytest_generate_tests`` function implementing a
-parametrization scheme similar to Michael Foord's `unittest
-parametrizer`_ but in a lot less code:
+Вот пример функции ``pytest_generate_tests``, реализующей схему параметризации,
+аналогичную `unittest parametrizer`_ от Michael Foord, но с более коротким кодом:
 
 .. code-block:: python
 
-    # content of ./test_parametrize.py
+    # листинг ./test_parametrize.py
     import pytest
 
 
     def pytest_generate_tests(metafunc):
-        # called once per each test function
+        # вызывается один раз для каждой тестовой функции
         funcarglist = metafunc.cls.params[metafunc.function.__name__]
         argnames = sorted(funcarglist[0])
         metafunc.parametrize(
@@ -455,7 +464,7 @@ parametrizer`_ but in a lot less code:
 
 
     class TestClass:
-        # a map specifying multiple argument sets for a test method
+        # схема, определяющая несколько наборов аргументов для тестового метода
         params = {
             "test_equals": [dict(a=1, b=2), dict(a=3, b=3)],
             "test_zerodivision": [dict(a=1, b=0)],
@@ -468,8 +477,9 @@ parametrizer`_ but in a lot less code:
             with pytest.raises(ZeroDivisionError):
                 a / b
 
-Our test generator looks up a class-level definition which specifies which
-argument sets to use for each test function.  Let's run it:
+Наш тестовый генератор отслеживает определение множества аргументов
+для каждой тестовой функции на уровне класса. Запустим его:
+
 
 .. code-block:: pytest
 
@@ -489,21 +499,23 @@ argument sets to use for each test function.  Let's run it:
     FAILED test_parametrize.py::TestClass::test_equals[1-2] - assert 1 == 2
     1 failed, 2 passed in 0.12s
 
-Indirect parametrization with multiple fixtures
+Косвенная(Indirect) параметризация с несколькими фикстурами
 --------------------------------------------------------------
 
-Here is a stripped down real-life example of using parametrized
-testing for testing serialization of objects between different python
-interpreters.  We define a ``test_basic_objects`` function which
-is to be run with different sets of arguments for its three arguments:
+Вот сокращенный реальный пример использования параметризованного тестирования
+для тестирования сериализации объектов различными интерпретаторами Python.
+Мы определяем функцию ``test_basic_objects``, которая должна запускаться с
+различными множествами трех своих аргументов:
 
-* ``python1``: first python interpreter, run to pickle-dump an object to a file
-* ``python2``: second interpreter, run to pickle-load an object from a file
-* ``obj``: object to be dumped/loaded
+* ``python1``: первый интерпретатор python, запускается для сериализации объекта в файл
+* ``python2``: второй интерпретатор python, запускается для восстановления объекта из файла
+* ``obj``: объект, который будет выгружен/загружен
 
 .. literalinclude:: multipython.py
 
-Running it results in some skips if we don't have all the python interpreters installed and otherwise runs all combinations (3 interpreters times 3 interpreters times 3 objects to serialize/deserialize):
+Запуск приводит к некоторым пропускам, если не установлены все интерпретаторы
+python, а в противном случае запускаются все возможные комбинации (3 интерпретатора
+умножить на 3 интерпретатора умножить на 3 объекта для сериализации/десериализации):
 
 .. code-block:: pytest
 
@@ -515,18 +527,18 @@ Running it results in some skips if we don't have all the python interpreters in
    SKIPPED [9] multipython.py:29: 'python3.7' not found
    27 skipped in 0.12s
 
-Indirect parametrization of optional implementations/imports
+Косвенная параметризация дополнительных реализаций/импорта
 --------------------------------------------------------------------
 
-If you want to compare the outcomes of several implementations of a given
-API, you can write test functions that receive the already imported implementations
-and get skipped in case the implementation is not importable/available.  Let's
-say we have a "base" implementation and the other (possibly optimized ones)
-need to provide similar results:
+Если вы хотите сравнить результаты нескольких реализаций данного API, вы можете написать
+тестовые функции, которые получают уже импортированные реализации и пропускаются в
+случае, если реализация недоступна для импорта или недоступна. Допустим, у нас есть
+«базовая» реализация, а другая (возможно, оптимизированная) должна давать аналогичные
+результаты:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
 
     import pytest
 
@@ -540,34 +552,34 @@ need to provide similar results:
     def optmod(request):
         return pytest.importorskip(request.param)
 
-And then a base implementation of a simple function:
+А затем базовая реализация простой функции:
 
 .. code-block:: python
 
-    # content of base.py
+    # листинг base.py
     def func1():
         return 1
 
-And an optimized version:
+И оптимизированная версия:
 
 .. code-block:: python
 
-    # content of opt1.py
+    # листинг opt1.py
     def func1():
         return 1.0001
 
-And finally a little test module:
+И наконец небольшой тестовый модуль:
 
 .. code-block:: python
 
-    # content of test_module.py
+    # листинг test_module.py
 
 
     def test_func1(basemod, optmod):
         assert round(basemod.func1(), 3) == round(optmod.func1(), 3)
 
 
-If you run this with reporting for skips enabled:
+Если вы запустите с включенном отчетом о пропусках:
 
 .. code-block:: pytest
 
@@ -584,29 +596,28 @@ If you run this with reporting for skips enabled:
     SKIPPED [1] conftest.py:12: could not import 'opt2': No module named 'opt2'
     ======================= 1 passed, 1 skipped in 0.12s =======================
 
-You'll see that we don't have an ``opt2`` module and thus the second test run
-of our ``test_func1`` was skipped.  A few notes:
+Вы увидите, что у нас нет модуля ``opt2``, поэтому второй тест ``test_func1``
+был пропущен.  Несколько замечаний:
 
-- the fixture functions in the ``conftest.py`` file are "session-scoped" because we
-  don't need to import more than once
+- фикстуры в файле ``conftest.py`` имеют уровень сессии, ибо нам не нужно импортировать
+  модуль больше одного раза;
 
-- if you have multiple test functions and a skipped import, you will see
-  the ``[1]`` count increasing in the report
+- если у вас несколько тестовых функций и пропущены импортированные, счетчик
+  ``[1]`` увеличится в отчете;
 
-- you can put :ref:`@pytest.mark.parametrize <@pytest.mark.parametrize>` style
-  parametrization on the test functions to parametrize input/output
-  values as well.
+- для параметризации тестовых функций можно также использовать
+  :ref:`@pytest.mark.parametrize <@pytest.mark.parametrize>`.
 
 
-Set marks or test ID for individual parametrized test
---------------------------------------------------------------------
+Установка маркеров или ID для индивидуального параметризованного теста
+-----------------------------------------------------------------------
 
-Use ``pytest.param`` to apply marks or set test ID to individual parametrized test.
-For example:
+Используйте ``pytest.param``, чтобы применить маркеры или установить ID конкретному тесту.
+Например:
 
 .. code-block:: python
 
-    # content of test_pytest_param_example.py
+    # листинг test_pytest_param_example.py
     import pytest
 
 
@@ -624,12 +635,12 @@ For example:
     def test_eval(test_input, expected):
         assert eval(test_input) == expected
 
-In this example, we have 4 parametrized tests. Except for the first test,
-we mark the rest three parametrized tests with the custom marker ``basic``,
-and for the fourth test we also use the built-in mark ``xfail`` to indicate this
-test is expected to fail. For explicitness, we set test ids for some tests.
+В этом примере 4 параметризованных теста. Исключая первый тест, отмечаем остальные
+три параметризованных теста специальным маркером ``basic``, а для четвертого теста
+используем встроенный маркер ``xfail``, чтобы указать, что ожидаем его падение.
+Для наглядности устанавливаем ID для некоторых тестов.
 
-Then run ``pytest`` with verbose mode and with only the ``basic`` marker:
+Теперь запустим ``pytest`` в подробном режиме и только с маркерами ``basic``:
 
 .. code-block:: pytest
 
@@ -646,26 +657,26 @@ Then run ``pytest`` with verbose mode and with only the ``basic`` marker:
 
     =============== 2 passed, 21 deselected, 1 xfailed in 0.12s ================
 
-As the result:
+В результате:
 
-- Four tests were collected
-- One test was deselected because it doesn't have the ``basic`` mark.
-- Three tests with the ``basic`` mark was selected.
-- The test ``test_eval[1+7-8]`` passed, but the name is autogenerated and confusing.
-- The test ``test_eval[basic_2+4]`` passed.
-- The test ``test_eval[basic_6*9]`` was expected to fail and did fail.
+- было собрано четыре теста;
+- один тест был отменен, поскольку он не имел маркера ``basic``;
+- три теста с маркером ``basic`` были выбраны;
+- тест ``test_eval[1+7-8]`` прошел, но его имя генерируется автоматически и сбивает с толку;
+- тест ``test_eval[basic_2+4]`` прошел;
+- тест ``test_eval[basic_6*9]`` должен был упасть и действительно не прошел.
 
 .. _`parametrizing_conditional_raising`:
 
-Parametrizing conditional raising
+Параметризованные условные исключения
 --------------------------------------------------------------------
 
-Use :func:`pytest.raises` with the
-:ref:`pytest.mark.parametrize ref` decorator to write parametrized tests
-in which some tests raise exceptions and others do not.
+Используйте :func:`pytest.raises` совместно с декоратором :ref:`pytest.mark.parametrize ref`,
+чтобы писать параметризованные тесты, в которых одни тесты вызывают исключения, а
+другие - нет.
 
-It is helpful to define a no-op context manager ``does_not_raise`` to serve
-as a complement to ``raises``. For example:
+Полезно определить менеджер контекста ``does_not_raise``, который
+будет служить дополнением к ``raises``. Например:
 
 .. code-block:: python
 
@@ -688,27 +699,27 @@ as a complement to ``raises``. For example:
         ],
     )
     def test_division(example_input, expectation):
-        """Test how much I know division."""
+        """Проверка насколько я знаю деление."""
         with expectation:
             assert (6 / example_input) is not None
 
-In the example above, the first three test cases should run unexceptionally,
-while the fourth should raise ``ZeroDivisionError``.
+В приведенном выше примере, первые три тестовых примера должны выполняться
+без исключений, а четвертый должен вызывать ``ZeroDivisionError``.
 
-If you're only supporting Python 3.7+, you can simply use ``nullcontext``
-to define ``does_not_raise``:
+Если планируется поддержка только Python 3.7+, можно просто использовать ``nullcontext``
+вместо ``does_not_raise``:
 
 .. code-block:: python
 
     from contextlib import nullcontext as does_not_raise
 
-Or, if you're supporting Python 3.3+ you can use:
+Если поддерживается ``Python 3.3`` и выше:
 
 .. code-block:: python
 
     from contextlib import ExitStack as does_not_raise
 
-Or, if desired, you can ``pip install contextlib2`` and use:
+Или при желании можно установить ``pip install contextlib2`` и использовать:
 
 .. code-block:: python
 

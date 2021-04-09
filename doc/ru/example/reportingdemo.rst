@@ -1,9 +1,9 @@
 .. _`tbreportdemo`:
 
-Demo of Python failure reports with pytest
-==========================================
+Python: примеры  отчетов об ошибках ``pytest``
+===============================================
 
-Here is a nice run of several failures and how ``pytest`` presents things:
+Ниже результаты нескольких тестов ``pytest``:
 
 .. code-block:: pytest
 

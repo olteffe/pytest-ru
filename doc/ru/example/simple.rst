@@ -1,79 +1,77 @@
-
-
-Basic patterns and examples
+Основные шаблоны и примеры
 ==========================================================
 
-How to change command line options defaults
--------------------------------------------
+Как изменить параметры командной строки по умолчанию
+-----------------------------------------------------
 
-It can be tedious to type the same series of command line options
-every time you use ``pytest``.  For example, if you always want to see
-detailed info on skipped and xfailed tests, as well as have terser "dot"
-progress output, you can write it into a configuration file:
+Может быть утомительно вводить одну и ту же серию параметров командной строки каждый
+раз, когда используется ``pytest``. Например, если всегда хотите видеть подробную
+информацию о пропущенных и xfailed-тестах, а также более лаконичный вывод о ходе
+выполнения, вы можете записать его в файл конфигурации:
 
 .. code-block:: ini
 
-    # content of pytest.ini
+    # листинг pytest.ini
     [pytest]
     addopts = -ra -q
 
-
-Alternatively, you can set a ``PYTEST_ADDOPTS`` environment variable to add command
-line options while the environment is in use:
+В качестве альтернативы можно установить переменную ``PYTEST_ADDOPTS`` среды окружения,
+чтобы добавить параметры командной строки во время использования:
 
 .. code-block:: bash
 
     export PYTEST_ADDOPTS="-v"
 
-Here's how the command-line is built in the presence of ``addopts`` or the environment variable:
+Вот как конструируется командная строка при наличии ``addopts`` или переменной окружения:
 
 .. code-block:: text
 
     <pytest.ini:addopts> $PYTEST_ADDOPTS <extra command-line arguments>
 
-So if the user executes in the command-line:
+И так, если пользователь выполняет в командной строке:
 
 .. code-block:: bash
 
     pytest -m slow
 
-The actual command line executed is:
+Фактическая выполняемая командная строка выглядит так:
 
 .. code-block:: bash
 
     pytest -ra -q -v -m slow
 
-Note that as usual for other command-line applications, in case of conflicting options the last one wins, so the example
-above will show verbose output because ``-v`` overwrites ``-q``.
+Обратите внимание: как и для других приложений командной строки, в случае конфликта
+параметров побеждает последний, поэтому в приведенном выше примере будет отображаться
+подробный вывод, потому что ``-v`` заменяет ``-q``.
 
 
 .. _request example:
 
-Pass different values to a test function, depending on command line options
-----------------------------------------------------------------------------
+Передача различных значений в тестовую функцию в зависимости от параметров командной строки
+----------------------------------------------------------------------------------------------
 
 .. regendoc:wipe
 
-Suppose we want to write a test that depends on a command line option.
-Here is a basic pattern to achieve this:
+Предположим, мы хотим написать тест, который зависит от параметра командной строки.
+Вот базовый шаблон:
 
 .. code-block:: python
 
-    # content of test_sample.py
+    # листинг test_sample.py
     def test_answer(cmdopt):
         if cmdopt == "type1":
             print("first")
         elif cmdopt == "type2":
             print("second")
-        assert 0  # to see what was printed
+        assert 0  # чтобы увидеть вывод
 
 
-For this to work we need to add a command line option and
-provide the ``cmdopt`` through a :ref:`fixture function <fixture>`:
+Чтобы это сработало, нам нужно добавить параметр командной строки и представить
+``cmdopt`` через :ref:`fixture function <fixture>`:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
     import pytest
 
 
@@ -87,7 +85,7 @@ provide the ``cmdopt`` through a :ref:`fixture function <fixture>`:
     def cmdopt(request):
         return request.config.getoption("--cmdopt")
 
-Let's run this without supplying our new option:
+Давайте запустим, не добавляя нашу новую опцию:
 
 .. code-block:: pytest
 
@@ -113,7 +111,7 @@ Let's run this without supplying our new option:
     FAILED test_sample.py::test_answer - assert 0
     1 failed in 0.12s
 
-And now with supplying a command line option:
+А теперь с использованием этого параметра:
 
 .. code-block:: pytest
 
@@ -139,37 +137,36 @@ And now with supplying a command line option:
     FAILED test_sample.py::test_answer - assert 0
     1 failed in 0.12s
 
-You can see that the command line option arrived in our test.  This
-completes the basic pattern.  However, one often rather wants to process
-command line options outside of the test and rather pass in different or
-more complex objects.
+Можно увидеть, что в нашем тесте появилось значение опции командной строки. На этом
+основной шаблон завершен. Однако часто требуется обрабатывать параметры командной строки
+вне теста и передавать другие или более сложные объекты.
 
-Dynamically adding command line options
+Динамическое добавлений опций командной строки
 --------------------------------------------------------------
 
 .. regendoc:wipe
 
-Through :confval:`addopts` you can statically add command line
-options for your project.  You can also dynamically modify
-the command line arguments before they get processed:
+С помощью :confval:`addopts` можно статически добавить опцию командной строки для
+вашего проекта. Можно также динамически модифицировать аргументы командной строки
+перед их обработкой:
 
 .. code-block:: python
 
-    # setuptools plugin
+    # плагин setuptools
     import sys
 
 
     def pytest_load_initial_conftests(args):
-        if "xdist" in sys.modules:  # pytest-xdist plugin
+        if "xdist" in sys.modules:  # плагин pytest-xdist
             import multiprocessing
 
             num = max(multiprocessing.cpu_count() / 2, 1)
             args[:] = ["-n", str(num)] + args
 
-If you have the `xdist plugin <https://pypi.org/project/pytest-xdist/>`_ installed
-you will now always perform test runs using a number
-of subprocesses close to your CPU. Running in an empty
-directory with the above conftest.py:
+Если у вас установлен `xdist plugin <https://pypi.org/project/pytest-xdist/>`_,
+то теперь вы будете всегда прогонять тесты с использованием числа подпроцессов,
+близкого к параметрам вашего процессора.
+Запустим в пустой директории с нашим ``conftest.py``:
 
 .. code-block:: pytest
 
@@ -184,17 +181,17 @@ directory with the above conftest.py:
 
 .. _`excontrolskip`:
 
-Control skipping of tests according to command line option
---------------------------------------------------------------
+Контролируем пропуск тестов в соответствии с параметрами командной строки
+---------------------------------------------------------------------------
 
 .. regendoc:wipe
 
-Here is a ``conftest.py`` file adding a ``--runslow`` command
-line option to control skipping of ``pytest.mark.slow`` marked tests:
+Добавим в файл ``conftest.py`` опцию ``--runslow``, чтобы контролировать пропуск
+тестов с пометкой ``pytest.mark.slow``:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
 
     import pytest
 
@@ -211,18 +208,18 @@ line option to control skipping of ``pytest.mark.slow`` marked tests:
 
     def pytest_collection_modifyitems(config, items):
         if config.getoption("--runslow"):
-            # --runslow given in cli: do not skip slow tests
+            # опция --runslow запрошена в командной строке: медленные тесты не пропускаем
             return
         skip_slow = pytest.mark.skip(reason="need --runslow option to run")
         for item in items:
             if "slow" in item.keywords:
                 item.add_marker(skip_slow)
 
-We can now write a test module like this:
+Можно теперь написать тестовый модуль:
 
 .. code-block:: python
 
-    # content of test_module.py
+    # листинг test_module.py
     import pytest
 
 
@@ -234,7 +231,7 @@ We can now write a test module like this:
     def test_func_slow():
         pass
 
-and when running it will see a skipped "slow" test:
+и при запуске увидим пропущенный "медленный" тест:
 
 .. code-block:: pytest
 
@@ -251,7 +248,7 @@ and when running it will see a skipped "slow" test:
     SKIPPED [1] test_module.py:8: need --runslow option to run
     ======================= 1 passed, 1 skipped in 0.12s =======================
 
-Or run it including the ``slow`` marked test:
+Или запустим тест, включая ``--runslow``:
 
 .. code-block:: pytest
 
@@ -268,20 +265,19 @@ Or run it including the ``slow`` marked test:
 
 .. _`__tracebackhide__`:
 
-Writing well integrated assertion helpers
------------------------------------------
+Написание вспомогательной функции тестирования
+-------------------------------------------------
 
 .. regendoc:wipe
 
-If you have a test helper function called from a test you can
-use the ``pytest.fail`` marker to fail a test with a certain message.
-The test support function will not show up in the traceback if you
-set the ``__tracebackhide__`` option somewhere in the helper function.
-Example:
+Если у вас есть вспомогательная функция тестирования, вызываемая из теста, вы можете
+использовать маркер ``pytest.fail``, чтобы "уронить" тест с определенным сообщением.
+Вспомогательная функция не будет отображаться в трассировке, если вы установите
+параметр ``__tracebackhide__`` где-нибудь в теле этой функции. Пример:
 
 .. code-block:: python
 
-    # content of test_checkconfig.py
+    # листинг test_checkconfig.py
     import pytest
 
 
@@ -294,10 +290,9 @@ Example:
     def test_something():
         checkconfig(42)
 
-The ``__tracebackhide__`` setting influences ``pytest`` showing
-of tracebacks: the ``checkconfig`` function will not be shown
-unless the ``--full-trace`` command line option is specified.
-Let's run our little function:
+Параметр ``__tracebackhide__`` влияет на отображение трассировки в ``pytest``: функция
+``checkconfig`` не будет отображаться, если не указан параметр командной строки
+``--full-trace``. Запустим нашу небольшую функцию:
 
 .. code-block:: pytest
 
@@ -315,9 +310,9 @@ Let's run our little function:
     FAILED test_checkconfig.py::test_something - Failed: not configured: 42
     1 failed in 0.12s
 
-If you only want to hide certain exceptions, you can set ``__tracebackhide__``
-to a callable which gets the ``ExceptionInfo`` object. You can for example use
-this to make sure unexpected exception types aren't hidden:
+Если вы хотите скрыть только определенные исключения, можно установить
+``__tracebackhide__`` на вызываемый объект, который получает объект ``ExceptionInfo``.
+Можно использовать это, чтобы убедиться, что неожиданные типы исключений не скрыты:
 
 .. code-block:: python
 
@@ -338,64 +333,61 @@ this to make sure unexpected exception types aren't hidden:
     def test_something():
         checkconfig(42)
 
-This will avoid hiding the exception traceback on unrelated exceptions (i.e.
-bugs in assertion helpers).
+Это позволит избежать скрытия трассировки исключений для несвязанных исключений.
 
-
-Detect if running from within a pytest run
+Как определить, запущено ли приложение из ``pytest``
 --------------------------------------------------------------
 
 .. regendoc:wipe
 
-Usually it is a bad idea to make application code
-behave differently if called from a test.  But if you
-absolutely must find out if your application code is
-running from a test you can do something like this:
+Обычно заставить приложение вести себя иначе, если он вызывается из теста,
+- плохая идея. Но если вам абсолютно необходимо выяснить, выполняется ли код
+вашего приложения из теста, можно сделать что-то вроде этого:
 
 .. code-block:: python
 
-    # content of your_module.py
+    # листинг your_module.py
 
 
     _called_from_test = False
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
 
 
     def pytest_configure(config):
         your_module._called_from_test = True
 
-and then check for the ``your_module._called_from_test`` flag:
+а затем проверьте наличие флага ``your_module._called_from_test``:
 
 .. code-block:: python
 
     if your_module._called_from_test:
-        # called from within a test run
+        # вызывается из тестового прогона
         ...
     else:
-        # called "normally"
+        # запущено "нормально"
         ...
 
-accordingly in your application.
+соответственно в вашем приложении.
 
-Adding info to test report header
+Добавление информации в заголовок отчета
 --------------------------------------------------------------
 
 .. regendoc:wipe
 
-It's easy to present extra information in a ``pytest`` run:
+Легко добавить дополнительную информацию к запуску ``pytest``:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
 
 
     def pytest_report_header(config):
         return "project deps: mylib-1.1"
 
-which will add the string to the test header accordingly:
+которая соответственно добавит строку в заголовок теста:
 
 .. code-block:: pytest
 
@@ -411,20 +403,19 @@ which will add the string to the test header accordingly:
 
 .. regendoc:wipe
 
-It is also possible to return a list of strings which will be considered as several
-lines of information. You may consider ``config.getoption('verbose')`` in order to
-display more information if applicable:
+Можно возвращать список строк - для каждого элемента списка будет добавлена отдельная строка.
+Можно также рассмотреть ``config.getoption('verbose')`` для получения подробной информации:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
 
 
     def pytest_report_header(config):
         if config.getoption("verbose") > 0:
             return ["info1: did you know that ...", "did you?"]
 
-which will add info only when run with "--v":
+Эта строка будет добавлена только при использовании параметра ``--v``:
 
 .. code-block:: pytest
 
@@ -439,7 +430,7 @@ which will add info only when run with "--v":
 
     ========================== no tests ran in 0.12s ===========================
 
-and nothing when run plainly:
+и ничего не изменится, когда запускается без ``--v``:
 
 .. code-block:: pytest
 
@@ -452,19 +443,20 @@ and nothing when run plainly:
 
     ========================== no tests ran in 0.12s ===========================
 
-Profiling test duration
---------------------------
+Определение продолжительности выполнения тестов
+------------------------------------------------
 
 .. regendoc:wipe
 
 .. versionadded: 2.2
 
-If you have a slow running large test suite you might want to find
-out which tests are the slowest. Let's make an artificial test suite:
+Если у вас есть медленно выполняющийся огромный набор тестов, то может возникнуть
+желание выяснить, какие тесты самые медленные. Давайте создадим искусственный
+тестовый набор:
 
 .. code-block:: python
 
-    # content of test_some_are_slow.py
+    # листинг test_some_are_slow.py
     import time
 
 
@@ -479,7 +471,7 @@ out which tests are the slowest. Let's make an artificial test suite:
     def test_funcslow2():
         time.sleep(0.3)
 
-Now we can profile which test functions execute the slowest:
+Теперь можно определить, какие тестовые функции выполняются медленнее всего:
 
 .. code-block:: pytest
 
@@ -498,44 +490,44 @@ Now we can profile which test functions execute the slowest:
     0.10s call     test_some_are_slow.py::test_funcfast
     ============================ 3 passed in 0.12s =============================
 
-Incremental testing - test steps
----------------------------------------------------
+Пошаговое(incremental) тестирование - этапы тестирования
+----------------------------------------------------------
 
 .. regendoc:wipe
 
-Sometimes you may have a testing situation which consists of a series
-of test steps.  If one step fails it makes no sense to execute further
-steps as they are all expected to fail anyway and their tracebacks
-add no insight.  Here is a simple ``conftest.py`` file which introduces
-an ``incremental`` marker which is to be used on classes:
+Иногда тесты могут состоять из нескольких серий, и выполнять их надо по шагам.
+Если на каком-то шаге тест упал, нет смысла выполнять следующие шаги этой серии,
+поскольку они в любом случае должны упасть и трассировка не пополнится
+никакой полезной информацией. Ниже - пример файла ``conftest.py``,
+который вводит маркер ``incremental`` для использования с классами:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
 
     from typing import Dict, Tuple
     import pytest
 
-    # store history of failures per test class name and per index in parametrize (if parametrize used)
+    # сохраняем историю сбоев по имени тестового класса и по индексу в параметризации (если используется параметризация)
     _test_failed_incremental: Dict[str, Dict[Tuple[int, ...], str]] = {}
 
 
     def pytest_runtest_makereport(item, call):
         if "incremental" in item.keywords:
-            # incremental marker is used
+            # использование инкрементного маркера
             if call.excinfo is not None:
-                # the test has failed
-                # retrieve the class name of the test
+                # тест упал
+                # получаем имя класса из теста
                 cls_name = str(item.cls)
-                # retrieve the index of the test (if parametrize is used in combination with incremental)
+                # получаем индекс теста (если параметризация используется в сочетании с инкрементальным)
                 parametrize_index = (
                     tuple(item.callspec.indices.values())
                     if hasattr(item, "callspec")
                     else ()
                 )
-                # retrieve the name of the test function
+                # получаем имя тестовой функции
                 test_name = item.originalname or item.name
-                # store in _test_failed_incremental the original name of the failed test
+                # сохраняем в _test_failed_incremental оригинальное имя упавшего теста
                 _test_failed_incremental.setdefault(cls_name, {}).setdefault(
                     parametrize_index, test_name
                 )
@@ -543,29 +535,29 @@ an ``incremental`` marker which is to be used on classes:
 
     def pytest_runtest_setup(item):
         if "incremental" in item.keywords:
-            # retrieve the class name of the test
+            # извлекаем из теста имя класса
             cls_name = str(item.cls)
-            # check if a previous test has failed for this class
+            # проверяем, падал-ли предыдущий тест на этом классе
             if cls_name in _test_failed_incremental:
-                # retrieve the index of the test (if parametrize is used in combination with incremental)
+                # извлекаем индексы теста (если вместе с  incremental используется параметризация)
                 parametrize_index = (
                     tuple(item.callspec.indices.values())
                     if hasattr(item, "callspec")
                     else ()
                 )
-                # retrieve the name of the first test function to fail for this class name and index
+                # извлекаем имя первой тестовой функции, которая должна упасть для этого имени класса и индекса
                 test_name = _test_failed_incremental[cls_name].get(parametrize_index, None)
-                # if name found, test has failed for the combination of class name & test name
+                # если нашли такое имя, значит, тест падал для такой комбинации класса и функции
                 if test_name is not None:
                     pytest.xfail("previous test failed ({})".format(test_name))
 
 
-These two hook implementations work together to abort incremental-marked
-tests in a class.  Here is a test module example:
+Эти два хука совместно работают на прерывание маркированных ``incremental``
+тестов в классе. Вот пример тестового модуля:
 
 .. code-block:: python
 
-    # content of test_step.py
+    # листинг test_step.py
 
     import pytest
 
@@ -585,7 +577,7 @@ tests in a class.  Here is a test module example:
     def test_normal():
         pass
 
-If we run this:
+Если мы запустим:
 
 .. code-block:: pytest
 
@@ -613,26 +605,28 @@ If we run this:
       reason: previous test failed (test_modification)
     ================== 1 failed, 2 passed, 1 xfailed in 0.12s ==================
 
-We'll see that ``test_deletion`` was not executed because ``test_modification``
-failed.  It is reported as an "expected failure".
+Мы увидим, что ``test_deletion`` не был выполнен, потому что ``test_modification``
+упал.  Сообщается как об «ожидаемой неудаче»(XFAIL).
 
 
-Package/Directory-level fixtures (setups)
+Фикстуры уровня пакета/каталога(настройки)
 -------------------------------------------------------
 
-If you have nested test directories, you can have per-directory fixture scopes
-by placing fixture functions in a ``conftest.py`` file in that directory.
-You can use all types of fixtures including :ref:`autouse fixtures
-<autouse fixtures>` which are the equivalent of xUnit's setup/teardown
-concept.  It's however recommended to have explicit fixture references in your
-tests or test classes rather than relying on implicitly executing
-setup/teardown functions, especially if they are far away from the actual tests.
+Если в вашем дереве тестов есть вложенные каталоги, можно каждый из них
+рассматривать как область действия фикстур - для этого достаточно разместить
+фикстуры в файле ``conftest.py`` соответствующего каталога.
+При этом можно использовать все типы фикстур, включая :ref:`autouse fixtures<autouse fixtures>`,
+которые являются эквивалентом ``setup/teardown`` функций ``xUnit``.
 
-Here is an example for making a ``db`` fixture available in a directory:
+Однако рекомендуется иметь явные ссылки на фикстуры в ваших тестах или тестовых
+классах, а не полагаться на неявное выполнение функций ``setup/teardown``, особенно
+если они расположены далеко от реальных тестов.
+
+Вот пример того, как сделать фикстуру ``db`` доступной в каталоге:
 
 .. code-block:: python
 
-    # content of a/conftest.py
+    # листинг a/conftest.py
     import pytest
 
 
@@ -644,32 +638,31 @@ Here is an example for making a ``db`` fixture available in a directory:
     def db():
         return DB()
 
-and then a test module in that directory:
+и затем тестовый модуль в этом каталоге:
 
 .. code-block:: python
 
-    # content of a/test_db.py
+    # листинг a/test_db.py
     def test_a1(db):
-        assert 0, db  # to show value
+        assert 0, db  # показать значение
 
-another test module:
+другой тестовый модуль:
 
 .. code-block:: python
 
-    # content of a/test_db2.py
+    # листинг a/test_db2.py
     def test_a2(db):
-        assert 0, db  # to show value
+        assert 0, db  # показать значение
 
-and then a module in a sister directory which will not see
-the ``db`` fixture:
+а затем модуль в соседнем каталоге, который не увидит фикстуру ``db``:
 
 .. code-block:: python
 
-    # content of b/test_error.py
-    def test_root(db):  # no db here, will error out
+    # листинг b/test_error.py
+    def test_root(db):  # здесь нет db, выйдет ошибка
         pass
 
-We can run this:
+Теперь запустим:
 
 .. code-block:: pytest
 
@@ -731,27 +724,26 @@ We can run this:
     ERROR b/test_error.py::test_root
     ============= 3 failed, 2 passed, 1 xfailed, 1 error in 0.12s ==============
 
-The two test modules in the ``a`` directory see the same ``db`` fixture instance
-while the one test in the sister-directory ``b`` doesn't see it.  We could of course
-also define a ``db`` fixture in that sister directory's ``conftest.py`` file.
-Note that each fixture is only instantiated if there is a test actually needing
-it (unless you use "autouse" fixture which are always executed ahead of the first test
-executing).
+Оба тестовых модуля из каталога ``a`` видят одну и ту же фикстуру ``db``,
+а вот модуль из каталога ``b`` ее не видит. Конечно, мы можем так же
+определить фикстуру ``db`` в файле ``b/conftest.py``. Обратите внимание,
+что каждая фикстура создается, только если требуется в тесте (кроме ``autouse``
+фикстур - они всегда выполняются перед запуском тестов).
 
 
-Post-process test reports / failures
----------------------------------------
+Отчеты об испытаниях после обработки/неудачи
+---------------------------------------------
 
-If you want to postprocess test reports and need access to the executing
-environment you can implement a hook that gets called when the test
-"report" object is about to be created.  Here we write out all failing
-test calls and also access a fixture (if it was used by the test) in
-case you want to query/look at it during your post processing.  In our
-case we just write some information out to a ``failures`` file:
+Если нужно обрабатывать отчеты ``pytest`` или получать доступ
+к исполняющему тесты окружению, можно реализовать хук, который будет вызываться
+во время создания объекта "report". Ниже мы обрабатываем все упавшие тесты
+и получаем доступ к фикстуре (если она используется в тестах), которую
+хотим посмотреть во время обработки. Всю информацию мы запишем
+в файл ``failures``:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
 
     import pytest
     import os.path
@@ -759,15 +751,15 @@ case we just write some information out to a ``failures`` file:
 
     @pytest.hookimpl(tryfirst=True, hookwrapper=True)
     def pytest_runtest_makereport(item, call):
-        # execute all other hooks to obtain the report object
+        # выполняем все остальные хуки, чтобы получить объект отчета
         outcome = yield
         rep = outcome.get_result()
 
-        # we only look at actual failing test calls, not setup/teardown
+        # мы смотрим только на фактические упавшие тестовые вызовы, а не setup/teardown
         if rep.when == "call" and rep.failed:
             mode = "a" if os.path.exists("failures") else "w"
             with open("failures", mode) as f:
-                # let's also access a fixture for the fun of it
+                # давайте также обратимся к фикстуре ради забавы
                 if "tmp_path" in item.fixturenames:
                     extra = " ({})".format(item.funcargs["tmp_path"])
                 else:
@@ -776,11 +768,11 @@ case we just write some information out to a ``failures`` file:
                 f.write(rep.nodeid + extra + "\n")
 
 
-if you then have failing tests:
+если у вас затем будут упавшие тесты:
 
 .. code-block:: python
 
-    # content of test_module.py
+    # листинг test_module.py
     def test_fail1(tmp_path):
         assert 0
 
@@ -788,7 +780,7 @@ if you then have failing tests:
     def test_fail2():
         assert 0
 
-and run them:
+и запустим их:
 
 .. code-block:: pytest
 
@@ -823,7 +815,7 @@ and run them:
     FAILED test_module.py::test_fail2 - assert 0
     ============================ 2 failed in 0.12s =============================
 
-you will have a "failures" file which contains the failing test ids:
+Мы получили файл ``failures`` с идентификаторами упавших тестов:
 
 .. code-block:: bash
 
@@ -831,29 +823,29 @@ you will have a "failures" file which contains the failing test ids:
     test_module.py::test_fail1 (PYTEST_TMPDIR/test_fail10)
     test_module.py::test_fail2
 
-Making test result information available in fixtures
------------------------------------------------------------
+Предоставление информации о результатах тестирования в фикстуры
+-----------------------------------------------------------------
 
 .. regendoc:wipe
 
-If you want to make test result reports available in fixture finalizers
-here is a little example implemented via a local plugin:
+Если вы хотите, чтобы отчеты о результатах тестов были доступны в
+финализаторе фикстуры, можно реализовать следующий небольшой плагин:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
 
     import pytest
 
 
     @pytest.hookimpl(tryfirst=True, hookwrapper=True)
     def pytest_runtest_makereport(item, call):
-        # execute all other hooks to obtain the report object
+        # выполнить все остальные хуки, чтобы получить объект отчета
         outcome = yield
         rep = outcome.get_result()
 
-        # set a report attribute for each phase of a call, which can
-        # be "setup", "call", "teardown"
+        # установим атрибут отчета для каждой фазы вызова, который может
+        # быть "setup", "call", "teardown"
 
         setattr(item, "rep_" + rep.when, rep)
 
@@ -861,8 +853,8 @@ here is a little example implemented via a local plugin:
     @pytest.fixture
     def something(request):
         yield
-        # request.node is an "item" because we use the default
-        # "function" scope
+        # "request.node" в данном случае "item", поскольку мы используем уровень
+        # по умолчанию - область "function"
         if request.node.rep_setup.failed:
             print("setting up a test failed!", request.node.nodeid)
         elif request.node.rep_setup.passed:
@@ -870,11 +862,11 @@ here is a little example implemented via a local plugin:
                 print("executing test failed", request.node.nodeid)
 
 
-if you then have failing tests:
+если у вас затем будут упавшие тесты:
 
 .. code-block:: python
 
-    # content of test_module.py
+    # листинг test_module.py
 
     import pytest
 
@@ -895,7 +887,7 @@ if you then have failing tests:
     def test_fail2():
         assert 0
 
-and run it:
+и запустим их:
 
 .. code-block:: pytest
 
@@ -942,23 +934,22 @@ and run it:
     ERROR test_module.py::test_setup_fails - assert 0
     ======================== 2 failed, 1 error in 0.12s ========================
 
-You'll see that the fixture finalizers could use the precise reporting
-information.
+Как видите, финализаторы фикстуры могут использовать информацию из отчета.
 
 .. _pytest current test env:
 
-``PYTEST_CURRENT_TEST`` environment variable
---------------------------------------------
+Переменная окружения ``PYTEST_CURRENT_TEST``
+---------------------------------------------
 
+Иногда тестовая сессия может зависнуть, и бывает непросто выяснить, на каком именно
+тесте она "застряла" (например, ``pytest`` запущен в "тихом" (``-q``) режиме или
+нет доступа к консольному выводу). Это особенно неприятно, когда проблема возникает
+нерегулярно - получаем так называемые "моргающие"(*flaky*) тесты.
 
-
-Sometimes a test session might get stuck and there might be no easy way to figure out
-which test got stuck, for example if pytest was run in quiet mode (``-q``) or you don't have access to the console
-output. This is particularly a problem if the problem happens only sporadically, the famous "flaky" kind of tests.
-
-``pytest`` sets the :envvar:`PYTEST_CURRENT_TEST` environment variable when running tests, which can be inspected
-by process monitoring utilities or libraries like `psutil <https://pypi.org/project/psutil/>`_ to discover which
-test got stuck if necessary:
+При запуске тестов ``pytest`` задает переменную окружения :envvar:`PYTEST_CURRENT_TEST`,
+которую можно проверять с помощью утилит мониторинга процессов или библиотек
+вроде `psutil <https://pypi.org/project/psutil/>`_ для того, чтобы выяснить,
+какой именно тест "застрял":
 
 .. code-block:: python
 
@@ -969,71 +960,77 @@ test got stuck if necessary:
         if "PYTEST_CURRENT_TEST" in environ:
             print(f'pytest process {pid} running: {environ["PYTEST_CURRENT_TEST"]}')
 
-During the test session pytest will set ``PYTEST_CURRENT_TEST`` to the current test
-:ref:`nodeid <nodeids>` and the current stage, which can be ``setup``, ``call``,
-or ``teardown``.
+Во время тестовой сессии ``pytest`` будет присваивать ``PYTEST_CURRENT_TEST``
+текущий идентификатор узла (:ref:`nodeid <nodeids>`) и текущее состояние:
+``setup``, ``call`` или ``teardown``.
 
-For example, when running a single test function named ``test_foo`` from ``foo_module.py``,
-``PYTEST_CURRENT_TEST`` will be set to:
+К примеру, если мы запустим одну тестовую функцию ``test_foo``
+из модуля  ``foo_module.py``, ``PYTEST_CURRENT_TEST`` будет принимать следующие значения:
 
 #. ``foo_module.py::test_foo (setup)``
 #. ``foo_module.py::test_foo (call)``
 #. ``foo_module.py::test_foo (teardown)``
 
-In that order.
+Именно в таком порядке.
 
 .. note::
 
-    The contents of ``PYTEST_CURRENT_TEST`` is meant to be human readable and the actual format
-    can be changed between releases (even bug fixes) so it shouldn't be relied on for scripting
-    or automation.
+    Поскольку содержимое ``PYTEST_CURRENT_TEST`` должно быть читабельно,
+    текущий формат от релиза к релизу может меняться (даже при фиксации багов),
+    поэтому не стоит полагаться именно на такой вид при написании сценариев
+    и автоматизации.
 
 .. _freezing-pytest:
 
-Freezing pytest
----------------
+"Заморозка" ``pytest``
+-----------------------
 
-If you freeze your application using a tool like
-`PyInstaller <https://pyinstaller.readthedocs.io>`_
-in order to distribute it to your end-users, it is a good idea to also package
-your test runner and run your tests using the frozen application. This way packaging
-errors such as dependencies not being included into the executable can be detected early
-while also allowing you to send test files to users so they can run them in their
-machines, which can be useful to obtain more information about a hard to reproduce bug.
+Если вы "замораживаете" приложение с помощью инструмента вроде
+`PyInstaller <https://pyinstaller.readthedocs.io>`_, чтобы распространить
+его среди конечных пользователей, хорошей идеей будет упаковать и ваш
+``pytest`` и запускать тесты с "замороженным" приложением.
+Благодаря такому способу некоторые ошибки (например, отсутствие в исполняемом
+файле нужных зависимостей) могут быть обнаружены на раннем этапе;
+кроме того, это позволяет вам отправлять тестовые файлы пользователям,
+чтобы они сами могли запустить тесты на своих машинах, что может
+быть полезно  для получения дополнительной информации о
+трудновоспроизводимой ошибке.
 
-Fortunately recent ``PyInstaller`` releases already have a custom hook
-for pytest, but if you are using another tool to freeze executables
-such as ``cx_freeze`` or ``py2exe``, you can use ``pytest.freeze_includes()``
-to obtain the full list of internal pytest modules. How to configure the tools
-to find the internal modules varies from tool to tool, however.
+К счастью, в последних релизах ``PyInstaller`` уже есть хук
+для ``pytest``, но если вы используете для "заморозки" другие инструменты,
+такие как ``cx_freeze`` или ``py2exe``, можно использовать
+``pytest.freeze_includes()`` для получения полного списка используемых
+``pytest`` модулей. Однако конфигурирование инструмента для
+поиска внутренних модулей зависит от используемого инструмента.
 
-Instead of freezing the pytest runner as a separate executable, you can make
-your frozen program work as the pytest runner by some clever
-argument handling during program startup. This allows you to
-have a single executable, which is usually more convenient.
-Please note that the mechanism for plugin discovery used by pytest
-(setupttools entry points) doesn't work with frozen executables so pytest
-can't find any third party plugins automatically. To include third party plugins
-like ``pytest-timeout`` they must be imported explicitly and passed on to pytest.main.
+Вместо того, чтобы "заморозить" ``pytest`` как отдельный исполняемый файл,
+можно заставить "замороженную" программу воспринимать ``pytest`` как некий
+хитрый аргумент, к которому она обращается во время запуска.
+Это позволит вам иметь один исполняемый файл - обычно так удобнее.
+Обратите внимание, что механизм поиска плагинов, используемый ``pytest``,
+не работает с "замороженными" исполняемыми файлами, поэтому
+``pytest`` не сможет найти сторонний плагин автоматически.
+Чтобы подключить стороние плагины вроде ``pytest-timeout``, их нужно
+явно импортировать и передать в ``pytest.main``.
 
 .. code-block:: python
 
-    # contents of app_main.py
+    # листинг app_main.py
     import sys
-    import pytest_timeout  # Third party plugin
+    import pytest_timeout  # Сторонний плагин
 
     if len(sys.argv) > 1 and sys.argv[1] == "--pytest":
         import pytest
 
         sys.exit(pytest.main(sys.argv[2:], plugins=[pytest_timeout]))
     else:
-        # normal application execution: at this point argv can be parsed
-        # by your argument-parsing library of choice as usual
+        # нормальное выполнение приложения: здесь можно проанализировать argv
+        # как обычно
         ...
 
 
-This allows you to execute tests using the frozen
-application with standard ``pytest`` command-line options:
+Такой шаблон позволит вам запускать тесты на "замороженном"
+приложении со стандартными опциями командной строки ``pytest``:
 
 .. code-block:: bash
 

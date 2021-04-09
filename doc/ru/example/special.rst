@@ -1,15 +1,13 @@
-A session-fixture which can look at all collected tests
-----------------------------------------------------------------
+Фикстура уровня сессии, которая может просматривать все собранные тесты
+------------------------------------------------------------------------
 
-A session-scoped fixture effectively has access to all
-collected test items.  Here is an example of a fixture
-function which walks all collected tests and looks
-if their test class defines a ``callme`` method and
-calls it:
+Фикстура уровня сессии имеет доступ ко всем собираемым тестам.
+Ниже - пример фикстуры, которая просматривает все собираемые тесты,
+ищет тестовый класс, содержащий метод ``callme`` и вызывает его:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
 
     import pytest
 
@@ -26,12 +24,12 @@ calls it:
                     cls.obj.callme()
                 seen.add(cls)
 
-test classes may now define a ``callme`` method which
-will be called ahead of running any tests:
+Теперь в тестовых классах можно определить метод ``callme``,
+который будет вызываться перед запуском любых тестов:
 
 .. code-block:: python
 
-    # content of test_module.py
+    # листинг test_module.py
 
 
     class TestHello:
@@ -55,7 +53,7 @@ will be called ahead of running any tests:
             print("test other")
 
 
-    # works with unittest as well ...
+    # также работает с unittest ...
     import unittest
 
 
@@ -67,7 +65,7 @@ will be called ahead of running any tests:
         def test_unit1(self):
             print("test_unit1 method called")
 
-If you run this without output capturing:
+Запустим этот код без перехвата вывода:
 
 .. code-block:: pytest
 
