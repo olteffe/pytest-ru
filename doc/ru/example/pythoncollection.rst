@@ -1,12 +1,12 @@
-Changing standard (Python) test discovery
-===============================================
+Изменение стандартных правил поиска тестов Python
+===================================================
 
-Ignore paths during test collection
------------------------------------
+Игнорирование путей при поиске тестов
+-------------------------------------------
 
-You can easily ignore certain test directories and modules during collection
-by passing the ``--ignore=path`` option on the cli. ``pytest`` allows multiple
-``--ignore`` options. Example:
+Возможно игнорировать определенные тестовые каталоги и модули во время запуска, передав
+``--ignore=path`` в командной строке. ``pytest`` позволяет использовать несколько параметров
+``--ignore``. Пример:
 
 .. code-block:: text
 
@@ -25,8 +25,8 @@ by passing the ``--ignore=path`` option on the cli. ``pytest`` allows multiple
             |-- test_world_02.py
             '-- test_world_03.py
 
-Now if you invoke ``pytest`` with ``--ignore=tests/foobar/test_foobar_03.py --ignore=tests/hello/``,
-you will see that ``pytest`` only collects test-modules, which do not match the patterns specified:
+Если вызвать ``pytest`` с ``--ignore=tests/foobar/test_foobar_03.py --ignore=tests/hello/``,
+то ``pytest`` выберет только те тестовые модули, которые не соответствуют указанным шаблонам:
 
 .. code-block:: pytest
 
@@ -43,23 +43,24 @@ you will see that ``pytest`` only collects test-modules, which do not match the 
 
     ========================= 5 passed in 0.02 seconds =========================
 
-The ``--ignore-glob`` option allows to ignore test file paths based on Unix shell-style wildcards.
-If you want to exclude test-modules that end with ``_01.py``, execute ``pytest`` with ``--ignore-glob='*_01.py'``.
+Опция ``--ignore-glob`` позволяет игнорировать пути в виде шаблонов Unix. Если
+хотите исключить тестовые модули, которые заканчиваются на ``_01.py``,
+можно запустить ``pytest`` с опцией ``--ignore-glob='*_01.py'``.
 
-Deselect tests during test collection
--------------------------------------
+Отмена выбора тестов во время запуска
+---------------------------------------
 
-Tests can individually be deselected during collection by passing the ``--deselect=item`` option.
-For example, say ``tests/foobar/test_foobar_01.py`` contains ``test_a`` and ``test_b``.
-You can run all of the tests within ``tests/`` *except* for ``tests/foobar/test_foobar_01.py::test_a``
-by invoking ``pytest`` with ``--deselect tests/foobar/test_foobar_01.py::test_a``.
-``pytest`` allows multiple ``--deselect`` options.
+Во время сборки тестов можно по отдельности отменить выбор некоторых, передав параметр
+``--deselect=item``. Например, ``tests/foobar/test_foobar_01.py`` содержит ``test_a`` и
+``test_b``. Возможно запустить все тесты в ``tests/`` *за исключением* ``tests/foobar/test_foobar_01.py::test_a``,
+запуская ``pytest`` с ``--deselect tests/foobar/test_foobar_01.py::test_a``.
+``pytest`` поддерживает несколько параметров ``--deselect``.
 
-Keeping duplicate paths specified from command line
-----------------------------------------------------
+Использование повторяющихся путей, указанных в командной строке
+--------------------------------------------------------------
 
-Default behavior of ``pytest`` is to ignore duplicate paths specified from the command line.
-Example:
+По умолчанию ``pytest`` игнорирует несколько путей, указанные в командной строке.
+Например:
 
 .. code-block:: pytest
 
@@ -69,10 +70,10 @@ Example:
     collected 1 item
     ...
 
-Just collect tests once.
+Будет собран только один элемент.
 
-To collect duplicate tests, use the ``--keep-duplicates`` option on the cli.
-Example:
+Для сборки двойных тестов, используйте ``--keep-duplicates`` в командной строке.
+Пример:
 
 .. code-block:: pytest
 
@@ -82,9 +83,10 @@ Example:
     collected 2 items
     ...
 
-As the collector just works on directories, if you specify twice a single test file, ``pytest`` will
-still collect it twice, no matter if the ``--keep-duplicates`` is not specified.
-Example:
+Поскольку сборщик работает только с каталогами, если вы укажете дважды один тестовый
+файл, ``pytest`` все равно соберет его дважды, даже если опция ``--keep-duplicates``
+не применялась.
+Пример:
 
 .. code-block:: pytest
 
@@ -95,10 +97,11 @@ Example:
     ...
 
 
-Changing directory recursion
+Изменение правил рекурсивного обхода
 -----------------------------------------------------
 
-You can set the :confval:`norecursedirs` option in an ini-file, for example your ``pytest.ini`` in the project root directory:
+Опцию :confval:`norecursedirs` можно задавать в ini-файле, например, в ``pytest.ini``
+корневого каталога проекта:
 
 .. code-block:: ini
 
@@ -106,34 +109,35 @@ You can set the :confval:`norecursedirs` option in an ini-file, for example your
     [pytest]
     norecursedirs = .svn _build tmp*
 
-This would tell ``pytest`` to not recurse into typical subversion or sphinx-build directories or into any ``tmp`` prefixed directory.
+Такая запись указывает ``pytest`` не проводить рекурсивный поиск тестов в каталоге ``.svn``
+subversion, в "build"-директориях "sphinx" и в любых каталогах с префиксом ``tmp``.
 
 .. _`change naming conventions`:
 
-Changing naming conventions
+Изменение соглашений об именах тестов для поиска
 -----------------------------------------------------
 
-You can configure different naming conventions by setting
-the :confval:`python_files`, :confval:`python_classes` and
-:confval:`python_functions` in your :ref:`configuration file <config file formats>`.
-Here is an example:
+Вы можете настроить свои правила для поиска тестов по имени, установив опции
+:confval:`python_files`, :confval:`python_classes` и
+:confval:`python_functions` в файле конфигурации :ref:`configuration file <config file formats>`.
+Вот пример:
 
 .. code-block:: ini
 
-    # content of pytest.ini
-    # Example 1: have pytest look for "check" instead of "test"
+    # листинг pytest.ini
+    # Пример 1: pytest ищет "check" вместо "test"
     [pytest]
     python_files = check_*.py
     python_classes = Check
     python_functions = *_check
 
-This would make ``pytest`` look for tests in files that match the ``check_*
-.py`` glob-pattern, ``Check`` prefixes in classes, and functions and methods
-that match ``*_check``. For example, if we have:
+Такая настройка заставит ``pytest`` искать тесты в файлах по глобальному шаблону
+``check_*.py``, префикс ``Check`` в классах, а функции и методы по шаблону
+``*_check``. Например:
 
 .. code-block:: python
 
-    # content of check_myapp.py
+    # листинг check_myapp.py
     class CheckMyApp:
         def simple_check(self):
             pass
@@ -141,7 +145,7 @@ that match ``*_check``. For example, if we have:
         def complex_check(self):
             pass
 
-The test collection would look like this:
+Набор тестов будет выглядеть так:
 
 .. code-block:: pytest
 
@@ -159,51 +163,48 @@ The test collection would look like this:
 
     ======================== 2 tests collected in 0.12s ========================
 
-You can check for multiple glob patterns by adding a space between the patterns:
+Вы можете использовать несколько глобальных шаблонов, добавив пробел между ними:
 
 .. code-block:: ini
 
-    # Example 2: have pytest look for files with "test" and "example"
-    # content of pytest.ini
+    # Пример 2: пусть pytest ищет файлы с "test" и "example"
+    # листинг pytest.ini
     [pytest]
     python_files = test_*.py example_*.py
 
 .. note::
 
-   the ``python_functions`` and ``python_classes`` options has no effect
-   for ``unittest.TestCase`` test discovery because pytest delegates
-   discovery of test case methods to unittest code.
+   параметры ``python_functions`` и ``python_classes`` не оказывают никакого действия
+   на поиск ``unittest.TestCase``, поскольку обнаружение таких тестов
+   производится средствами ``unittest``.
 
-Interpreting cmdline arguments as Python packages
------------------------------------------------------
+Интерпретация аргументов командной строки как пакетов Python
+---------------------------------------------------------------
 
-You can use the ``--pyargs`` option to make ``pytest`` try
-interpreting arguments as python package names, deriving
-their file system path and then running the test. For
-example if you have unittest2 installed you can type:
+Можно использовать опцию ``--pyargs``, чтобы ``pytest`` попытался интерпретировать
+аргументы как имена пакетов ``python``, получить путь к их файловой системе и затем
+запустить тест. Например, если у вас установлен ``unittest2``, вы можете выполнить команду:
 
 .. code-block:: bash
 
     pytest --pyargs unittest2.test.test_skipping -q
 
-which would run the respective test module.  Like with
-other options, through an ini-file and the :confval:`addopts` option you
-can make this change more permanently:
+которая запустит соответствующий тестовый модуль. Как и с другими опциями,
+через ini-файл и опциями :confval:`addopts` вы можете сделать их постоянными:
 
 .. code-block:: ini
 
-    # content of pytest.ini
+    # листинг pytest.ini
     [pytest]
     addopts = --pyargs
 
-Now a simple invocation of ``pytest NAME`` will check
-if NAME exists as an importable package/module and otherwise
-treat it as a filesystem path.
+Теперь простой вызов ``pytest NAME`` проверит, существует ли ``NAME`` как импортируемый
+модуль пакета, и в противном случае обработает его как путь в файловой системе.
 
-Finding out what is collected
+Просмотр дерева найденных тестов
 -----------------------------------------------
 
-You can always peek at the collection tree without running tests like this:
+Всегда возможно заглянуть в дерево собранных тестов, не выполняя самих тестов:
 
 .. code-block:: pytest
 
@@ -224,53 +225,53 @@ You can always peek at the collection tree without running tests like this:
 
 .. _customizing-test-collection:
 
-Customizing test collection
+Настройка поиска тестов
 ---------------------------
 
 .. regendoc:wipe
 
-You can easily instruct ``pytest`` to discover tests from every Python file:
+Можно легко указать ``pytest`` обнаруживать тесты в любом ``python``-файле:
 
 .. code-block:: ini
 
-    # content of pytest.ini
+    # листинг pytest.ini
     [pytest]
     python_files = *.py
 
-However, many projects will have a ``setup.py`` which they don't want to be
-imported. Moreover, there may files only importable by a specific python
-version. For such cases you can dynamically define files to be ignored by
-listing them in a ``conftest.py`` file:
+Однако, во многих проектах есть файл ``setup.py``, который не хотелось бы импортировать.
+Более того, там могут присутствовать файлы, которые можно импортировать только
+определенной версией ``Python``. В таких случаях можно динамически определить
+игнорируемые файлы, перечислив их в ``conftest.py``:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
     import sys
 
     collect_ignore = ["setup.py"]
     if sys.version_info[0] > 2:
         collect_ignore.append("pkg/module_py2.py")
 
-and then if you have a module file like this:
+а затем, если у вас есть файл модуля, подобный этому:
 
 .. code-block:: python
 
-    # content of pkg/module_py2.py
+    # листинг pkg/module_py2.py
     def test_only_on_python2():
         try:
             assert 0
         except Exception, e:
             pass
 
-and a ``setup.py`` dummy file like this:
+и макет файла ``setup.py``:
 
 .. code-block:: python
 
-    # content of setup.py
-    0 / 0  # will raise exception if imported
+    # листинг setup.py
+    0 / 0  # вызовет исключение, если импортировано
 
-If you run with a Python 2 interpreter then you will find the one test and will
-leave out the ``setup.py`` file:
+Тогда при запуске ``pytest`` в интерпретаторе ```Python 2`` мы соберем 1 тест,
+а файл``setup.py`` будет проигнорирован:
 
 .. code-block:: pytest
 
@@ -284,8 +285,7 @@ leave out the ``setup.py`` file:
 
     ====== 1 tests found in 0.04 seconds ======
 
-If you run with a Python 3 interpreter both the one test and the ``setup.py``
-file will be left out:
+При запустите на ``Python 3`` будут исключены:
 
 .. code-block:: pytest
 
@@ -298,27 +298,26 @@ file will be left out:
 
     ======================= no tests collected in 0.12s ========================
 
-It's also possible to ignore files based on Unix shell-style wildcards by adding
-patterns to :globalvar:`collect_ignore_glob`.
+Для определения файлов, которые должны быть пропущены, можно также добавлять в
+:globalvar:`collect_ignore_glob` шаблоны в стиле Unix.
 
-The following example ``conftest.py`` ignores the file ``setup.py`` and in
-addition all files that end with ``*_py2.py`` when executed with a Python 3
-interpreter:
+В следующем примере в ``conftest.py`` игнорируется файл ``setup.py`` и все файлы,
+которые оканчиваются на ``*_py2.py`` и запускаются с помощью ``python`` версии 3 и выше:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
     import sys
 
     collect_ignore = ["setup.py"]
     if sys.version_info[0] > 2:
         collect_ignore_glob = ["*_py2.py"]
 
-Since Pytest 2.6, users can prevent pytest from discovering classes that start
-with ``Test`` by setting a boolean ``__test__`` attribute to ``False``.
+Начиная с Pytest 2.6, пользователи могут запретить pytest обнаруживать классы,
+начинающиеся с ``Test`` установив логическое значение атрибута ``__test__`` в ``False``.
 
 .. code-block:: python
 
-    # Will not be discovered as a test
+    # Не будет обнаружен как тест
     class TestClass:
         __test__ = False
