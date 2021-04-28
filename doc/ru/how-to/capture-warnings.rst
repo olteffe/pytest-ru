@@ -1,16 +1,14 @@
 .. _`warnings`:
 
-How to capture warnings
-=======================
+Фиксирование предупреждений
+===============================
 
-
-
-Starting from version ``3.1``, pytest now automatically catches warnings during test execution
-and displays them at the end of the session:
+Начиная с версии ``3.1``, pytest автоматически перехватывает предупреждения во время
+выполнения теста и отображает их в конце сеанса:
 
 .. code-block:: python
 
-    # content of test_show_warnings.py
+    # листинг test_show_warnings.py
     import warnings
 
 
@@ -22,7 +20,7 @@ and displays them at the end of the session:
     def test_one():
         assert api_v1() == 1
 
-Running pytest now produces this output:
+При запуске pytest получим следующий результат:
 
 .. code-block:: pytest
 
@@ -43,8 +41,8 @@ Running pytest now produces this output:
     -- Docs: https://docs.pytest.org/en/stable/warnings.html
     ======================= 1 passed, 1 warning in 0.12s =======================
 
-The ``-W`` flag can be passed to control which warnings will be displayed or even turn
-them into errors:
+Флаг ``-W`` может быть передан для управления тем, какие предупреждения будут отображаться
+или даже обратить их в ошибки:
 
 .. code-block:: pytest
 
@@ -68,10 +66,10 @@ them into errors:
     FAILED test_show_warnings.py::test_one - UserWarning: api v1, should use ...
     1 failed in 0.12s
 
-The same option can be set in the ``pytest.ini`` or ``pyproject.toml`` file using the
-``filterwarnings`` ini option. For example, the configuration below will ignore all
-user warnings and specific deprecation warnings matching a regex, but will transform
-all other warnings into errors.
+Тот же параметр можно установить в файле ``pytest.ini`` или ``pyproject.toml`` с помощью
+ini-параметра ``filterwarnings``. Например, приведенные ниже настройки игнорируют все
+пользовательские предупреждения и определенные предупреждения об устаревании,
+соответствующие регулярному выражению, но преобразует все другие предупреждения в ошибки.
 
 .. code-block:: ini
 
@@ -94,12 +92,12 @@ all other warnings into errors.
     ]
 
 
-When a warning matches more than one option in the list, the action for the last matching option
-is performed.
+Когда предупреждение соответствует более чем одному параметру в списке, выполняется
+действие для последнего совпадающего параметра.
 
-Both ``-W`` command-line option and ``filterwarnings`` ini option are based on Python's own
-`-W option`_ and `warnings.simplefilter`_, so please refer to those sections in the Python
-documentation for other examples and advanced usage.
+Опция командной строки ``-W`` и настройка ``filterwarnings`` в ini-файле основаны на встроенные в Python
+`-W option`_ и `warnings.simplefilter`_, поэтому обратитесь к этим разделам в документации Python для
+других примеров и использования.
 
 .. _`filterwarnings`:
 
@@ -108,9 +106,9 @@ documentation for other examples and advanced usage.
 
 
 
-You can use the ``@pytest.mark.filterwarnings`` to add warning filters to specific test items,
-allowing you to have finer control of which warnings should be captured at test, class or
-even module level:
+Вы можете использовать ``@pytest.mark.filterwarnings`` для добавления фильтров предупреждений к конкретным
+элементам теста, что позволяет более точно контролировать, какие предупреждения следует фиксировать на
+уровне теста, класса или даже модуля:
 
 .. code-block:: python
 
@@ -127,44 +125,43 @@ even module level:
         assert api_v1() == 1
 
 
-Filters applied using a mark take precedence over filters passed on the command line or configured
-by the ``filterwarnings`` ini option.
+Фильтры, примененные с помощью метки, имеют приоритет над фильтрами, переданными в командной строке или
+настроенными с помощью ini-параметра ``filterwarnings``.
 
-You may apply a filter to all tests of a class by using the ``filterwarnings`` mark as a class
-decorator or to all tests in a module by setting the :globalvar:`pytestmark` variable:
+Вы можете применить фильтр ко всем тестам класса, используя метку ``filterwarnings`` в качестве декоратора
+класса, или ко всем тестам в модуле, установив переменную :globalvar:`pytestmark`:
 
 .. code-block:: python
 
-    # turns all warnings into errors for this module
+    # превращает все предупреждения в ошибки для этого модуля
     pytestmark = pytest.mark.filterwarnings("error")
 
 
 
-*Credits go to Florian Schulze for the reference implementation in the* `pytest-warnings`_
-*plugin.*
+*Смотрите эталонную реализацию Florian Schulze в модуле* `pytest-warnings`_
 
 .. _`-W option`: https://docs.python.org/3/using/cmdline.html#cmdoption-w
 .. _warnings.simplefilter: https://docs.python.org/3/library/warnings.html#warnings.simplefilter
 .. _`pytest-warnings`: https://github.com/fschulze/pytest-warnings
 
-Disabling warnings summary
---------------------------
-
-Although not recommended, you can use the ``--disable-warnings`` command-line option to suppress the
-warning summary entirely from the test run output.
-
-Disabling warning capture entirely
+Отключение сводки предупреждений
 ----------------------------------
 
-This plugin is enabled by default but can be disabled entirely in your ``pytest.ini`` file with:
+Хотя это не рекомендуется, вы можете использовать параметр командной строки ``--disable-warnings``, чтобы
+полностью исключить суммарные предупреждения из выходных данных тестового запуска.
+
+Полное отключение сбора предупреждений
+---------------------------------------
+
+Этот плагин включен по умолчанию, но его можно полностью отключить в файле ``pytest.ini`` с помощью:
 
     .. code-block:: ini
 
         [pytest]
         addopts = -p no:warnings
 
-Or passing ``-p no:warnings`` in the command-line. This might be useful if your test suites handles warnings
-using an external system.
+Или передав в командной строке ``-p no:warnings``. Это может быть полезно, если ваши наборы тестов
+обрабатывают предупреждения с помощью внешней системы.
 
 
 .. _`deprecation-warnings`:
@@ -175,15 +172,16 @@ DeprecationWarning and PendingDeprecationWarning
 
 
 
-By default pytest will display ``DeprecationWarning`` and ``PendingDeprecationWarning`` warnings from
-user code and third-party libraries, as recommended by `PEP-0565 <https://www.python.org/dev/peps/pep-0565>`_.
-This helps users keep their code modern and avoid breakages when deprecated warnings are effectively removed.
+По умолчанию pytest отобразит предупреждения ``DeprecationWarning`` и ``PendingDeprecationWarning``  из
+пользовательского кода и сторонних библиотек, как рекомендуется в `PEP-0565 <https://www.python.org/dev/peps/pep-0565>`_.
+Это помогает пользователям поддерживать свой код в современном стиле и избегать поломок, когда
+DeprecationWarning эффективно удаляются.
 
-Sometimes it is useful to hide some specific deprecation warnings that happen in code that you have no control over
-(such as third-party libraries), in which case you might use the warning filters options (ini or marks) to ignore
-those warnings.
+Иногда полезно скрыть некоторые конкретные DeprecationWarning, которые появляются в коде, который вы не
+контролируете (например, сторонние библиотеки), и в этом случае вы можете использовать
+параметры фильтров предупреждений (ini или метки), чтобы игнорировать эти предупреждения.
 
-For example:
+Например:
 
 .. code-block:: ini
 
@@ -192,31 +190,31 @@ For example:
         ignore:.*U.*mode is deprecated:DeprecationWarning
 
 
-This will ignore all warnings of type ``DeprecationWarning`` where the start of the message matches
-the regular expression ``".*U.*mode is deprecated"``.
+Это проигнорирует все предупреждения типа ``DeprecationWarning``, где начало сообщения соответствует регулярному
+выражению ``".*U.*mode is deprecated"``.
 
 .. note::
 
-    If warnings are configured at the interpreter level, using
-    the `PYTHONWARNINGS <https://docs.python.org/3/using/cmdline.html#envvar-PYTHONWARNINGS>`_ environment variable or the
-    ``-W`` command-line option, pytest will not configure any filters by default.
+    Если предупреждения настроены на уровне интерпретатора, использование
+    `PYTHONWARNINGS <https://docs.python.org/3/using/cmdline.html#envvar-PYTHONWARNINGS>`_ переменная
+    окружения или параметр командной строки ``-W``, pytest не будет настраивать какие-либо фильтры по
+    умолчанию.
 
-    Also pytest doesn't follow ``PEP-0506`` suggestion of resetting all warning filters because
-    it might break test suites that configure warning filters themselves
-    by calling ``warnings.simplefilter`` (see issue `#2430 <https://github.com/pytest-dev/pytest/issues/2430>`_
-    for an example of that).
+    Также pytest не следует ``PEP-0506`` о сбросе всех фильтров предупреждений, потому что
+    это может нарушить комплекты тестов, которые сами настраивают фильтры предупреждений
+    вызывая ``warnings.simplefilter`` (см. issue `#2430 <https://github.com/pytest-dev/pytest/issues/2430>`_
+    для примера).
 
 
 .. _`ensuring a function triggers a deprecation warning`:
 
 .. _ensuring_function_triggers:
 
-Ensuring code triggers a deprecation warning
---------------------------------------------
+Обеспечение того, чтобы код запускал предупреждение об устаревании
+--------------------------------------------------------------------
 
-You can also use :func:`pytest.deprecated_call` for checking
-that a certain function call triggers a ``DeprecationWarning`` or
-``PendingDeprecationWarning``:
+Вы также можете использовать :func:`pytest.deprecated_call` для проверки того, что
+вызов определенной функции запускает ``DeprecationWarning`` или ``PendingDeprecationWarning``:
 
 .. code-block:: python
 
@@ -227,14 +225,12 @@ that a certain function call triggers a ``DeprecationWarning`` or
         with pytest.deprecated_call():
             myfunction(17)
 
-This test will fail if ``myfunction`` does not issue a deprecation warning
-when called with a ``17`` argument.
+Этот тест не пройдёт, если ``myfunction`` не выдает предупреждение об устаревании при вызове с
+аргументом ``17``.
 
-By default, ``DeprecationWarning`` and ``PendingDeprecationWarning`` will not be
-caught when using :func:`pytest.warns` or :ref:`recwarn <recwarn>` because
-the default Python warnings filters hide
-them. If you wish to record them in your own code, use
-``warnings.simplefilter('always')``:
+По умолчанию, ``DeprecationWarning`` и ``PendingDeprecationWarning`` не будет захвачен при использовании
+:func:`pytest.warns` или :ref:`recwarn <recwarn>`, потому что фильтр предупреждений Python по умолчанию
+скрывает их. Если вы хотите записать их в свой код, используйте ``warnings.simplefilter('always')``:
 
 .. code-block:: python
 
@@ -249,8 +245,8 @@ them. If you wish to record them in your own code, use
         assert recwarn.pop(DeprecationWarning)
 
 
-The :ref:`recwarn <recwarn>` fixture automatically ensures to reset the warnings
-filter at the end of the test, so no global state is leaked.
+Фикстура :ref:`recwarn <recwarn>` автоматически обеспечивает сброс фильтра предупреждений в конце теста,
+так что не происходит утечки глобального состояния.
 
 .. _`asserting warnings`:
 
@@ -260,13 +256,13 @@ filter at the end of the test, so no global state is leaked.
 
 .. _warns:
 
-Asserting warnings with the warns function
-------------------------------------------
+Утверждение предупреждений с помощью функции предупреждений
+-------------------------------------------------------------
 
 
 
-You can check that code raises a particular warning using func:`pytest.warns`,
-which works in a similar manner to :ref:`raises <assertraises>`:
+Вы можете проверить, вызывает ли код конкретное предупреждение, используя func:`pytest.warns`,
+который работает аналогично :ref:`raises <assertraises>`:
 
 .. code-block:: python
 
@@ -278,8 +274,8 @@ which works in a similar manner to :ref:`raises <assertraises>`:
         with pytest.warns(UserWarning):
             warnings.warn("my warning", UserWarning)
 
-The test will fail if the warning in question is not raised. The keyword
-argument ``match`` to assert that the exception matches a text or regex::
+Тест упадет, если соответствующее предупреждение не появится. Аргумент ``match``,
+чтобы подтвердить, что исключение соответствует тексту или регулярному выражению::
 
     >>> with warns(UserWarning, match='must be 0 or None'):
     ...     warnings.warn("value must be 0 or None", UserWarning)
@@ -293,46 +289,44 @@ argument ``match`` to assert that the exception matches a text or regex::
       ...
     Failed: DID NOT WARN. No warnings of type ...UserWarning... was emitted...
 
-You can also call func:`pytest.warns` on a function or code string:
+Вы также можете вызвать func:`pytest.warns` в строке функции или кода:
 
 .. code-block:: python
 
     pytest.warns(expected_warning, func, *args, **kwargs)
     pytest.warns(expected_warning, "func(*args, **kwargs)")
 
-The function also returns a list of all raised warnings (as
-``warnings.WarningMessage`` objects), which you can query for
-additional information:
+Функция также возвращает список всех выданных предупреждений (такие как объекты
+``warnings.WarningMessage``), которые вы можете запросить для получения дополнительной информации:
 
 .. code-block:: python
 
     with pytest.warns(RuntimeWarning) as record:
         warnings.warn("another warning", RuntimeWarning)
 
-    # check that only one warning was raised
+    # проверка, что было только одно предупреждение
     assert len(record) == 1
-    # check that the message matches
+    # проверка, что сообщение соответствует
     assert record[0].message.args[0] == "another warning"
 
-Alternatively, you can examine raised warnings in detail using the
-:ref:`recwarn <recwarn>` fixture (see below).
+Кроме того, вы можете подробно изучить возникшие предупреждения, используя фикстуру
+:ref:`recwarn <recwarn>`(см. ниже).
 
 .. note::
-    ``DeprecationWarning`` and ``PendingDeprecationWarning`` are treated
-    differently; see :ref:`ensuring_function_triggers`.
+    ``DeprecationWarning`` и ``PendingDeprecationWarning`` обрабатываются по разному;
+    см. :ref:`ensuring_function_triggers`.
 
 .. _`recording warnings`:
 
 .. _recwarn:
 
-Recording warnings
-------------------
+Регистрирующие предупреждения
+------------------------------
 
-You can record raised warnings either using func:`pytest.warns` or with
-the ``recwarn`` fixture.
+Вы можете записывать возникшие предупреждения, используя func:`pytest.warns` или с фикстурой ``recwarn``.
 
-To record with func:`pytest.warns` without asserting anything about the warnings,
-pass ``None`` as the expected warning type:
+Для записи с помощью func: `pytest.warns` без утверждения каких-либо предупреждений, передайте
+``None`` в качестве ожидаемого типа предупреждения:
 
 .. code-block:: python
 
@@ -344,7 +338,7 @@ pass ``None`` as the expected warning type:
     assert str(record[0].message) == "user"
     assert str(record[1].message) == "runtime"
 
-The ``recwarn`` fixture will record warnings for the whole function:
+Фикстура ``recwarn`` будет записывать предупреждения для всей функции:
 
 .. code-block:: python
 
@@ -360,10 +354,10 @@ The ``recwarn`` fixture will record warnings for the whole function:
         assert w.filename
         assert w.lineno
 
-Both ``recwarn`` and func:`pytest.warns` return the same interface for recorded
-warnings: a WarningsRecorder instance. To view the recorded warnings, you can
-iterate over this instance, call ``len`` on it to get the number of recorded
-warnings, or index into it to get a particular recorded warning.
+И ``recwarn``, и func:`pytest.warns` возвращают один и тот же интерфейс для записанных предупреждений:
+экземпляр WarningsRecorder. Чтобы просмотреть записанные предупреждения, вы можете перебрать этот
+экземпляр, вызвать для него ``len``, чтобы получить количество записанных предупреждений, или
+проиндексировать его, чтобы получить конкретное записанное предупреждение.
 
 .. currentmodule:: _pytest.warnings
 
@@ -371,12 +365,11 @@ Full API: :class:`~_pytest.recwarn.WarningsRecorder`.
 
 .. _custom_failure_messages:
 
-Custom failure messages
------------------------
+Пользовательские сообщения об ошибках
+--------------------------------------
 
-Recording warnings provides an opportunity to produce custom test
-failure messages for when no warnings are issued or other conditions
-are met.
+Запись предупреждений дает возможность создавать настраиваемые сообщения об ошибках тестирования,
+когда предупреждения не выдаются или выполняются другие условия.
 
 .. code-block:: python
 
@@ -386,23 +379,24 @@ are met.
             if not record:
                 pytest.fail("Expected a warning!")
 
-If no warnings are issued when calling ``f``, then ``not record`` will
-evaluate to ``True``.  You can then call :func:`pytest.fail` with a
-custom error message.
+Если при вызове ``f`` не выдаются предупреждения, то ``not record`` будет оцениваться как ``True``.
+Затем вы можете вызвать :func:`pytest.fail` с настраиваемым сообщением об ошибке.
 
 .. _internal-warnings:
 
-Internal pytest warnings
-------------------------
+Внутренние предупреждения pytest
+------------------------------------
 
-pytest may generate its own warnings in some situations, such as improper usage or deprecated features.
+pytest может генерировать собственные предупреждения в некоторых ситуациях, таких как неправильное
+использование или устаревшие функции.
 
-For example, pytest will emit a warning if it encounters a class that matches :confval:`python_classes` but also
-defines an ``__init__`` constructor, as this prevents the class from being instantiated:
+Например, pytest выдаст предупреждение, если он встретит класс, который соответствует
+:confval:`python_classes`, но также определяет конструктор ``__init__``, поскольку это предотвращает
+создание экземпляра класса:
 
 .. code-block:: python
 
-    # content of test_pytest_warnings.py
+    # листинг test_pytest_warnings.py
     class Test:
         def __init__(self):
             pass
@@ -422,9 +416,10 @@ defines an ``__init__`` constructor, as this prevents the class from being insta
     -- Docs: https://docs.pytest.org/en/stable/warnings.html
     1 warning in 0.12s
 
-These warnings might be filtered using the same builtin mechanisms used to filter other types of warnings.
+Эти предупреждения могут быть отфильтрованы с использованием тех же встроенных механизмов, которые
+используются для фильтрации других типов предупреждений.
 
-Please read our :ref:`backwards-compatibility` to learn how we proceed about deprecating and eventually removing
-features.
+Пожалуйста, прочтите наш :ref:`backwards-compatibility` чтобы узнать, как мы поступаем с прекращением
+поддержки и, в конечном итоге, удалением функций.
 
-The full list of warnings is listed in :ref:`the reference documentation <warnings ref>`.
+Полный список предупреждений приведен в :ref:`the reference documentation <warnings ref>`.

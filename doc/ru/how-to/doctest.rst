@@ -1,30 +1,29 @@
 .. _doctest:
 
-How to run doctests
+Как запустить доктесты(doctests)
 =========================================================
 
-By default, all files matching the ``test*.txt`` pattern will
-be run through the python standard ``doctest`` module.  You
-can change the pattern by issuing:
+По умолчанию все файлы, соответствующие шаблону ``test*.txt``, будут запускаться через
+стандартный модуль Python ``doctest``. Вы можете изменить шаблон, выполнив:
 
 .. code-block:: bash
 
     pytest --doctest-glob="*.rst"
 
-on the command line. ``--doctest-glob`` can be given multiple times in the command-line.
+в командной строке. ``--doctest-glob`` можно указать несколько раз в командной строке.
 
-If you then have a text file like this:
+Если у вас есть такой текстовый файл:
 
 .. code-block:: text
 
-    # content of test_example.txt
+    # листинг test_example.txt
 
     hello this is a doctest
     >>> x = 3
     >>> x
     3
 
-then you can just invoke ``pytest`` directly:
+тогда вы можете просто вызвать ``pytest`` напрямую:
 
 .. code-block:: pytest
 
@@ -39,15 +38,16 @@ then you can just invoke ``pytest`` directly:
 
     ============================ 1 passed in 0.12s =============================
 
-By default, pytest will collect ``test*.txt`` files looking for doctest directives, but you
-can pass additional globs using the ``--doctest-glob`` option (multi-allowed).
+По умолчанию pytest будет собирать файлы ``test*.txt`` в поисках директив doctest, но вы
+можете передать дополнительные глобальные параметры, используя параметр ``--doctest-glob``
+(разрешено несколько).
 
-In addition to text files, you can also execute doctests directly from docstrings of your classes
-and functions, including from test modules:
+Помимо текстовых файлов, вы также можете выполнять тесты прямо из строк документации
+ваших классов и функций, в том числе из тестовых модулей:
 
 .. code-block:: python
 
-    # content of mymodule.py
+    # листинг mymodule.py
     def something():
         """a doctest in a docstring
         >>> something()
@@ -69,8 +69,8 @@ and functions, including from test modules:
 
     ============================ 2 passed in 0.12s =============================
 
-You can make these changes permanent in your project by
-putting them into a pytest.ini file like this:
+Вы можете сделать эти изменения постоянными в своем проекте, поместив их в файл
+pytest.ini следующим образом:
 
 .. code-block:: ini
 
@@ -79,36 +79,33 @@ putting them into a pytest.ini file like this:
     addopts = --doctest-modules
 
 
-Encoding
---------
+Кодировки
+------------
 
-The default encoding is **UTF-8**, but you can specify the encoding
-that will be used for those doctest files using the
-``doctest_encoding`` ini option:
+Кодировка по умолчанию - **UTF-8**, но вы можете указать кодировку, которая будет
+использоваться для этих файлов doctest, используя ini-параметр ``doctest_encoding``:
 
 .. code-block:: ini
 
-    # content of pytest.ini
+    # листинг pytest.ini
     [pytest]
     doctest_encoding = latin1
 
-Using 'doctest' options
------------------------
+Использование опции 'doctest'
+-------------------------------
 
-Python's standard ``doctest`` module provides some `options <https://docs.python.org/3/library/doctest.html#option-flags>`__
-to configure the strictness of doctest tests. In pytest, you can enable those flags using the
-configuration file.
+Стандартный модуль Python ``doctest`` предоставляет некоторые опции `options <https://docs.python.org/3/library/doctest.html#option-flags>`__
+для настройки строгости тестов doctest. В pytest вы можете включить эти флаги с помощью файла конфигурации.
 
-For example, to make pytest ignore trailing whitespaces and ignore
-lengthy exception stack traces you can just write:
+Например, чтобы заставить pytest игнорировать конечные пробелы и игнорировать длинные трассировки
+стека исключений, вы можете просто написать:
 
 .. code-block:: ini
 
     [pytest]
     doctest_optionflags = NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL
 
-Alternatively, options can be enabled by an inline comment in the doc test
-itself:
+Кроме того, параметры можно включить с помощью встроенного комментария в самом тесте документа:
 
 .. code-block:: rst
 
@@ -116,58 +113,57 @@ itself:
     Traceback (most recent call last):
     ValueError: ...
 
-pytest also introduces new options:
+pytest также вводит новые опции:
 
-* ``ALLOW_UNICODE``: when enabled, the ``u`` prefix is stripped from unicode
-  strings in expected doctest output. This allows doctests to run in Python 2
-  and Python 3 unchanged.
+* ``ALLOW_UNICODE``: при включении префикс ``u`` удаляется из строк unicode в ожидаемом выводе
+  doctest. Это позволяет запускать доктесты в Python 2 и Python 3 без изменений.
 
-* ``ALLOW_BYTES``: similarly, the ``b`` prefix is stripped from byte strings
-  in expected doctest output.
+* ``ALLOW_BYTES``: аналогично, префикс ``b`` удаляется из байтовых строк
+  в ожидаемом выводе doctest.
 
-* ``NUMBER``: when enabled, floating-point numbers only need to match as far as
-  the precision you have written in the expected doctest output. For example,
-  the following output would only need to match to 2 decimal places::
+* ``NUMBER``: при включении, числа с плавающей точкой должны совпадать только с
+  точностью, указанной в ожидаемом выводе doctest. Например,
+  следующий вывод должен соответствовать только 2 десятичным знакам::
 
       >>> math.pi
       3.14
 
-  If you wrote ``3.1416`` then the actual output would need to match to 4
-  decimal places; and so on.
+  Если вы записали ``3.1416``, то актуальный вывод будет соответствовать 4 десятичным
+  разрядам; и так далее.
 
-  This avoids false positives caused by limited floating-point precision, like
-  this::
+  Это позволяет избежать ложных срабатываний, вызванных ограниченной точностью с плавающей точкой,
+  например::
 
       Expected:
           0.233
       Got:
           0.23300000000000001
 
-  ``NUMBER`` also supports lists of floating-point numbers -- in fact, it
-  matches floating-point numbers appearing anywhere in the output, even inside
-  a string! This means that it may not be appropriate to enable globally in
-  ``doctest_optionflags`` in your configuration file.
+  ``NUMBER`` также поддерживает списки чисел с плавающей точкой - фактически, он
+  соответствует числам с плавающей точкой, появляющимся в любом месте вывода, даже внутри строки!
+  Это означает, что может быть нецелесообразно включать глобально в ``doctest_optionflags`` в вашем
+  файле конфигурации.
 
   .. versionadded:: 5.1
 
 
-Continue on failure
--------------------
+Продолжение при падении
+------------------------
 
-By default, pytest would report only the first failure for a given doctest. If
-you want to continue the test even when you have failures, do:
+По умолчанию pytest сообщает только о первом сбое для данного doctest. Если
+вы хотите продолжить тест даже при падениях, сделайте:
 
 .. code-block:: bash
 
     pytest --doctest-modules --doctest-continue-on-failure
 
 
-Output format
--------------
+Выходной формат
+----------------
 
-You can change the diff output format on failure for your doctests
-by using one of standard doctest modules format in options
-(see :data:`python:doctest.REPORT_UDIFF`, :data:`python:doctest.REPORT_CDIFF`,
+Вы можете изменить выходной формат diff в случае падения ваших тестов,
+используя один из стандартных форматов модулей doctest в опциях
+(см. :data:`python:doctest.REPORT_UDIFF`, :data:`python:doctest.REPORT_CDIFF`,
 :data:`python:doctest.REPORT_NDIFF`, :data:`python:doctest.REPORT_ONLY_FIRST_FAILURE`):
 
 .. code-block:: bash
@@ -179,48 +175,48 @@ by using one of standard doctest modules format in options
     pytest --doctest-modules --doctest-report only_first_failure
 
 
-pytest-specific features
+Особенности pytest
 ------------------------
 
-Some features are provided to make writing doctests easier or with better integration with
-your existing test suite. Keep in mind however that by using those features you will make
-your doctests incompatible with the standard ``doctests`` module.
+Некоторые функции упрощают написание тестов или обеспечивают лучшую интеграцию с
+вашим существующим набором тестов. Однако имейте ввиду, что используя эти функции, вы сделаете
+ваши doctests несовместимы со стандартным модулем ``doctests``.
 
-Using fixtures
-^^^^^^^^^^^^^^
+Использование фикстур
+^^^^^^^^^^^^^^^^^^^^^^^
 
-It is possible to use fixtures using the ``getfixture`` helper:
+Можно использовать фикстуры с помощью помощника ``getfixture``:
 
 .. code-block:: text
 
-    # content of example.rst
+    # листинг example.rst
     >>> tmp = getfixture('tmp_path')
     >>> ...
     >>>
 
-Note that the fixture needs to be defined in a place visible by pytest, for example, a `conftest.py`
-file or plugin; normal python files containing docstrings are not normally scanned for fixtures
-unless explicitly configured by :confval:`python_files`.
+Обратите внимание, что фикстура должна быть определена в месте, видимом pytest, например, в файле
+или плагине `conftest.py`; обычные файлы Python, содержащие строки документации, обычно не сканируются
+на наличие фикстур, если явно не настроено в :confval:`python_files`.
 
-Also, the :ref:`usefixtures <usefixtures>` mark and fixtures marked as :ref:`autouse <autouse>` are supported
-when executing text doctest files.
+Также, метка :ref:`usefixtures <usefixtures>` и маркированная фикстура :ref:`autouse <autouse>`
+поддерживаются при выполнении текстовых тестовых файлов
 
 
 .. _`doctest_namespace`:
 
-'doctest_namespace' fixture
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Фикстура 'doctest_namespace'
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``doctest_namespace`` fixture can be used to inject items into the
-namespace in which your doctests run. It is intended to be used within
-your own fixtures to provide the tests that use them with context.
+Фикстура ``doctest_namespace`` может использоваться для вставки элементов в
+пространство имен, в котором запускаются ваши тесты. Она предназначена для использования в
+ваших собственных фикстурах, чтобы предоставить тесты, которые используют их с контекстом.
 
-``doctest_namespace`` is a standard ``dict`` object into which you
-place the objects you want to appear in the doctest namespace:
+``doctest_namespace`` - это стандартный объект ``dict``, в который вы
+поместите объекты, которые вы хотите отобразить, в пространство имен doctest:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
     import numpy
 
 
@@ -228,11 +224,11 @@ place the objects you want to appear in the doctest namespace:
     def add_np(doctest_namespace):
         doctest_namespace["np"] = numpy
 
-which can then be used in your doctests directly:
+которые затем можно будет напрямую использовать в ваших тестах:
 
 .. code-block:: python
 
-    # content of numpy.py
+    # листинг numpy.py
     def arange():
         """
         >>> a = np.arange(10)
@@ -241,18 +237,18 @@ which can then be used in your doctests directly:
         """
         pass
 
-Note that like the normal ``conftest.py``, the fixtures are discovered in the directory tree conftest is in.
-Meaning that if you put your doctest with your source code, the relevant conftest.py needs to be in the same directory tree.
-Fixtures will not be discovered in a sibling directory tree!
+Обратите внимание, что как и в случае с обычным файлом ``conftest.py``, фикстуры обнаруживаются в
+дереве каталогов, в котором находится conftest. Это означает, что если вы поместите свой doctest с
+исходным кодом, соответствующий файл conftest.py должен находиться в том же дереве каталогов.
+Фикстуры не будут обнаружены в дереве соседних каталогов!
 
-Skipping tests
-^^^^^^^^^^^^^^
+Пропуск тестов
+^^^^^^^^^^^^^^^^
 
-For the same reasons one might want to skip normal tests, it is also possible to skip
-tests inside doctests.
+По тем же причинам, по которым можно пропустить обычные тесты, также можно пропустить тесты внутри doctests.
 
-To skip a single check inside a doctest you can use the standard
-`doctest.SKIP <https://docs.python.org/3/library/doctest.html#doctest.SKIP>`__ directive:
+Чтобы пропустить единственную проверку внутри доктеста, вы можете использовать стандартную директиву
+`doctest.SKIP <https://docs.python.org/3/library/doctest.html#doctest.SKIP>`__:
 
 .. code-block:: python
 
@@ -265,11 +261,11 @@ To skip a single check inside a doctest you can use the standard
         2
         """
 
-This will skip the first check, but not the second.
+Это пропустит первую проверку, но не вторую".
 
-pytest also allows using the standard pytest functions :func:`pytest.skip` and
-:func:`pytest.xfail` inside doctests, which might be useful because you can
-then skip/xfail tests based on external conditions:
+pytest также разрешает использование стандартных функций pytest :func:`pytest.skip` и
+:func:`pytest.xfail` внутри доктест, что может быть полезно, потому что вы можете
+затем пропустить/xfail на основе внешних условий:
 
 
 .. code-block:: text
@@ -281,32 +277,32 @@ then skip/xfail tests based on external conditions:
     >>> import fcntl
     >>> ...
 
-However using those functions is discouraged because it reduces the readability of the
-docstring.
+Однако использование этих функций не рекомендуется, поскольку это снижает удобочитаемость
+строк документации.
 
 .. note::
 
-    :func:`pytest.skip` and :func:`pytest.xfail` behave differently depending
-    if the doctests are in a Python file (in docstrings) or a text file containing
-    doctests intermingled with text:
+    :func:`pytest.skip` и :func:`pytest.xfail` вести себя по-разному в зависимости от того, находятся
+    ли тесты в файле Python (в строках документации) или в текстовом файле, содержащем тесты, смешанные
+    с текстом:
 
-    * Python modules (docstrings): the functions only act in that specific docstring,
-      letting the other docstrings in the same module execute as normal.
+    * Модули Python(docstrings): функции действуют только в этой конкретной строке документации,
+      позволяя другим строкам документации в том же модуле выполняться как обычно.
 
-    * Text files: the functions will skip/xfail the checks for the rest of the entire
-      file.
+    * Текстовые файлы: функции будут skip/xfail проверки для остальной части всего файла.
 
 
-Alternatives
-------------
 
-While the built-in pytest support provides a good set of functionalities for using
-doctests, if you use them extensively you might be interested in those external packages
-which add many more features, and include pytest integration:
+Альтернативы
+-------------
 
-* `pytest-doctestplus <https://github.com/astropy/pytest-doctestplus>`__: provides
-  advanced doctest support and enables the testing of reStructuredText (".rst") files.
+Хотя встроенная поддержка pytest предоставляет хороший набор функций для использования
+doctests, если вы их широко используете, вас могут заинтересовать эти внешние пакеты
+которые добавляют много дополнительных функций и включают интеграцию с pytest:
 
-* `Sybil <https://sybil.readthedocs.io>`__: provides a way to test examples in
-  your documentation by parsing them from the documentation source and evaluating
-  the parsed examples as part of your normal test run.
+* `pytest-doctestplus <https://github.com/astropy/pytest-doctestplus>`__: обеспечивает расширенную
+  поддержку doctest и позволяет тестировать файлы reStructuredText (".rst").
+
+* `Sybil <https://sybil.readthedocs.io>`__: предоставляет способ тестовых примеров в вашей
+  документации, анализируя их из источника документации и оценивая проанализированные примеры как часть
+  вашего обычного тестового запуска.
