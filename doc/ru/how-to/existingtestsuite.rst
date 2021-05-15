@@ -1,34 +1,32 @@
 .. _existingtestsuite:
 
-How to use pytest with an existing test suite
-==============================================
+Использование ``pytest`` с существующими наборами тестов
+===========================================================
 
-Pytest can be used with most existing test suites, but its
-behavior differs from other test runners such as :ref:`nose <noseintegration>` or
-Python's default unittest framework.
+``pytest`` можно использовать с большинством существующих наборов тестов, однако его поведение
+отличается от поведения других фреймворков, таких как :ref:`nose <noseintegration>` или встроенный в
+``Python`` ``unittest``.
 
-Before using this section you will want to :ref:`install pytest <getstarted>`.
+Перед использованием этого раздела необходимо ознакомиться с :ref:`install pytest <getstarted>`.
 
-Running an existing test suite with pytest
----------------------------------------------
+Запуск существующих наборов тестов с помощью ``pytest``
+---------------------------------------------------------
 
-Say you want to contribute to an existing repository somewhere.
-After pulling the code into your development space using some
-flavor of version control and (optionally) setting up a virtualenv
-you will want to run:
+Скажем, вы хотите внести свой вклад в существующий репозиторий. После загрузки кода в ваше пространство
+разработки с использованием какой-либо разновидности системы контроля версий и (необязательно) настройки
+virtualenv, вы захотите запустить:
 
 .. code-block:: bash
 
     cd <repository>
-    pip install -e .  # Environment dependent alternatives include
-                      # 'python setup.py develop' and 'conda develop'
+    pip install -e .  # альтернативная виртуальная среда, включающая
+                      # 'python setup.py develop' и 'conda develop'
 
-in your project root.  This will set up a symlink to your code in
-site-packages, allowing you to edit your code while your tests
-run against it as if it were installed.
+в корне вашего проекта. Это установит символическую ссылку на ваш код в пакетах, что позволит
+вам редактировать код, пока ваши тесты будут запускаться на нем, как если бы он был установлен.
 
-Setting up your project in development mode lets you avoid having to
-reinstall every time you want to run your tests, and is less brittle than
-mucking about with sys.path to point your tests at local code.
+Настройка вашего проекта в режиме разработки позволяет избежать переустановки каждый раз, когда вы
+захотите запускать свои тесты, и надежнее, чем возиться с ``sys.path``, чтобы указать путь к вашим
+тестам в локальном коде.
 
-Also consider using :ref:`tox <use tox>`.
+Советуем также рассмотреть возможность использования :ref:`tox <use tox>`.

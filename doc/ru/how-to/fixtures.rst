@@ -1,26 +1,23 @@
 .. _how-to-fixtures:
 
-How to use fixtures
-====================
+Как использовать фикстуры
+==========================
 
 .. seealso:: :ref:`about-fixtures`
 .. seealso:: :ref:`Fixtures reference <reference-fixtures>`
 
 
-"Requesting" fixtures
----------------------
+"Запрашивающие" фикстуры
+-------------------------
 
-At a basic level, test functions request fixtures they require by declaring
-them as arguments.
+На базовом уровне тестовые функции запрашивают необходимые им фикстуры, объявляя их в качестве аргументов.
 
-When pytest goes to run a test, it looks at the parameters in that test
-function's signature, and then searches for fixtures that have the same names as
-those parameters. Once pytest finds them, it runs those fixtures, captures what
-they returned (if anything), and passes those objects into the test function as
-arguments.
+Когда pytest запускает тест, он просматривает параметры в сигнатуре этой тестовой функции, а затем ищет
+фикстуры, имена которых совпадают с именами этих параметров. Как только pytest находит их, он запускает
+эти фикстуры, фиксирует то, что они вернули (если есть), и передает эти объекты в тестовую функцию в
+качестве аргументов.
 
-
-Quick example
+Пример
 ^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -47,26 +44,25 @@ Quick example
                 fruit.cube()
 
 
-    # Arrange
+    # Настройка
     @pytest.fixture
     def fruit_bowl():
         return [Fruit("apple"), Fruit("banana")]
 
 
     def test_fruit_salad(fruit_bowl):
-        # Act
+        # Выполнение
         fruit_salad = FruitSalad(*fruit_bowl)
 
-        # Assert
+        # Проверка
         assert all(fruit.cubed for fruit in fruit_salad.fruit)
 
-In this example, ``test_fruit_salad`` "**requests**" ``fruit_bowl`` (i.e.
-``def test_fruit_salad(fruit_bowl):``), and when pytest sees this, it will
-execute the ``fruit_bowl`` fixture function and pass the object it returns into
-``test_fruit_salad`` as the ``fruit_bowl`` argument.
+В этом примере, ``test_fruit_salad`` "**запрашивает**" ``fruit_bowl`` (т.е.
+``def test_fruit_salad(fruit_bowl):``), и когда pytest увидит это, он выполнит фикстурную функцию
+ ``fruit_bowl`` и передаст объект, в который он возвращается ``test_fruit_salad`` как аргумент
+``fruit_bowl``.
 
-Here's roughly
-what's happening if we were to do it by hand:
+Вот примерно что случилось бы, если бы мы сделали это вручную:
 
 .. code-block:: python
 
@@ -75,57 +71,55 @@ what's happening if we were to do it by hand:
 
 
     def test_fruit_salad(fruit_bowl):
-        # Act
+        # Выполнение
         fruit_salad = FruitSalad(*fruit_bowl)
 
-        # Assert
+        # Проверка
         assert all(fruit.cubed for fruit in fruit_salad.fruit)
 
 
-    # Arrange
+    # Настройка
     bowl = fruit_bowl()
     test_fruit_salad(fruit_bowl=bowl)
 
 
-Fixtures can **request** other fixtures
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Фикстуры могут **запрашивать** другие фикстуры
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-One of pytest's greatest strengths is its extremely flexible fixture system. It
-allows us to boil down complex requirements for tests into more simple and
-organized functions, where we only need to have each one describe the things
-they are dependent on. We'll get more into this further down, but for now,
-here's a quick example to demonstrate how fixtures can use other fixtures:
+Одной из самых сильных сторон pytest является его чрезвычайно гибкая система фикстур. Это позволяет
+нам свести сложные требования к тестам к более простым и организованным функциям, где нам нужно только,
+чтобы каждая из них описывала то, от чего они зависят. Мы рассмотрим это подробнее ниже, а пока вот
+небольшой пример, демонстрирующий как фикстуры могут использовать другие фикстуры:
 
 .. code-block:: python
 
-    # contents of test_append.py
+    # листинг test_append.py
     import pytest
 
 
-    # Arrange
+    # Настройка
     @pytest.fixture
     def first_entry():
         return "a"
 
 
-    # Arrange
+    # Настройка
     @pytest.fixture
     def order(first_entry):
         return [first_entry]
 
 
     def test_string(order):
-        # Act
+        # Выполнение
         order.append("b")
 
-        # Assert
+        # Проверка
         assert order == ["a", "b"]
 
 
-Notice that this is the same example from above, but very little changed. The
-fixtures in pytest **request** fixtures just like tests. All the same
-**requesting** rules apply to fixtures that do for tests. Here's how this
-example would work if we did it by hand:
+Обратите внимание, что это тот же пример что и выше, но с очень небольшими изменениями. Фикстуры в
+pytest **запрашивают** фикстуры так же, как и тесты. Все те же правила запроса применяются к фикстурам,
+предназначенным для тестов. Вот как работал бы этот пример, если бы мы делали это вручную:
 
 .. code-block:: python
 
@@ -138,10 +132,10 @@ example would work if we did it by hand:
 
 
     def test_string(order):
-        # Act
+        # Выполнение
         order.append("b")
 
-        # Assert
+        # Проверка
         assert order == ["a", "b"]
 
 
@@ -149,59 +143,57 @@ example would work if we did it by hand:
     the_list = order(first_entry=entry)
     test_string(order=the_list)
 
-Fixtures are reusable
-^^^^^^^^^^^^^^^^^^^^^
+Фикстуры можно переиспользовать
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-One of the things that makes pytest's fixture system so powerful, is that it
-gives us the ability to define a generic setup step that can reused over and
-over, just like a normal function would be used. Two different tests can request
-the same fixture and have pytest give each test their own result from that
-fixture.
+Одна из вещей, которая делает систему фикстур pytest такой мощной, заключается в том, что она дает нам
+возможность определять общий шаг настройки, который можно повторно использовать снова и снова, как если
+бы использовалась обычная функция. Два разных теста могут запрашивать одно и ту же фикстуру, и
+pytest дает каждому тесту свой результат из этой фикстуры.
 
-This is extremely useful for making sure tests aren't affected by each other. We
-can use this system to make sure each test gets its own fresh batch of data and
-is starting from a clean state so it can provide consistent, repeatable results.
+Это чрезвычайно полезно, чтобы убедиться, что тесты не влияют друг на друга. Мы можем использовать
+эту систему, чтобы убедиться, что каждый тест получает свой собственный свежий пакет данных и
+запускается с чистого состояния, чтобы обеспечить согласованные, повторяемые результаты.
 
-Here's an example of how this can come in handy:
+Вот пример того, как это можно использовать:
 
 .. code-block:: python
 
-    # contents of test_append.py
+    # листинг test_append.py
     import pytest
 
 
-    # Arrange
+    # Настройка
     @pytest.fixture
     def first_entry():
         return "a"
 
 
-    # Arrange
+    # Настройка
     @pytest.fixture
     def order(first_entry):
         return [first_entry]
 
 
     def test_string(order):
-        # Act
+        # Выполнение
         order.append("b")
 
-        # Assert
+        # Проверка
         assert order == ["a", "b"]
 
 
     def test_int(order):
-        # Act
+        # Выполнение
         order.append(2)
 
-        # Assert
+        # Проверка
         assert order == ["a", 2]
 
 
-Each test here is being given its own copy of that ``list`` object,
-which means the ``order`` fixture is getting executed twice (the same
-is true for the ``first_entry`` fixture). If we were to do this by hand as
-well, it would look something like this:
+Каждому тесту здесь предоставляется собственная копия этого объекта ``list``, что означает, что фикстура
+``order`` выполняется дважды (то же самое верно и для фикстуры ``first_entry``). Если бы мы тоже делали это
+вручную, это выглядело бы примерно так:
 
 .. code-block:: python
 
@@ -214,18 +206,18 @@ well, it would look something like this:
 
 
     def test_string(order):
-        # Act
+        # выполнение
         order.append("b")
 
-        # Assert
+        # проверка
         assert order == ["a", "b"]
 
 
     def test_int(order):
-        # Act
+        # выполнение
         order.append(2)
 
-        # Assert
+        # проверка
         assert order == ["a", 2]
 
 
@@ -237,112 +229,108 @@ well, it would look something like this:
     the_list = order(first_entry=entry)
     test_int(order=the_list)
 
-A test/fixture can **request** more than one fixture at a time
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Тест/фикстура может **запрашивать** более одной фикстуры одновременно
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Tests and fixtures aren't limited to **requesting** a single fixture at a time.
-They can request as many as they like. Here's another quick example to
-demonstrate:
+Тесты и фикстуры не ограничиваются запросом одной фикстуры за раз. Они могут запросить столько,
+сколько захотят. Вот еще один простой пример:
 
 .. code-block:: python
 
-    # contents of test_append.py
+    # листинг test_append.py
     import pytest
 
 
-    # Arrange
+    # настройка
     @pytest.fixture
     def first_entry():
         return "a"
 
 
-    # Arrange
+    # настройка
     @pytest.fixture
     def second_entry():
         return 2
 
 
-    # Arrange
+    # настройка
     @pytest.fixture
     def order(first_entry, second_entry):
         return [first_entry, second_entry]
 
 
-    # Arrange
+    # настройка
     @pytest.fixture
     def expected_list():
         return ["a", 2, 3.0]
 
 
     def test_string(order, expected_list):
-        # Act
+        # выполнение
         order.append(3.0)
 
-        # Assert
+        # проверка
         assert order == expected_list
 
-Fixtures can be **requested** more than once per test (return values are cached)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Фикстуры могут быть запрошены более одного раза за тест (возвращаемые значения кешируются)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Fixtures can also be **requested** more than once during the same test, and
-pytest won't execute them again for that test. This means we can **request**
-fixtures in multiple fixtures that are dependent on them (and even again in the
-test itself) without those fixtures being executed more than once.
+Фикстуры также могут быть **запрошены** более одного раза во время одного и того же теста, и pytest не
+будет выполнять их повторно для этого теста. Это означает, что мы можем **запрашивать** фикстуры в нескольких
+фикстурах, которые зависят от них (и даже в самом тесте), без того, чтобы эти фикстуры выполнялись
+более одного раза.
 
 .. code-block:: python
 
-    # contents of test_append.py
+    # листинг test_append.py
     import pytest
 
 
-    # Arrange
+    # настройка
     @pytest.fixture
     def first_entry():
         return "a"
 
 
-    # Arrange
+    # настройка
     @pytest.fixture
     def order():
         return []
 
 
-    # Act
+    # выполнение
     @pytest.fixture
     def append_first(order, first_entry):
         return order.append(first_entry)
 
 
     def test_string_only(append_first, order, first_entry):
-        # Assert
+        # проверка
         assert order == [first_entry]
 
-If a **requested** fixture was executed once for every time it was **requested**
-during a test, then this test would fail because both ``append_first`` and
-``test_string_only`` would see ``order`` as an empty list (i.e. ``[]``), but
-since the return value of ``order`` was cached (along with any side effects
-executing it may have had) after the first time it was called, both the test and
-``append_first`` were referencing the same object, and the test saw the effect
-``append_first`` had on that object.
+Если **запрошенная** фикстура выполнилась один раз для каждого раза, когда она была **запршена** во время
+теста, то этот тест завершится неудачно, потому что и ``append_first`` и ``test_string_only`` увидят
+``order`` как пустой список (т.е. ``[]``), но поскольку возвращаемое значение ``order`` было кэшировано
+(вместе с любыми сторонним эффектами, которые могли быть) после первого вызова, и тест, и ``append_first``
+ссылались на тот же объект, и тест увидел эффект ``append_first`` на этом объекте.
 
 .. _`autouse`:
 .. _`autouse fixtures`:
 
-Autouse fixtures (fixtures you don't have to request)
------------------------------------------------------
+Автоамтически(Autouse) выполняемые фикстуры(которые не нужно запрашивать)
+--------------------------------------------------------------------------
 
-Sometimes you may want to have a fixture (or even several) that you know all
-your tests will depend on. "Autouse" fixtures are a convenient way to make all
-tests automatically **request** them. This can cut out a
-lot of redundant **requests**, and can even provide more advanced fixture usage
-(more on that further down).
+Иногда вам может понадобиться фикстура(или даже несколько), от которой, как вы знаете, будут зависеть
+все ваши тесты. «Autouse» - это удобный способ сделать так, чтобы все тесты автоматически
+**запрашивали** их. Это может сократить количество избыточных **запросов** и даже обеспечить более продвинутое
+использование фикстур(подробнее об этом ниже).
 
-We can make a fixture an autouse fixture by passing in ``autouse=True`` to the
-fixture's decorator. Here's a simple example for how they can be used:
+Мы можем сделать фикстуру "autouse", передав параметр ``autouse=True`` в декоратор фикстуры.
+Вот простой пример того, как их можно использовать:
 
 .. code-block:: python
 
-    # contents of test_append.py
+    # листинг test_append.py
     import pytest
 
 
@@ -369,35 +357,32 @@ fixture's decorator. Here's a simple example for how they can be used:
         order.append(2)
         assert order == [first_entry, 2]
 
-In this example, the ``append_first`` fixture is an autouse fixture. Because it
-happens automatically, both tests are affected by it, even though neither test
-**requested** it. That doesn't mean they *can't* be **requested** though; just
-that it isn't *necessary*.
+В этом примере фикстура ``append_first`` является autouse-фикстурой. Поскольку это происходит автоматически,
+это влияет на оба теста, даже если ни один из тестов этого не **запрашивал**. Это не значит, что их *нельзя*
+**запрашивать**; просто в этом нет необходимости.
 
 .. _smtpshared:
 
-Scope: sharing fixtures across classes, modules, packages or session
---------------------------------------------------------------------
+Scope: совместное использование фикстур между классами, модулями, пакетами или сессией
+------------------------------------------------------------------------------------------
 
 .. regendoc:wipe
 
-Fixtures requiring network access depend on connectivity and are
-usually time-expensive to create.  Extending the previous example, we
-can add a ``scope="module"`` parameter to the
-:py:func:`@pytest.fixture <pytest.fixture>` invocation
-to cause a ``smtp_connection`` fixture function, responsible to create a connection to a preexisting SMTP server, to only be invoked
-once per test *module* (the default is to invoke once per test *function*).
-Multiple test functions in a test module will thus
-each receive the same ``smtp_connection`` fixture instance, thus saving time.
-Possible values for ``scope`` are: ``function``, ``class``, ``module``, ``package`` or ``session``.
+Фикстуры, требующие доступа к сети, зависят от возможности подключения и обычно требуют больших
+затрат времени на создание. Расширяя предыдущий пример, мы можем добавить параметр ``scope="module"`` к
+вызову :py:func:`@pytest.fixture <pytest.fixture>`, чтобы вызвать функцию фиксации ``smtp_connection``,
+отвечающую за для создания соединения с уже существующим SMTP-сервером, которое будет вызываться
+только один раз для каждого тестового *модуля*(по умолчанию вызывается один раз для каждой тестовой
+*функции*). Таким образом, несколько тестовых функций в тестовом модуле получат один и тот же экземпляр
+фикстуры ``smtp_connection``, что сэкономит время. Возможные значения для ``scope``: ``function``,
+``class``, ``module``, ``package`` или ``session``.
 
-The next example puts the fixture function into a separate ``conftest.py`` file
-so that tests from multiple test modules in the directory can
-access the fixture function:
+В следующем примере функция фикстуры помещается в отдельный файл ``conftest.py``, чтобы тесты из нескольких
+тестовых модулей в каталоге могли получить доступ к функции фикстуры:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
     import pytest
     import smtplib
 
@@ -409,24 +394,24 @@ access the fixture function:
 
 .. code-block:: python
 
-    # content of test_module.py
+    # листинг test_module.py
 
 
     def test_ehlo(smtp_connection):
         response, msg = smtp_connection.ehlo()
         assert response == 250
         assert b"smtp.gmail.com" in msg
-        assert 0  # for demo purposes
+        assert 0  # для демонстрационных целей
 
 
     def test_noop(smtp_connection):
         response, msg = smtp_connection.noop()
         assert response == 250
-        assert 0  # for demo purposes
+        assert 0  # для демонстрационных целей
 
-Here, the ``test_ehlo`` needs the ``smtp_connection`` fixture value.  pytest
-will discover and call the :py:func:`@pytest.fixture <pytest.fixture>`
-marked ``smtp_connection`` fixture function.  Running the test looks like this:
+Здесь для ``test_ehlo`` необходимо значение фикстуры ``smtp_connection``. pytest
+откроет и вызовет :py:func:`@pytest.fixture <pytest.fixture>`
+отмеченная функция фикстуры ``smtp_connection``.  Запуск теста выглядит так:
 
 .. code-block:: pytest
 
@@ -468,56 +453,54 @@ marked ``smtp_connection`` fixture function.  Running the test looks like this:
     FAILED test_module.py::test_noop - assert 0
     ============================ 2 failed in 0.12s =============================
 
-You see the two ``assert 0`` failing and more importantly you can also see
-that the **exactly same** ``smtp_connection`` object was passed into the
-two test functions because pytest shows the incoming argument values in the
-traceback.  As a result, the two test functions using ``smtp_connection`` run
-as quick as a single one because they reuse the same instance.
+Вы видите, что два ``assert 0`` упали, и, что более важно, вы также можете видеть, что точно
+такой же объект ``smtp_connection`` был передан в две тестовые функции, потому что pytest показывает
+входящие значения аргументов в трассировке. В результате две тестовые функции, использующие
+``smtp_connection``, выполняются так же быстро, как и одна, потому что они повторно используют один и тот
+же экземпляр.
 
-If you decide that you rather want to have a session-scoped ``smtp_connection``
-instance, you can simply declare it:
+Если вы решите, что необходим экземпляр ``smtp_connection`` в области сеанса, вы можете просто объявить его:
 
 .. code-block:: python
 
     @pytest.fixture(scope="session")
     def smtp_connection():
-        # the returned fixture value will be shared for
-        # all tests requesting it
+        # возвращенное значение фикстуры будет передано для
+        # всех тестов, запрашивающих это
         ...
 
 
-Fixture scopes
-^^^^^^^^^^^^^^
+Области фикстур
+^^^^^^^^^^^^^^^^^
 
-Fixtures are created when first requested by a test, and are destroyed based on their ``scope``:
+Фикстуры создаются при первом запросе теста и удаляются в зависимости от их ``scope``:
 
-* ``function``: the default scope, the fixture is destroyed at the end of the test.
-* ``class``: the fixture is destroyed during teardown of the last test in the class.
-* ``module``: the fixture is destroyed during teardown of the last test in the module.
-* ``package``: the fixture is destroyed during teardown of the last test in the package.
-* ``session``: the fixture is destroyed at the end of the test session.
+* ``function``: область действия по умолчанию, фикстура удаляется в конце теста.
+* ``class``: фикстура уничтожается во время очистки(teardown) последнего теста в классе.
+* ``module``: фикстура уничтожается  во время очистки последнего теста в модуле.
+* ``package``: фикстура уничтожается  во время очистки последнего теста в пакете.
+* ``session``: фикстура уничтожается в конце тестовой сессии.
 
 .. note::
 
-    Pytest only caches one instance of a fixture at a time, which
-    means that when using a parametrized fixture, pytest may invoke a fixture more than once in
-    the given scope.
+    Pytest кэширует только один экземпляр фикстуры за раз, что означает, что при использовании
+    параметризованной фикстуры, pytest может вызывать фикстуру более одного раза в заданной области.
 
 .. _dynamic scope:
 
-Dynamic scope
-^^^^^^^^^^^^^
+Динамическая область
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. versionadded:: 5.2
 
-In some cases, you might want to change the scope of the fixture without changing the code.
-To do that, pass a callable to ``scope``. The callable must return a string with a valid scope
-and will be executed only once - during the fixture definition. It will be called with two
-keyword arguments - ``fixture_name`` as a string and ``config`` with a configuration object.
+В некоторых случаях может потребоваться изменить область действия фикстуры без изменения кода. Для этого
+передайте вызываемый объект в ``scope``. Вызываемый объект должен возвращать строку с допустимой областью
+видимости и будет выполнен только один раз - во время определения фикстуры. Он будет вызываться с
+двумя ключевыми аргументами - ``fixture_name`` в виде строки и ``config`` с объектом конфигурации.
 
-This can be especially useful when dealing with fixtures that need time for setup, like spawning
-a docker container. You can use the command-line argument to control the scope of the spawned
-containers for different environments. See the example below.
+Это может быть особенно полезно при работе с фикстурами, которым требуется время для настройки, например,
+при создании контейнера докера. Вы можете использовать аргумент командной строки для управления
+областью порожденных контейнеров для различных сред. См. Пример ниже.
 
 .. code-block:: python
 
@@ -535,50 +518,48 @@ containers for different environments. See the example below.
 
 .. _`finalization`:
 
-Teardown/Cleanup (AKA Fixture finalization)
--------------------------------------------
+Teardown/Cleanup(также известная как финализация фикстуры)
+------------------------------------------------------------
 
-When we run our tests, we'll want to make sure they clean up after themselves so
-they don't mess with any other tests (and also so that we don't leave behind a
-mountain of test data to bloat the system). Fixtures in pytest offer a very
-useful teardown system, which allows us to define the specific steps necessary
-for each fixture to clean up after itself.
+Когда мы запускаем наши тесты, мы хотим убедиться, что они убирают за собой, чтобы они не вмешивались
+в другие тесты (а также чтобы мы не оставили после себя горы тестовых данных, которые раздувают систему).
+Фикстуры в pytest предлагают очень полезную систему очистки, которая позволяет нам определять
+конкретные шаги, необходимые для очистки каждой фикстуры после себя.
 
-This system can be leveraged in two ways.
+Эту систему можно использовать двумя способами.
 
 .. _`yield fixtures`:
 
-1. ``yield`` fixtures (recommended)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1. Фикстуры ``yield`` (рекомендовано)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. regendoc: wipe
 
-"Yield" fixtures ``yield`` instead of ``return``. With these
-fixtures, we can run some code and pass an object back to the requesting
-fixture/test, just like with the other fixtures. The only differences are:
+Используем *выход*-фикстуру ``yield`` вместо ``return``. С помощью этих фикстур мы можем запустить некоторый
+код и передать объект обратно запрашивающему fixture/test, как и в случае с другими фикстурами.
+Единственные отличия:
 
-1. ``return`` is swapped out for ``yield``.
-2. Any teardown code for that fixture is placed *after* the ``yield``.
+1. ``return`` заменен на ``yield``.
+2. Любой код очистки для этой фикстуры помещается *после* ``yield``.
 
-Once pytest figures out a linear order for the fixtures, it will run each one up
-until it returns or yields, and then move on to the next fixture in the list to
-do the same thing.
+Как только pytest определит линейный порядок для фикстур, он будет запускать каждый из них до тех пор,
+пока он не вернется или не даст результатов, а затем перейдет к следующей фикстуре в списке,
+чтобы сделать то же самое.
 
-Once the test is finished, pytest will go back down the list of fixtures, but in
-the *reverse order*, taking each one that yielded, and running the code inside
-it that was *after* the ``yield`` statement.
+После завершения теста pytest вернется вниз по списку фикстур, но в *обратном порядке*, беря каждое из них
+и запуская внутри него код, который был *после* оператора ``yield``.
 
-As a simple example, consider this basic email module:
+В качестве простого примера рассмотрим этот базовый модуль email:
 
 .. code-block:: python
 
-    # content of emaillib.py
+    # листинг emaillib.py
     class MailAdminClient:
         def create_user(self):
             return MailUser()
 
         def delete_user(self, user):
-            # do some cleanup
+            # сделаем некоторую очистку
             pass
 
 
@@ -598,18 +579,17 @@ As a simple example, consider this basic email module:
             self.subject = subject
             self.body = body
 
-Let's say we want to test sending email from one user to another. We'll have to
-first make each user, then send the email from one user to the other, and
-finally assert that the other user received that message in their inbox. If we
-want to clean up after the test runs, we'll likely have to make sure the other
-user's mailbox is emptied before deleting that user, otherwise the system may
-complain.
+Допустим, мы хотим протестировать отправку электронной почты от одного пользователя другому. Нам нужно
+сначала создать каждого пользователя, затем отправить электронное письмо от одного пользователя другому
+и, наконец, подтвердить, что другой пользователь получил это сообщение в своем почтовом ящике. Если мы
+хотим очистить после запуска теста, нам, вероятно, придется убедиться, что почтовый ящик другого
+пользователя пуст, прежде чем удалять этого пользователя, иначе система может выдать предупреждение.
 
-Here's what that might look like:
+Вот как это может выглядеть:
 
 .. code-block:: python
 
-    # content of test_emaillib.py
+    # листинг test_emaillib.py
     import pytest
 
     from emaillib import Email, MailAdminClient
@@ -639,12 +619,11 @@ Here's what that might look like:
         sending_user.send_email(email, receiving_user)
         assert email in receiving_user.inbox
 
-Because ``receiving_user`` is the last fixture to run during setup, it's the first to run
-during teardown.
+Поскольку ``receiving_user`` - это последняя фикстура, запускаемая во время установки, она запускается первой
+во время очистки.
 
-There is a risk that even having the order right on the teardown side of things
-doesn't guarantee a safe cleanup. That's covered in a bit more detail in
-:ref:`safe teardowns`.
+Существует риск того, что даже наведение порядка при разборке не гарантирует безопасную уборку.
+Подробнее об этом можно прочитать в :ref:`safe teardowns`.
 
 .. code-block:: pytest
 
@@ -652,38 +631,34 @@ doesn't guarantee a safe cleanup. That's covered in a bit more detail in
    .                                                                    [100%]
    1 passed in 0.12s
 
-Handling errors for yield fixture
-"""""""""""""""""""""""""""""""""
+Обработка ошибок для фикстуры yield
+"""""""""""""""""""""""""""""""""""""
 
-If a yield fixture raises an exception before yielding, pytest won't try to run
-the teardown code after that yield fixture's ``yield`` statement. But, for every
-fixture that has already run successfully for that test, pytest will still
-attempt to tear them down as it normally would.
+Если yield-фикстура вызывает исключение перед уступкой, pytest не будет пытаться запустить код
+уступки после оператора ``yield`` yield-фикстуры. Но для каждой фикстуры, которая уже была успешно
+запущена для этого теста, pytest все равно будет пытаться удалить их, как обычно.
 
-2. Adding finalizers directly
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2. Добавление финализаторов напрямую
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-While yield fixtures are considered to be the cleaner and more straightforward
-option, there is another choice, and that is to add "finalizer" functions
-directly to the test's `request-context`_ object. It brings a similar result as
-yield fixtures, but requires a bit more verbosity.
+Хотя yield-фикстуры считаются более правильным и простым вариантом, есть и другой вариант, а именно
+добавление «финализатор»-функций непосредственно к объекту `request-context`_ теста. Это дает тот же
+результат, что и yield-фикстура, но требует немного большего объема кода.
 
-In order to use this approach, we have to request the `request-context`_ object
-(just like we would request another fixture) in the fixture we need to add
-teardown code for, and then pass a callable, containing that teardown code, to
-its ``addfinalizer`` method.
+Чтобы использовать этот подход, мы должны запросить объект `request-context`_ (точно так же, как мы
+запрашиваем другую фикстуру) в фикстуре, для которого нам нужно добавить teardown-код, а затем
+передать вызываемый объект, содержащий этот teardown-код, к его методу ``addfinalizer``.
 
-We have to be careful though, because pytest will run that finalizer once it's
-been added, even if that fixture raises an exception after adding the finalizer.
-So to make sure we don't run the finalizer code when we wouldn't need to, we
-would only add the finalizer once the fixture would have done something that
-we'd need to teardown.
+Однако нужно быть осторожным, потому что pytest будет запускать этот финализатор после его добавления,
+даже если эта фикстура вызывает исключение после добавления финализатора. Поэтому, чтобы убедиться, что
+мы не запускаем код финализатора, когда он нам не нужен, мы добавляем финализатор только после того,
+как фикстура сделает что-то, что нам нужно будет очистить.
 
-Here's how the previous example would look using the ``addfinalizer`` method:
+Вот как будет выглядеть предыдущий пример с использованием метода ``addfinalizer``:
 
 .. code-block:: python
 
-    # content of test_emaillib.py
+    # листинг test_emaillib.py
     import pytest
 
     from emaillib import Email, MailAdminClient
@@ -727,9 +702,8 @@ Here's how the previous example would look using the ``addfinalizer`` method:
     def test_email_received(receiving_user, email):
         assert email in receiving_user.inbox
 
-
-It's a bit longer than yield fixtures and a bit more complex, but it
-does offer some nuances for when you're in a pinch.
+Он немного длиннее, чем yield-фикстура, и немного сложнее, но он предлагает некоторые нюансы,
+когда вы в затруднительном положении.
 
 .. code-block:: pytest
 
@@ -739,20 +713,19 @@ does offer some nuances for when you're in a pinch.
 
 .. _`safe teardowns`:
 
-Safe teardowns
---------------
+Безопасные очистки
+--------------------
 
-The fixture system of pytest is *very* powerful, but it's still being run by a
-computer, so it isn't able to figure out how to safely teardown everything we
-throw at it. If we aren't careful, an error in the wrong spot might leave stuff
-from our tests behind, and that can cause further issues pretty quickly.
+Система фикстур pytest очень мощная, но она все еще запускается компьютером, поэтому он не может понять,
+как безопасно очистить все, что мы делаем. Если мы не будем осторожны, ошибка в неправильном
+месте может привести к тому, что наши тесты останутся позади, и это может довольно быстро вызвать
+дополнительные проблемы.
 
-For example, consider the following tests (based off of the mail example from
-above):
+Например, рассмотрим следующие тесты (основанные на примере выше):
 
 .. code-block:: python
 
-    # content of test_emaillib.py
+    # листинг test_emaillib.py
     import pytest
 
     from emaillib import Email, MailAdminClient
@@ -775,15 +748,14 @@ above):
         receiving_user, email = setup
         assert email in receiving_user.inbox
 
-This version is a lot more compact, but it's also harder to read, doesn't have a
-very descriptive fixture name, and none of the fixtures can be reused easily.
+Эта версия намного компактнее, но ее сложнее читать, у нее нет описательного названия фикстуры, и ни
+одна из фикстур не может быть легко использована повторно.
 
-There's also a more serious issue, which is that if any of those steps in the
-setup raise an exception, none of the teardown code will run.
+Существует также более серьезная проблема, заключающаяся в том, что если какой-либо из этих шагов в
+настройке вызывает исключение, ни один из кодов очистки не запустится.
 
-One option might be to go with the ``addfinalizer`` method instead of yield
-fixtures, but that might get pretty complex and difficult to maintain (and it
-wouldn't be compact anymore).
+Одним из вариантов может быть использование метода ``addfinalizer`` вместо yield-фикстур, но это может
+оказаться довольно сложным и трудным в обслуживании (и больше не будет компактным).
 
 .. code-block:: pytest
 
@@ -793,42 +765,40 @@ wouldn't be compact anymore).
 
 .. _`safe fixture structure`:
 
-Safe fixture structure
-^^^^^^^^^^^^^^^^^^^^^^
+Безопасная конструкция фикстуры
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The safest and simplest fixture structure requires limiting fixtures to only
-making one state-changing action each, and then bundling them together with
-their teardown code, as :ref:`the email examples above <yield fixtures>` showed.
+Самая безопасная и простая структура фикстуры требует, чтобы фикстуры выполняли только одно действие по
+изменению состояния каждое, а затем связывали их вместе с их кодом очистки, как показано в примерах
+:ref:`the email examples above <yield fixtures>`.
 
-The chance that a state-changing operation can fail but still modify state is
-negligible, as most of these operations tend to be `transaction
-<https://en.wikipedia.org/wiki/Transaction_processing>`_-based (at least at the
-level of testing where state could be left behind). So if we make sure that any
-successful state-changing action gets torn down by moving it to a separate
-fixture function and separating it from other, potentially failing
-state-changing actions, then our tests will stand the best chance at leaving
-the test environment the way they found it.
+Вероятность того, что операция изменения состояния может упасть, но все же изменить
+состояние, незначительна, поскольку большинство этих операций, как правило, основаны на транзакциях
+`transaction <https://en.wikipedia.org/wiki/Transaction_processing>`_ (по крайней мере, на уровне
+тестирования, где состояние может быть оставлен позади). Поэтому, если мы убедимся, что любое успешное
+действие, изменяющее состояние, прерывается, перемещая его в отдельную фикстурную функцию и отделяя его
+от других, потенциально неуспешных действий по изменению состояния, тогда наши тесты будут иметь лучший
+шанс оставить тестовую среду в предыдущем состоянии.
 
-For an example, let's say we have a website with a login page, and we have
-access to an admin API where we can generate users. For our test, we want to:
+Например, предположим, что у нас есть веб-сайт со страницей входа, и у нас есть доступ к административному
+API, где мы можем создавать пользователей. Для нашего теста мы хотим:
 
-1. Create a user through that admin API
-2. Launch a browser using Selenium
-3. Go to the login page of our site
-4. Log in as the user we created
-5. Assert that their name is in the header of the landing page
+1. Создаем пользователя через административный API
+2. Запускаем браузер с помощью Selenium
+3. Перейдем на страницу авторизации на нашем сайте
+4. Авторизуемся как созданный нами пользователь
+5. Подтверждаем, что их имя указано в заголовке целевой страницы.
 
-We wouldn't want to leave that user in the system, nor would we want to leave
-that browser session running, so we'll want to make sure the fixtures that
-create those things clean up after themselves.
+Мы не хотели бы оставлять этого пользователя в системе или оставлять этот сеанс браузера запущенным,
+поэтому мы хотим убедиться, что фикстуры, которые создают это, очищаются после себя.
 
-Here's what that might look like:
+Вот как это может выглядеть:
 
 .. note::
 
-    For this example, certain fixtures (i.e. ``base_url`` and
-    ``admin_credentials``) are implied to exist elsewhere. So for now, let's
-    assume they exist, and we're just not looking at them.
+    В этом примере некоторые фикстуры(т.е. ``base_url`` и ``admin_credentials``)
+    подразумевается, что они существуют где-то еще. Итак, пока давайте
+    предполагаем, что они существуют, и мы просто не смотрим на них.
 
 .. code-block:: python
 
@@ -878,55 +848,50 @@ Here's what that might look like:
     def test_name_on_landing_page_after_login(landing_page, user):
         assert landing_page.header == f"Welcome, {user.name}!"
 
-The way the dependencies are laid out means it's unclear if the ``user``
-fixture would execute before the ``driver`` fixture. But that's ok, because
-those are atomic operations, and so it doesn't matter which one runs first
-because the sequence of events for the test is still `linearizable
-<https://en.wikipedia.org/wiki/Linearizability>`_. But what *does* matter is
-that, no matter which one runs first, if the one raises an exception while the
-other would not have, neither will have left anything behind. If ``driver``
-executes before ``user``, and ``user`` raises an exception, the driver will
-still quit, and the user was never made. And if ``driver`` was the one to raise
-the exception, then the driver would never have been started and the user would
-never have been made.
+То, как установлены зависимости, означает, что неясно, будет ли фикстура ``user`` выполняться
+перед фикстурой ``driver``. Но это нормально, потому что это атомарные операции, и поэтому не имеет
+значения, какая из них выполняется первой, потому что последовательность событий для теста по-прежнему
+является `linearizable <https: en.wikipedia.orgwikiLinearizability>`_. Но важно то, что независимо от
+того, какая из них запускается первой, если одна вызовет исключение, а другая нет, ни одна из них ничего
+не оставит. Если ``driver`` выполняется до ``user``, а ``user`` вызывает исключение, driver все равно завершится,
+и пользователь никогда не будет создан. И если ``driver`` был тем, кто вызвал исключение, то ``driver``
+никогда не был бы запущен, и пользователь никогда не был бы создан.
 
 .. note:
 
-    While the ``user`` fixture doesn't *actually* need to happen before the
-    ``driver`` fixture, if we made ``driver`` request ``user``, it might save
-    some time in the event that making the user raises an exception, since it
-    won't bother trying to start the driver, which is a fairly expensive
-    operation.
+    Хотя фикстура ``user`` на самом деле не обязательно должна быть перед фикстурой
+    ``driver``, если мы сделаем с ``driver`` запрос ``user``, это может сэкономить некоторое
+    время в том случае, если user вызывает исключение, так как он не будет пытаться
+    запустить driver, что является довольно дорогостоящей операцией.
 
 
-Running multiple ``assert`` statements safely
----------------------------------------------
+Безопасный запуск нескольких ``assert``
+------------------------------------------------------
 
-Sometimes you may want to run multiple asserts after doing all that setup, which
-makes sense as, in more complex systems, a single action can kick off multiple
-behaviors. pytest has a convenient way of handling this and it combines a bunch
-of what we've gone over so far.
+Иногда вы можете захотеть запустить несколько ``assert`` после выполнения всей настройки,
+что имеет смысл, поскольку в более сложных системах одно действие может запускать несколько вариантов
+поведения. У pytest есть удобный способ сделать это, и он сочетает в себе многое из того, что мы уже
+рассмотрели.
 
-All that's needed is stepping up to a larger scope, then having the **act**
-step defined as an autouse fixture, and finally, making sure all the fixtures
-are targeting that higher level scope.
+Все, что нужно, - это перейти к большему объему, затем определить шаг **действие** как фикстуру
+``autouse`` и, наконец, убедиться, что все фикстуры указывают на более высокий уровень.
 
-Let's pull :ref:`an example from above <safe fixture structure>`, and tweak it a
-bit. Let's say that in addition to checking for a welcome message in the header,
-we also want to check for a sign out button, and a link to the user's profile.
+Давайте возьмем :ref:`an example from above <safe fixture structure>` и немного подправим его. Предположим,
+что помимо проверки приветственного сообщения в заголовке, мы также хотим проверить кнопку выхода и
+ссылку на профиль пользователя.
 
-Let's take a look at how we can structure that so we can run multiple asserts
-without having to repeat all those steps again.
+Давайте посмотрим, как мы можем структурировать это, чтобы мы могли запускать несколько утверждений,
+не повторяя все эти шаги снова.
 
 .. note::
 
-    For this example, certain fixtures (i.e. ``base_url`` and
-    ``admin_credentials``) are implied to exist elsewhere. So for now, let's
-    assume they exist, and we're just not looking at them.
+    Для этого примера, определенные фикстуры(т.е. ``base_url`` и
+    ``admin_credentials``) подразумевается, что существуют где-то еще. Итак, пока давайте
+    предположим, что они существуют, и мы просто не смотрим на них.
 
 .. code-block:: python
 
-    # contents of tests/end_to_end/test_login.py
+    # листинг tests/end_to_end/test_login.py
     from uuid import uuid4
     from urllib.parse import urljoin
 
@@ -980,29 +945,26 @@ without having to repeat all those steps again.
             profile_href = urljoin(base_url, f"/profile?id={user.profile_id}")
             assert landing_page.profile_link.get_attribute("href") == profile_href
 
-Notice that the methods are only referencing ``self`` in the signature as a
-formality. No state is tied to the actual test class as it might be in the
-``unittest.TestCase`` framework. Everything is managed by the pytest fixture
-system.
+Обратите внимание, что методы только формально ссылаются на ``self`` в подписи. Никакое состояние не
+связано с фактическим тестовым классом, как это может быть в структуре ``unittest.TestCase``. Все
+управляется системой фикстур pytest.
 
-Each method only has to request the fixtures that it actually needs without
-worrying about order. This is because the **act** fixture is an autouse fixture,
-and it made sure all the other fixtures executed before it. There's no more
-changes of state that need to take place, so the tests are free to make as many
-non-state-changing queries as they want without risking stepping on the toes of
-the other tests.
+Каждый метод должен запрашивать только те фикстуры, которые ему действительно нужны, не беспокоясь о
+порядке. Это связано с тем, что фикстура **выполнение** является autouse-фикстурой, и это обеспечило
+выполнение всех остальных фикстур перед ней. Больше нет необходимости в изменении состояния, поэтому
+тесты могут выполнять столько запросов без изменения состояния, сколько они хотят, не рискуя мешать
+другим тестам.
 
-The ``login`` fixture is defined inside the class as well, because not every one
-of the other tests in the module will be expecting a successful login, and the **act** may need to
-be handled a little differently for another test class. For example, if we
-wanted to write another test scenario around submitting bad credentials, we
-could handle it by adding something like this to the test file:
+Фикстура ``login`` также определена внутри класса, потому что не все другие тесты в модуле будут ожидать
+успешного входа в систему, и действие, возможно, придется обрабатывать немного по-другому для другого
+тестового класса. Например, если мы хотим написать еще один тестовый сценарий для отправки неверных
+учетных данных, мы могли бы сделать это, добавив следующее в тестовый файл:
 
 .. note:
 
-    It's assumed that the page object for this (i.e. ``LoginPage``) raises a
-    custom exception, ``BadCredentialsException``, when it recognizes text
-    signifying that on the login form after attempting to log in.
+    Предполагается, что объект страницы(т.е. ``LoginPage``) вызывает настраиваемое
+    исключение ``BadCredentialsException``, когда распознает текст, обозначающий это, в форме входа
+    после попытки входа в систему.
 
 .. code-block:: python
 
@@ -1020,17 +982,17 @@ could handle it by adding something like this to the test file:
 
 .. _`request-context`:
 
-Fixtures can introspect the requesting test context
+Фикстуры могут анализировать запрашиваемый тестовый контекст
 -------------------------------------------------------------
 
-Fixture functions can accept the :py:class:`request <_pytest.fixtures.FixtureRequest>` object
-to introspect the "requesting" test function, class or module context.
-Further extending the previous ``smtp_connection`` fixture example, let's
-read an optional server URL from the test module which uses our fixture:
+Фикстуры могут принимать объект :py:class:`request <_pytest.fixtures.FixtureRequest>` для интроспекции
+«запрашивающей» тестовой функции, класса или контекста модуля. Далее, расширяя предыдущий пример
+фикстуры ``smtp_connection``, давайте прочитаем необязательный URL-адрес сервера из тестового модуля,
+который использует нашу фикстуру:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
     import pytest
     import smtplib
 
@@ -1043,9 +1005,8 @@ read an optional server URL from the test module which uses our fixture:
         print("finalizing {} ({})".format(smtp_connection, server))
         smtp_connection.close()
 
-We use the ``request.module`` attribute to optionally obtain an
-``smtpserver`` attribute from the test module.  If we just execute
-again, nothing much has changed:
+Мы используем атрибут ``request.module`` чтобы дополнительно получить атрибут ``smtpserver`` из тестового
+модуля. Если мы просто запустим еще раз, ничего особенного не изменится:
 
 .. code-block:: pytest
 
@@ -1057,20 +1018,20 @@ again, nothing much has changed:
     FAILED test_module.py::test_noop - assert 0
     2 failed in 0.12s
 
-Let's quickly create another test module that actually sets the
-server URL in its module namespace:
+Давайте быстро создадим еще один тестовый модуль, который фактически устанавливает URL-адрес сервера в
+пространстве имен модуля:
 
 .. code-block:: python
 
-    # content of test_anothersmtp.py
+    # листинг test_anothersmtp.py
 
-    smtpserver = "mail.python.org"  # will be read by smtp fixture
+    smtpserver = "mail.python.org"  # будет прочитано фикстурой smtp
 
 
     def test_showhelo(smtp_connection):
         assert 0, smtp_connection.helo()
 
-Running it:
+Запустим:
 
 .. code-block:: pytest
 
@@ -1087,17 +1048,16 @@ Running it:
     ========================= short test summary info ==========================
     FAILED test_anothersmtp.py::test_showhelo - AssertionError: (250, b'mail....
 
-voila! The ``smtp_connection`` fixture function picked up our mail server name
-from the module namespace.
+Вуаля! Фикстура ``smtp_connection`` взяла имя нашего почтового сервера из пространства имен модуля.
 
 .. _`using-markers`:
 
-Using markers to pass data to fixtures
+Использование маркеров для передачи данных в фикстуры
 -------------------------------------------------------------
 
-Using the :py:class:`request <_pytest.fixtures.FixtureRequest>` object, a fixture can also access
-markers which are applied to a test function. This can be useful to pass data
-into a fixture from a test:
+Используя объект :py:class:`request <_pytest.fixtures.FixtureRequest>`, фикстура также может получить
+доступ к маркерам, которые применяются к тестовой функции. Это может быть полезно для передачи данных
+в фикстуру из теста:
 
 .. code-block:: python
 
@@ -1108,12 +1068,12 @@ into a fixture from a test:
     def fixt(request):
         marker = request.node.get_closest_marker("fixt_data")
         if marker is None:
-            # Handle missing marker in some way...
+            # Каким-то образом обработаем отсутствующий маркер...
             data = None
         else:
             data = marker.args[0]
 
-        # Do something with the data
+        # Сделаем что-нибудь с данными
         return data
 
 
@@ -1123,15 +1083,14 @@ into a fixture from a test:
 
 .. _`fixture-factory`:
 
-Factories as fixtures
--------------------------------------------------------------
+Фабрики как фикстуры
+---------------------------
 
-The "factory as fixture" pattern can help in situations where the result
-of a fixture is needed multiple times in a single test. Instead of returning
-data directly, the fixture instead returns a function which generates the data.
-This function can then be called multiple times in the test.
+Шаблон «Фабрика как фикстура» может помочь в ситуациях, когда результат фикстуры требуется
+несколько раз в одном тесте. Вместо того, чтобы возвращать данные напрямую, фикстура возвращает функцию,
+которая генерирует данные. Затем эту функцию можно вызывать в тесте несколько раз.
 
-Factories can have parameters as needed:
+Фабрики могут получать параметры по мере необходимости:
 
 .. code-block:: python
 
@@ -1148,7 +1107,7 @@ Factories can have parameters as needed:
         customer_2 = make_customer_record("Mike")
         customer_3 = make_customer_record("Meredith")
 
-If the data created by the factory requires managing, the fixture can take care of that:
+Если данные, созданные фабрикой, требуют управления, фикстура позаботится об этом:
 
 .. code-block:: python
 
@@ -1176,24 +1135,23 @@ If the data created by the factory requires managing, the fixture can take care 
 
 .. _`fixture-parametrize`:
 
-Parametrizing fixtures
+Параметризация фикстур
 -----------------------------------------------------------------
 
-Fixture functions can be parametrized in which case they will be called
-multiple times, each time executing the set of dependent tests, i.e. the
-tests that depend on this fixture.  Test functions usually do not need
-to be aware of their re-running.  Fixture parametrization helps to
-write exhaustive functional tests for components which themselves can be
-configured in multiple ways.
+Функции фикстуры можно параметризовать, и в этом случае они будут вызываться несколько раз, каждый раз
+выполняя набор зависимых тестов, то есть тестов, которые зависят от этой фикстуры. Тестовым функциям
+обычно не нужно знать об их повторном запуске. Параметризация фикстур помогает писать
+исчерпывающие функциональные тесты для компонентов, которые сами могут быть настроены различными
+способами.
 
-Extending the previous example, we can flag the fixture to create two
-``smtp_connection`` fixture instances which will cause all tests using the fixture
-to run twice.  The fixture function gets access to each parameter
-through the special :py:class:`request <FixtureRequest>` object:
+Расширяя предыдущий пример, мы можем пометить прибор, чтобы создать два экземпляра фикстуры
+``smtp_connection``, которые заставят все тесты, использующие фикстуру, запускаться дважды. Функция
+фикстуры получает доступ к каждому параметру через специальный объект
+:py:class:`request <FixtureRequest>`:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
     import pytest
     import smtplib
 
@@ -1205,11 +1163,10 @@ through the special :py:class:`request <FixtureRequest>` object:
         print("finalizing {}".format(smtp_connection))
         smtp_connection.close()
 
-The main change is the declaration of ``params`` with
-:py:func:`@pytest.fixture <pytest.fixture>`, a list of values
-for each of which the fixture function will execute and can access
-a value via ``request.param``.  No test function code needs to change.
-So let's just do another run:
+Основным изменением является объявление ``params`` с помощью :py:func:`@pytest.fixture <pytest.fixture>`,
+списка значений, для каждого из которых функция фикстуры будет выполняться и может получить доступ к
+значению через ``request.param``. Код тестовой функции изменять не нужно. Итак, давайте просто сделаем
+еще один прогон:
 
 .. code-block:: pytest
 
@@ -1272,27 +1229,24 @@ So let's just do another run:
     FAILED test_module.py::test_noop[mail.python.org] - assert 0
     4 failed in 0.12s
 
-We see that our two test functions each ran twice, against the different
-``smtp_connection`` instances.  Note also, that with the ``mail.python.org``
-connection the second test fails in ``test_ehlo`` because a
-different server string is expected than what arrived.
+Мы видим, что каждая из наших двух тестовых функций запускалась дважды с разными экземплярами
+``smtp_connection``. Также обратите внимание, что с подключением ``mail.python.org`` второй тест не
+проходит в ``test_ehlo``, потому что ожидается другая строка сервера, отличная от полученной.
 
-pytest will build a string that is the test ID for each fixture value
-in a parametrized fixture, e.g. ``test_ehlo[smtp.gmail.com]`` and
-``test_ehlo[mail.python.org]`` in the above examples.  These IDs can
-be used with ``-k`` to select specific cases to run, and they will
-also identify the specific case when one is failing.  Running pytest
-with ``--collect-only`` will show the generated IDs.
+pytest построит строку, которая является идентификатором теста для каждого значения фикстуры в
+параметризованной фикстуре, например ``test_ehlo[smtp.gmail.com]`` и ``test_ehlo[mail.python.org]`` в
+приведенных выше примерах. Эти идентификаторы можно использовать с ``-k`` для выбора конкретных случаев
+для запуска, и они также будут определять конкретный случай, когда один из них упадет. Запуск
+pytest с параметром ``--collect-only`` покажет сгенерированные идентификаторы.
 
-Numbers, strings, booleans and ``None`` will have their usual string
-representation used in the test ID. For other objects, pytest will
-make a string based on the argument name.  It is possible to customise
-the string used in a test ID for a certain fixture value by using the
-``ids`` keyword argument:
+Числа, строки, логические значения и ``None`` будут иметь обычное строковое представление, используемое
+в идентификаторе теста. Для других объектов pytest создаст строку на основе имени аргумента. Можно
+настроить строку, используемую в идентификаторе теста для определенного значения фикстуры, используя
+аргумент ключевого слова ``ids``:
 
 .. code-block:: python
 
-   # content of test_ids.py
+   # листинг test_ids.py
    import pytest
 
 
@@ -1320,12 +1274,11 @@ the string used in a test ID for a certain fixture value by using the
    def test_b(b):
        pass
 
-The above shows how ``ids`` can be either a list of strings to use or
-a function which will be called with the fixture value and then
-has to return a string to use.  In the latter case if the function
-returns ``None`` then pytest's auto-generated ID will be used.
+Выше показано, как ``ids`` может быть либо списком строк для использования, либо функцией, которая будет
+вызываться со значением фикстуры, а затем должна возвращать строку для использования. В последнем случае,
+если функция возвращает ``None``, будет использоваться автоматически сгенерированный идентификатор pytest.
 
-Running the above tests results in the following test IDs being used:
+Выполнение вышеуказанных тестов приводит к использованию следующих идентификаторов тестов:
 
 .. code-block:: pytest
 
@@ -1356,17 +1309,17 @@ Running the above tests results in the following test IDs being used:
 
 .. _`fixture-parametrize-marks`:
 
-Using marks with parametrized fixtures
---------------------------------------
+Использование маркеров с параметризованными фикстурами
+--------------------------------------------------------
 
-:func:`pytest.param` can be used to apply marks in values sets of parametrized fixtures in the same way
-that they can be used with :ref:`@pytest.mark.parametrize <@pytest.mark.parametrize>`.
+:func:`pytest.param` могут использоваться для нанесения маркеров в наборах значений параметризованных
+фикстур так же, как их можно использовать с :ref:`@pytest.mark.parametrize <@pytest.mark.parametrize>`.
 
-Example:
+Пример:
 
 .. code-block:: python
 
-    # content of test_fixture_marks.py
+    # cлистинг test_fixture_marks.py
     import pytest
 
 
@@ -1378,7 +1331,7 @@ Example:
     def test_data(data_set):
         pass
 
-Running this test will *skip* the invocation of ``data_set`` with value ``2``:
+Запуск этого теста будет *пропускать* вызов ``data_set`` со значением ``2``:
 
 .. code-block:: pytest
 
@@ -1397,19 +1350,17 @@ Running this test will *skip* the invocation of ``data_set`` with value ``2``:
 
 .. _`interdependent fixtures`:
 
-Modularity: using fixtures from a fixture function
+Модульность: использование фикстур из функции фикстуры
 ----------------------------------------------------------
 
-In addition to using fixtures in test functions, fixture functions
-can use other fixtures themselves.  This contributes to a modular design
-of your fixtures and allows re-use of framework-specific fixtures across
-many projects.  As a simple example, we can extend the previous example
-and instantiate an object ``app`` where we stick the already defined
-``smtp_connection`` resource into it:
+Помимо использования фикстур в тестовых функциях, функции фикстур могут сами использовать другие
+фикстуры. Это способствует модульному дизайну ваших фикстур и позволяет повторно использовать фикстуры
+во многих проектах. В качестве простого примера мы можем расширить предыдущий пример и создать экземпляр
+объекта ``app``, в который мы вставим уже определенный ``smtp_connection``:
 
 .. code-block:: python
 
-    # content of test_appsetup.py
+    # листинг test_appsetup.py
 
     import pytest
 
@@ -1427,8 +1378,8 @@ and instantiate an object ``app`` where we stick the already defined
     def test_smtp_connection_exists(app):
         assert app.smtp_connection
 
-Here we declare an ``app`` fixture which receives the previously defined
-``smtp_connection`` fixture and instantiates an ``App`` object with it.  Let's run it:
+Здесь мы объявляем фикстуру ``app``, которая получает ранее определенную фикстуру ``smtp_connection`` и
+создает с ней экземпляр объекта ``App``. Запустим:
 
 .. code-block:: pytest
 
@@ -1444,39 +1395,36 @@ Here we declare an ``app`` fixture which receives the previously defined
 
     ============================ 2 passed in 0.12s =============================
 
-Due to the parametrization of ``smtp_connection``, the test will run twice with two
-different ``App`` instances and respective smtp servers.  There is no
-need for the ``app`` fixture to be aware of the ``smtp_connection``
-parametrization because pytest will fully analyse the fixture dependency graph.
+Из-за параметризации ``smtp_connection`` тест будет запускаться дважды с двумя разными экземплярами ``App``
+и соответствующими серверами smtp. Нет необходимости, чтобы фикстура ``app`` знала о параметризации
+``smtp_connection``, потому что pytest полностью проанализирует график зависимостей фикстуры.
 
-Note that the ``app`` fixture has a scope of ``module`` and uses a
-module-scoped ``smtp_connection`` fixture.  The example would still work if
-``smtp_connection`` was cached on a ``session`` scope: it is fine for fixtures to use
-"broader" scoped fixtures but not the other way round:
-A session-scoped fixture could not use a module-scoped one in a
-meaningful way.
+Обратите внимание, что фикстура ``app`` имеет область видимости ``module`` и использует фикстуру
+``smtp_connection`` в области видимости модуля. Пример все равно работал бы, если бы ``smtp_connection``
+был кэширован в области видимости ``сессии``: фикстуры с более широкой областью видимости могут
+использовать фикстуры с более широкой областью видимости, но не наоборот: фикстура с привязкой к сеансу
+не может использовать модуль в области видимости осмысленным образом.
 
 
 .. _`automatic per-resource grouping`:
 
-Automatic grouping of tests by fixture instances
+Автоматическая группировка тестов по экземплярам фикстур
 ----------------------------------------------------------
 
 .. regendoc: wipe
 
-pytest minimizes the number of active fixtures during test runs.
-If you have a parametrized fixture, then all the tests using it will
-first execute with one instance and then finalizers are called
-before the next fixture instance is created.  Among other things,
-this eases testing of applications which create and use global state.
+pytest минимизирует количество активных фикстур во время тестовых прогонов. Если у вас есть
+параметризованная фикстура, то все тесты, использующие ее, сначала будут выполняться с одним экземпляром,
+а затем вызываются финализаторы перед созданием следующего экземпляра фикстуры. Помимо прочего, это
+упрощает тестирование приложений, которые создают и используют глобальное состояние.
 
-The following example uses two parametrized fixtures, one of which is
-scoped on a per-module basis, and all the functions perform ``print`` calls
-to show the setup/teardown flow:
+В следующем примере используются две параметризованных фикстуры, одна из которых ограничена для каждого
+модуля, и все функции выполняют вызовы ``print``, чтобы показать последовательность действий
+setup/teardown:
 
 .. code-block:: python
 
-    # content of test_module.py
+    # листинг test_module.py
     import pytest
 
 
@@ -1508,7 +1456,7 @@ to show the setup/teardown flow:
         print("  RUN test2 with otherarg {} and modarg {}".format(otherarg, modarg))
 
 
-Let's run the tests in verbose mode and with looking at the print-output:
+Запустим тесты в подробном режиме и с учетом вывода на печать:
 
 .. code-block:: pytest
 
@@ -1554,37 +1502,33 @@ Let's run the tests in verbose mode and with looking at the print-output:
 
     ============================ 8 passed in 0.12s =============================
 
-You can see that the parametrized module-scoped ``modarg`` resource caused an
-ordering of test execution that lead to the fewest possible "active" resources.
-The finalizer for the ``mod1`` parametrized resource was executed before the
-``mod2`` resource was setup.
+Вы можете видеть, что параметризованный ресурс ``modarg`` с областью видимости модуля вызвал такой порядок
+выполнения тестов, который приводит к минимальному количеству «активных» ресурсов. Финализатор для
+параметризованного ресурса ``mod1`` был выполнен до настройки ресурса ``mod2``.
 
-In particular notice that test_0 is completely independent and finishes first.
-Then test_1 is executed with ``mod1``, then test_2 with ``mod1``, then test_1
-with ``mod2`` and finally test_2 with ``mod2``.
+В частности, обратите внимание, что test_0 полностью независим и заканчивается первым. Затем test_1
+выполняется с ``mod1``, затем test_2 с ``mod1``, затем test_1 с ``mod2`` и, наконец, test_2 с ``mod2``.
 
-The ``otherarg`` parametrized resource (having function scope) was set up before
-and teared down after every test that used it.
+Параметризованный ресурс ``otherarg`` (имеющий область действия) был настроен раньше и отключался после
+каждого теста, в котором он использовался.
 
 
 .. _`usefixtures`:
 
-Use fixtures in classes and modules with ``usefixtures``
---------------------------------------------------------
+Использование фикстуры в классах и модулях с ``usefixtures``
+---------------------------------------------------------------
 
 .. regendoc:wipe
 
-Sometimes test functions do not directly need access to a fixture object.
-For example, tests may require to operate with an empty directory as the
-current working directory but otherwise do not care for the concrete
-directory.  Here is how you can use the standard `tempfile
-<http://docs.python.org/library/tempfile.html>`_ and pytest fixtures to
-achieve it.  We separate the creation of the fixture into a conftest.py
-file:
+Иногда тестовым функциям не нужен прямой доступ к объекту фикстуры. Например, тесты могут потребовать
+работы с пустым каталогом в качестве текущего рабочего каталога, но в остальном не заботятся о
+конкретном каталоге. Вот как вы можете использовать стандартный `tempfile
+<http://docs.python.org/library/tempfile.html>`_ и фикстуру pytest для этого. Мы разделяем создание
+фикстуры в файле conftest.py:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
 
     import os
     import tempfile
@@ -1600,11 +1544,11 @@ file:
             yield
             os.chdir(old_cwd)
 
-and declare its use in a test module via a ``usefixtures`` marker:
+и объявить его использование в тестовом модуле с помощью маркера ``usefixtures``:
 
 .. code-block:: python
 
-    # content of test_setenv.py
+    # листинг test_setenv.py
     import os
     import pytest
 
@@ -1619,10 +1563,9 @@ and declare its use in a test module via a ``usefixtures`` marker:
         def test_cwd_again_starts_empty(self):
             assert os.listdir(os.getcwd()) == []
 
-Due to the ``usefixtures`` marker, the ``cleandir`` fixture
-will be required for the execution of each test method, just as if
-you specified a "cleandir" function argument to each of them.  Let's run it
-to verify our fixture is activated and the tests pass:
+Из-за маркера ``usefixtures`` для выполнения каждого метода тестирования потребуется фикстура ``cleandir``,
+как если бы вы указали аргумент функции ``cleandir`` для каждого из них. Давайте запустим его, чтобы
+убедиться, что наша фикстура активирована и тесты проходят:
 
 .. code-block:: pytest
 
@@ -1630,7 +1573,7 @@ to verify our fixture is activated and the tests pass:
     ..                                                                   [100%]
     2 passed in 0.12s
 
-You can specify multiple fixtures like this:
+Вы можете указать несколько фикстур, например:
 
 .. code-block:: python
 
@@ -1638,15 +1581,14 @@ You can specify multiple fixtures like this:
     def test():
         ...
 
-and you may specify fixture usage at the test module level using :globalvar:`pytestmark`:
+и вы можете указать использование фикстур на уровне тестового модуля, используя :globalvar:`pytestmark`:
 
 .. code-block:: python
 
     pytestmark = pytest.mark.usefixtures("cleandir")
 
 
-It is also possible to put fixtures required by all tests in your project
-into an ini-file:
+Также можно поместить фикстуры, необходимые для всех тестов в вашем проекте, в ini-файл.:
 
 .. code-block:: ini
 
@@ -1657,8 +1599,8 @@ into an ini-file:
 
 .. warning::
 
-    Note this mark has no effect in **fixture functions**. For example,
-    this **will not work as expected**:
+    Обратите внимание, что этот маркер не влияет на **функции фикстуры**. Например,
+    это **не будет работать как ожидалось**:
 
     .. code-block:: python
 
@@ -1667,21 +1609,22 @@ into an ini-file:
         def my_fixture_that_sadly_wont_use_my_other_fixture():
             ...
 
-    Currently this will not generate any error or warning, but this is intended
-    to be handled by `#3664 <https://github.com/pytest-dev/pytest/issues/3664>`_.
+    В настоящее время это не будет генерировать никаких ошибок или предупреждений, но это
+    будет обработано в `#3664 <https://github.com/pytest-dev/pytest/issues/3664>`_.
 
 .. _`override fixtures`:
 
-Overriding fixtures on various levels
--------------------------------------
+Переопределение фикстур на разных уровнях
+-------------------------------------------
 
-In relatively large test suite, you most likely need to ``override`` a ``global`` or ``root`` fixture with a ``locally``
-defined one, keeping the test code readable and maintainable.
+В относительно большом наборе тестов вам, скорее всего, потребуется ``переопределить`` ``глобальную`
+или ``корневую`` фикстуру на ``локально`` определенную, чтобы код теста оставался читаемым
+и поддерживаемым.
 
-Override a fixture on a folder (conftest) level
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Переопределение фикстур на уровне папки (conftest)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Given the tests file structure is:
+Учитывая, что структура файла тестов:
 
 ::
 
@@ -1717,14 +1660,14 @@ Given the tests file structure is:
                 def test_username(username):
                     assert username == 'overridden-username'
 
-As you can see, a fixture with the same name can be overridden for certain test folder level.
-Note that the ``base`` or ``super`` fixture can be accessed from the ``overriding``
-fixture easily - used in the example above.
+Как видите, фикстуру с таким же именем можно переопределить для определенного уровня тестовой папки.
+Обратите внимание, что к ``базовой`` или ``супер`` фикстуре можно легко получить доступ из
+``переопределяющей`` фикстуры - используется в примере выше.
 
-Override a fixture on a test module level
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Переопределение фикстуры на уровне тестового модуля
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Given the tests file structure is:
+Учитывая, что структура тестовых файлов следующая:
 
 ::
 
@@ -1761,13 +1704,14 @@ Given the tests file structure is:
             def test_username(username):
                 assert username == 'overridden-else-username'
 
-In the example above, a fixture with the same name can be overridden for certain test module.
+В приведенном выше примере фикстура с таким же именем может быть переопределена для определенного
+тестового модуля.
 
 
-Override a fixture with direct test parametrization
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Переопределение фикстуры с прямой параметризацией теста
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Given the tests file structure is:
+Учитывая, что структура тестовых файлов следующая:
 
 ::
 
@@ -1798,14 +1742,15 @@ Given the tests file structure is:
             def test_username_other(other_username):
                 assert other_username == 'other-directly-overridden-username-other'
 
-In the example above, a fixture value is overridden by the test parameter value. Note that the value of the fixture
-can be overridden this way even if the test doesn't use it directly (doesn't mention it in the function prototype).
+В приведенном выше примере значение фикстуры заменяется значением параметра теста. Обратите внимание,
+что значение фикстуры может быть переопределено таким образом, даже если тест не использует его
+напрямую (не упоминает об этом в прототипе функции).
 
 
-Override a parametrized fixture with non-parametrized one and vice versa
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Переопределение параметризованной фикстуры непараметризованной и наоборот
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Given the tests file structure is:
+Учитывая, что структура тестовых файлов:
 
 ::
 
@@ -1850,40 +1795,40 @@ Given the tests file structure is:
             def test_username(non_parametrized_username):
                 assert non_parametrized_username == 'username'
 
-In the example above, a parametrized fixture is overridden with a non-parametrized version, and
-a non-parametrized fixture is overridden with a parametrized version for certain test module.
-The same applies for the test folder level obviously.
+В приведенном выше примере параметризованная фикстура заменяется непараметризованной версией, а
+непараметризованная фикстура заменяется параметризованной версией для определенного тестового модуля.
+То же самое относится и к уровню тестовой папки, что очевидно.
 
 
-Using fixtures from other projects
-----------------------------------
+Использование фикстур из других проектов
+-------------------------------------------
 
-Usually projects that provide pytest support will use :ref:`entry points <setuptools entry points>`,
-so just installing those projects into an environment will make those fixtures available for use.
+Обычно проекты, которые предоставляют поддержку pytest, будут использовать точки входа
+:ref:`entry points <setuptools entry points>`, поэтому простая установка этих проектов в среду
+сделает эти фикстуры доступными для использования.
 
-In case you want to use fixtures from a project that does not use entry points, you can
-define :globalvar:`pytest_plugins` in your top ``conftest.py`` file to register that module
-as a plugin.
+Если вы хотите использовать фикстуры из проекта, который не использует точки входа, вы можете
+определить :globalvar:`pytest_plugins` в вашем верхнем файле ``conftest.py``, чтобы зарегистрировать
+этот модуль как плагин.
 
-Suppose you have some fixtures in ``mylibrary.fixtures`` and you want to reuse them into your
-``app/tests`` directory.
+Предположим, у вас есть фикстуры в ``mylibrary.fixtures``, и вы хотите повторно использовать их в своем
+каталоге ``app/tests``.
 
-All you need to do is to define :globalvar:`pytest_plugins` in ``app/tests/conftest.py``
-pointing to that module.
+Все, что вам нужно сделать, это определить :globalvar:`pytest_plugins` в ``app/tests/conftest.py``
+указывая на этот модуль.
 
 .. code-block:: python
 
     pytest_plugins = "mylibrary.fixtures"
 
-This effectively registers ``mylibrary.fixtures`` as a plugin, making all its fixtures and
-hooks available to tests in ``app/tests``.
+Это регистрирует ``mylibrary.fixtures`` как плагин, делая все его фикстуры и хуки доступными для тестов
+в ``app/tests``..
 
 .. note::
 
-    Sometimes users will *import* fixtures from other projects for use, however this is not
-    recommended: importing fixtures into a module will register them in pytest
-    as *defined* in that module.
+    Иногда пользователи *импортируют* фикстуры из других проектов для использования, однако это не
+    рекомендуется: импорт фикстур в модуль зарегистрирует их в pytest, как *определено* в самом модуле.
 
-    This has minor consequences, such as appearing multiple times in ``pytest --help``,
-    but it is not **recommended** because this behavior might change/stop working
-    in future versions.
+    Это имеет незначительные последствия, такие как многократное появление в ``pytest --help``, но
+    это *не рекомендуется*, поскольку такое поведение может измениться и перестать работать в будущих
+    версиях.
