@@ -1,40 +1,37 @@
 .. _mark:
 
-How to mark test functions with attributes
+Маркировка тестовых функций атрибутами
 ===========================================
 
-By using the ``pytest.mark`` helper you can easily set
-metadata on your test functions. You can find the full list of builtin markers
-in the :ref:`API Reference<marks ref>`. Or you can list all the markers, including
-builtin and custom, using the CLI - :code:`pytest --markers`.
+Используя ``pytest.mark``, вы можете легко передавать метаданные в ваши тестовые функции. Вы можете найти
+полный список встроенных маркеров в :ref:`API Reference<marks ref>`. Или вы можете перечислить все маркеры,
+включая встроенные и настраиваемые, с помощью интерфейса командной строки - :code:`pytest --markers`.
 
-Here are some of the builtin markers:
+Вот некоторые из встроенных маркеров:
 
-* :ref:`usefixtures <usefixtures>` - use fixtures on a test function or class
-* :ref:`filterwarnings <filterwarnings>` - filter certain warnings of a test function
-* :ref:`skip <skip>` - always skip a test function
-* :ref:`skipif <skipif>` - skip a test function if a certain condition is met
-* :ref:`xfail <xfail>` - produce an "expected failure" outcome if a certain
-  condition is met
-* :ref:`parametrize <parametrizemark>` - perform multiple calls
-  to the same test function.
+* :ref:`usefixtures <usefixtures>` - использовать фикстуры в тестовой функции или классе
+* :ref:`filterwarnings <filterwarnings>` - фильтровать определенные предупреждения тестовой функции
+* :ref:`skip <skip>` - всегда пропускать тестовую функцию
+* :ref:`skipif <skipif>` - пропустить тестовую функцию, если выполняется определенное условие
+* :ref:`xfail <xfail>` - помечает тест как  "ожидаемо падающий"(xfail), если выполняется определенное условие
+* :ref:`parametrize <parametrizemark>` - выполнять несколько вызовов одной и той же тестовой функции.
 
-It's easy to create custom markers or to apply markers
-to whole test classes or modules. Those markers can be used by plugins, and also
-are commonly used to :ref:`select tests <mark run>` on the command-line with the ``-m`` option.
+Можно с легкостью создавать собственные маркеры или применять маркеры ко всем тестовым классам или модулям.
+Эти маркеры могут использоваться плагинами, а также обычно используются для отбора тестов
+:ref:`select tests <mark run>` из командной строки с параметром ``-m``.
 
-See :ref:`mark examples` for examples which also serve as documentation.
+См. :ref:`mark examples` для примеров, которые также служат в качестве документации.
 
 .. note::
 
-    Marks can only be applied to tests, having no effect on
+    Маркеры могут применяться только к тестам, не влияя на фикстуры
     :ref:`fixtures <fixtures>`.
 
 
-Registering marks
------------------
+Регистрация маркеров
+----------------------
 
-You can register custom marks in your ``pytest.ini`` file like this:
+Вы можете зарегистрировать пользовательские маркеры в своем файле ``pytest.ini``:
 
 .. code-block:: ini
 
@@ -43,7 +40,7 @@ You can register custom marks in your ``pytest.ini`` file like this:
         slow: marks tests as slow (deselect with '-m "not slow"')
         serial
 
-or in your ``pyproject.toml`` file like this:
+или в файле ``pyproject.toml``:
 
 .. code-block:: toml
 
@@ -53,10 +50,10 @@ or in your ``pyproject.toml`` file like this:
         "serial",
     ]
 
-Note that everything past the ``:`` after the mark name is an optional description.
+Обратите внимание, что все, что находится после ``:`` после имени метки, является необязательным описанием.
 
-Alternatively, you can register new markers programmatically in a
-:ref:`pytest_configure <initialization-hooks>` hook:
+Кроме того, вы можете программно зарегистрировать новые маркеры в хуке
+:ref:`pytest_configure <initialization-hooks>`:
 
 .. code-block:: python
 
@@ -66,23 +63,23 @@ Alternatively, you can register new markers programmatically in a
         )
 
 
-Registered marks appear in pytest's help text and do not emit warnings (see the next section). It
-is recommended that third-party plugins always :ref:`register their markers <registering-markers>`.
+Зарегистрированные маркеры появляются в тексте справки pytest и не вызывают предупреждений (см. следующий
+раздел). Рекомендуется, чтобы сторонние плагины всегда регистрировали свои маркеры
+:ref:`register their markers <registering-markers>`.
 
 .. _unknown-marks:
 
-Raising errors on unknown marks
--------------------------------
+Выявление ошибок на неизвестные маркеры
+-----------------------------------------
 
-Unregistered marks applied with the ``@pytest.mark.name_of_the_mark`` decorator
-will always emit a warning in order to avoid silently doing something
-surprising due to mistyped names. As described in the previous section, you can disable
-the warning for custom marks by registering them in your ``pytest.ini`` file or
-using a custom ``pytest_configure`` hook.
+Незарегистрированные маркеры, применяемые с помощью декоратора ``@pytest.mark.name_of_the_mark``,
+будут всегда генерировать предупреждения. Это сделано, чтобы избежать неожиданностей из-за опечаток.
+В предыдущем разделе рассказано, как отключить генерацию предупреждений для
+настроенных маркеров с помощью регистрации их в ``pytest.ini`` или хуке ``pytest_configure``.
 
-When the ``--strict-markers`` command-line flag is passed, any unknown marks applied
-with the ``@pytest.mark.name_of_the_mark`` decorator will trigger an error. You can
-enforce this validation in your project by adding ``--strict-markers`` to ``addopts``:
+Если применить опцию командной строки ``--strict-markers``, то все неопознанные маркеры,
+используемые декоратором ``@pytest.mark.name_of_the_mark``, будут генерировать ошибку.
+Для своего проекта эту опцию можно применить принудительно, добавив ``--strict-markers`` в ``addopts``.
 
 .. code-block:: ini
 

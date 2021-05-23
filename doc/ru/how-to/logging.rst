@@ -1,18 +1,18 @@
 .. _logging:
 
-How to manage logging
----------------------
+Управление ведением логов
+-------------------------------
 
-pytest captures log messages of level ``WARNING`` or above automatically and displays them in their own section
-for each failed test in the same manner as captured stdout and stderr.
+pytest автоматически захватывает сообщения журнала уровня ``WARNING`` или выше и отображает их в
+отдельном разделе для каждого упавшего теста так же, как захваченные stdout и stderr.
 
-Running without options:
+Запуск без опций:
 
 .. code-block:: bash
 
     pytest
 
-Shows failed tests like so:
+Упавшие тесты выглядят следующим образом:
 
 .. code-block:: pytest
 
@@ -24,18 +24,17 @@ Shows failed tests like so:
     text going to stderr
     ==================== 2 failed in 0.02 seconds =====================
 
-By default each captured log message shows the module, line number, log level
-and message.
+По умолчанию каждое записанное сообщение журнала показывает модуль, номер строки, уровень журнала и сообщение.
 
-If desired the log and date format can be specified to
-anything that the logging module supports by passing specific formatting options:
+При желании можно указать формат журнала и даты для всего, что поддерживает модуль ведения журнала,
+передав определенные параметры форматирования:
 
 .. code-block:: bash
 
     pytest --log-format="%(asctime)s %(levelname)s %(message)s" \
             --log-date-format="%Y-%m-%d %H:%M:%S"
 
-Shows failed tests like so:
+Упавшие тесты выглядят так:
 
 .. code-block:: pytest
 
@@ -47,7 +46,7 @@ Shows failed tests like so:
     text going to stderr
     ==================== 2 failed in 0.02 seconds =====================
 
-These options can also be customized through ``pytest.ini`` file:
+Эти параметры также можно настроить с помощью файла ``pytest.ini``:
 
 .. code-block:: ini
 
@@ -55,19 +54,19 @@ These options can also be customized through ``pytest.ini`` file:
     log_format = %(asctime)s %(levelname)s %(message)s
     log_date_format = %Y-%m-%d %H:%M:%S
 
-Further it is possible to disable reporting of captured content (stdout,
-stderr and logs) on failed tests completely with:
+Кроме того, можно полностью отключить создание отчетов о захваченном контенте (stdout, stderr и журналы)
+о упавших тестах с помощью:
 
 .. code-block:: bash
 
     pytest --show-capture=no
 
 
-caplog fixture
-^^^^^^^^^^^^^^
+Фикстура caplog
+^^^^^^^^^^^^^^^^^
 
-Inside tests it is possible to change the log level for the captured log
-messages.  This is supported by the ``caplog`` fixture:
+Внутри тестов можно изменить уровень логирования для захваченных сообщений журнала. Это поддерживается
+фикстурой ``caplog``:
 
 .. code-block:: python
 
@@ -75,9 +74,8 @@ messages.  This is supported by the ``caplog`` fixture:
         caplog.set_level(logging.INFO)
         pass
 
-By default the level is set on the root logger,
-however as a convenience it is also possible to set the log level of any
-logger:
+По умолчанию уровень установлен в корневом логгере, однако для удобства также можно установить
+уровень журнала любого регистратора:
 
 .. code-block:: python
 
@@ -85,10 +83,9 @@ logger:
         caplog.set_level(logging.CRITICAL, logger="root.baz")
         pass
 
-The log levels set are restored automatically at the end of the test.
+Установленные уровни журнала автоматически восстанавливаются в конце теста.
 
-It is also possible to use a context manager to temporarily change the log
-level inside a ``with`` block:
+Также можно использовать диспетчер контекста для временного изменения уровня лога внутри блока ``with``:
 
 .. code-block:: python
 
@@ -96,8 +93,8 @@ level inside a ``with`` block:
         with caplog.at_level(logging.INFO):
             pass
 
-Again, by default the level of the root logger is affected but the level of any
-logger can be changed instead with:
+Опять же, по умолчанию уровень корневого логера затрагивается, но вместо этого уровень любого
+логера может быть изменен с помощью:
 
 .. code-block:: python
 
@@ -105,9 +102,9 @@ logger can be changed instead with:
         with caplog.at_level(logging.CRITICAL, logger="root.baz"):
             pass
 
-Lastly all the logs sent to the logger during the test run are made available on
-the fixture in the form of both the ``logging.LogRecord`` instances and the final log text.
-This is useful for when you want to assert on the contents of a message:
+Наконец, все журналы, отправленные логеру во время тестового запуска, становятся доступными на
+устройстве в форме как экземпляров ``logging.LogRecord``, так и окончательного текста лога. Это полезно,
+когда вы хотите подтвердить содержимое сообщения:
 
 .. code-block:: python
 
@@ -117,12 +114,11 @@ This is useful for when you want to assert on the contents of a message:
             assert record.levelname != "CRITICAL"
         assert "wally" not in caplog.text
 
-For all the available attributes of the log records see the
-``logging.LogRecord`` class.
+Для всех доступных атрибутов записей журнала см. класс ``logging.LogRecord``.
 
-You can also resort to ``record_tuples`` if all you want to do is to ensure,
-that certain messages have been logged under a given logger name with a given
-severity and message:
+Вы также можете прибегнуть к ``record_tuples``, если все, что вы хотите сделать, это убедиться,
+что определенные сообщения были зарегистрированы под заданным именем регистратора с заданной
+серьезностью и сообщением:
 
 .. code-block:: python
 
@@ -131,7 +127,7 @@ severity and message:
 
         assert caplog.record_tuples == [("root", logging.INFO, "boo arg")]
 
-You can call ``caplog.clear()`` to reset the captured log records in a test:
+Можно вызвать ``caplog.clear()`` для сброса записанных журналов в тесте:
 
 .. code-block:: python
 
@@ -142,13 +138,13 @@ You can call ``caplog.clear()`` to reset the captured log records in a test:
         assert ["Foo"] == [rec.message for rec in caplog.records]
 
 
-The ``caplog.records`` attribute contains records from the current stage only, so
-inside the ``setup`` phase it contains only setup logs, same with the ``call`` and
-``teardown`` phases.
+Атрибут ``caplog.records`` содержит записи только с текущего этапа, поэтому внутри фазы ``настройки`` он
+содержит только журналы настройки, то же самое с фазами ``call`` и ``teardown``.
 
-To access logs from other stages, use the ``caplog.get_records(when)`` method. As an example,
-if you want to make sure that tests which use a certain fixture never log any warnings, you can inspect
-the records for the ``setup`` and ``call`` stages during teardown like so:
+Для доступа к журналам с других этапов используйте метод ``caplog.get_records(when)``. В качестве примера,
+если вы хотите убедиться, что тесты, которые используют определенную фикстуру, никогда не регистрируют
+никаких предупреждений, вы можете проверить записи для этапов ``setup`` и ``call`` во время teardown,
+например:
 
 .. code-block:: python
 
@@ -167,69 +163,62 @@ the records for the ``setup`` and ``call`` stages during teardown like so:
 
 
 
-The full API is available at :class:`_pytest.logging.LogCaptureFixture`.
+Полный API доступен по адресу :class:`_pytest.logging.LogCaptureFixture`.
 
 
 .. _live_logs:
 
-Live Logs
-^^^^^^^^^
+Живые логи
+^^^^^^^^^^^^
 
-By setting the :confval:`log_cli` configuration option to ``true``, pytest will output
-logging records as they are emitted directly into the console.
+Установив для параметра конфигурации :confval:`log_cli` значение ``true``, pytest будет выводить
+записи журнала по мере их отправки непосредственно в консоль.
 
-You can specify the logging level for which log records with equal or higher
-level are printed to the console by passing ``--log-cli-level``. This setting
-accepts the logging level names as seen in python's documentation or an integer
-as the logging level num.
+Вы можете указать уровень ведения журнала, для которого записи журнала того же или более высокого
+уровня будут выводиться на консоль, передав параметр ``--log-cli-level``. Этот параметр принимает имена
+уровней ведения журнала, как показано в документации python, или целое число в качестве номера уровня
+ведения журнала.
 
-Additionally, you can also specify ``--log-cli-format`` and
-``--log-cli-date-format`` which mirror and default to ``--log-format`` and
-``--log-date-format`` if not provided, but are applied only to the console
-logging handler.
+Кроме того, вы также можете указать ``--log-cli-format`` и ``--log-cli-date-format``, которые являются
+зеркальными и по умолчанию используются ``--log-format`` и ``--log-date-format``, если не указан, но
+применяются только к обработчику ведения журнала консоли.
 
-All of the CLI log options can also be set in the configuration INI file. The
-option names are:
+Все параметры журнала CLI также можно установить в файле конфигурации INI. Названия опций:
 
 * ``log_cli_level``
 * ``log_cli_format``
 * ``log_cli_date_format``
 
-If you need to record the whole test suite logging calls to a file, you can pass
-``--log-file=/path/to/log/file``. This log file is opened in write mode which
-means that it will be overwritten at each run tests session.
+Если вам нужно записывать в файл все вызовы журналирования набора тестов, вы можете передать
+``--log-file=/path/to/log/file``. Этот файл журнала открывается в режиме записи, что означает, что он
+будет перезаписываться при каждом запуске сессии тестов.
 
-You can also specify the logging level for the log file by passing
-``--log-file-level``. This setting accepts the logging level names as seen in
-python's documentation(ie, uppercased level names) or an integer as the logging
-level num.
+Вы также можете указать уровень логирования для файла лога, передав параметр ``--log-file-level``.
+Этот параметр принимает имена уровней логирования, как показано в документации Python (т. е. имена
+уровней в верхнем регистре), или целое число в качестве номера уровня ведения журнала.
 
-Additionally, you can also specify ``--log-file-format`` and
-``--log-file-date-format`` which are equal to ``--log-format`` and
-``--log-date-format`` but are applied to the log file logging handler.
+Кроме того, вы также можете указать ``--log-file-format`` и ``--log-file-date-format``, которые равны
+``--log-format`` и ``--log-date-format``, но применяются к обработчику логирования.
 
-All of the log file options can also be set in the configuration INI file. The
-option names are:
+Все параметры файла лога также можно установить в файле конфигурации INI. Названия опций:
 
 * ``log_file``
 * ``log_file_level``
 * ``log_file_format``
 * ``log_file_date_format``
 
-You can call ``set_log_path()`` to customize the log_file path dynamically. This functionality
-is considered **experimental**.
+Вы можете вызвать ``set_log_path()`` для динамической настройки пути лог-файла. Эта функция считается
+**экспериментальной**.
 
 .. _log_release_notes:
 
-Release notes
-^^^^^^^^^^^^^
+Примечания к выпуску
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This feature was introduced as a drop-in replacement for the `pytest-catchlog
-<https://pypi.org/project/pytest-catchlog/>`_ plugin and they conflict
-with each other. The backward compatibility API with ``pytest-capturelog``
-has been dropped when this feature was introduced, so if for that reason you
-still need ``pytest-catchlog`` you can disable the internal feature by
-adding to your ``pytest.ini``:
+Эта фича была введена как замена плагина `pytest-catchlog <https://pypi.org/project/pytest-catchlog/>`_,
+и они конфликтуют друг с другом. API обратной совместимости с ``pytest-capturelog`` было удалено, когда эта
+фича была представлена, поэтому, если по этой причине вам все еще нужен ``pytest-catchlog``, вы можете
+отключить внутреннюю фичу, добавив в свой файл ``pytest.ini``:
 
 .. code-block:: ini
 
@@ -239,25 +228,24 @@ adding to your ``pytest.ini``:
 
 .. _log_changes_3_4:
 
-Incompatible changes in pytest 3.4
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Несовместимые изменения в pytest версии 3.4
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This feature was introduced in ``3.3`` and some **incompatible changes** have been
-made in ``3.4`` after community feedback:
+Эта особенность была представлена в версии 3.3, а некоторые несовместимые изменения были внесены в 3.4 после
+отзывов сообщества:
 
-* Log levels are no longer changed unless explicitly requested by the :confval:`log_level` configuration
-  or ``--log-level`` command-line options. This allows users to configure logger objects themselves.
-  Setting :confval:`log_level` will set the level that is captured globally so if a specific test requires
-  a lower level than this, use the ``caplog.set_level()`` functionality otherwise that test will be prone to
-  failure.
-* :ref:`Live Logs <live_logs>` is now disabled by default and can be enabled setting the
-  :confval:`log_cli` configuration option to ``true``. When enabled, the verbosity is increased so logging for each
-  test is visible.
-* :ref:`Live Logs <live_logs>` are now sent to ``sys.stdout`` and no longer require the ``-s`` command-line option
-  to work.
+* Уровни логирования больше не меняются, если явно не запрошены конфигурацией :confval:`log_level` или
+  параметрами командной строки ``--log-level``. Это позволяет пользователям самостоятельно настраивать объекты
+  логирования. Параметр :confval:`log_level` установит уровень, который фиксируется глобально, поэтому,
+  если для конкретного теста требуется более низкий уровень, чем этот, используйте функцию ``caplog.set_level()``,
+  в противном случае этот тест будет подвержен ошибкам.
+* :ref:`Live Logs <live_logs>` теперь отключен по умолчанию, и его можно включить, установив вариант конфигурации
+  :confval:`log_cli`  в ``true``. Когда этот параметр включен, уровень детализации увеличивается,
+  поэтому логирование для каждого теста можно увидеть.
+* :ref:`Live Logs <live_logs>` теперь отправляется в ``sys.stdout`` и больше не требует параметр командной строки ``-s``.
 
-If you want to partially restore the logging behavior of version ``3.3``, you can add this options to your ``ini``
-file:
+Если вы хотите частично восстановить ведение журнала версии ``3.3``, вы можете добавить эти параметры
+в свой файл ``ini``:
 
 .. code-block:: ini
 
@@ -265,5 +253,5 @@ file:
     log_cli=true
     log_level=NOTSET
 
-More details about the discussion that lead to this changes can be read in
-issue `#3013 <https://github.com/pytest-dev/pytest/issues/3013>`_.
+Подробнее об обсуждениях, которые привели к этим изменениям, можно прочитать в выпуске
+`#3013 <https://github.com/pytest-dev/pytest/issues/3013>`_.

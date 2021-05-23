@@ -1,18 +1,17 @@
 .. _monkeypatching:
 
-How to monkeypatch/mock modules and environments
+Использование monkeypatch/mock модули и окружение
 ================================================================
 
 .. currentmodule:: _pytest.monkeypatch
 
-Sometimes tests need to invoke functionality which depends
-on global settings or which invokes code which cannot be easily
-tested such as network access.  The ``monkeypatch`` fixture
-helps you to safely set/delete an attribute, dictionary item or
-environment variable, or to modify ``sys.path`` for importing.
+Иногда тесты должны вызывать функциональность, которая зависит от глобальных настроек или которая вызывает
+код, который нелегко протестировать, например доступ к сети. Фикстура ``monkeypatch`` помогает вам
+безопасно установить/удалить атрибут, элемент словаря или переменной среды или изменить ``sys.path``
+для импорта.
 
-The ``monkeypatch`` fixture provides these helper methods for safely patching and mocking
-functionality in tests:
+Фикстура ``monkeypatch`` предоставляет эти вспомогательные методы для безопасного исправления и имитации
+функциональности в тестах:
 
 .. code-block:: python
 
@@ -26,18 +25,17 @@ functionality in tests:
     monkeypatch.syspath_prepend(path)
     monkeypatch.chdir(path)
 
-All modifications will be undone after the requesting
-test function or fixture has finished. The ``raising``
-parameter determines if a ``KeyError`` or ``AttributeError``
-will be raised if the target of the set/deletion operation does not exist.
+Все изменения будут отменены после завершения запрашивающей тестовой функции или фикстуры. Параметр
+``raising`` определяет, будет ли возникать ошибка ``KeyError`` или ``AttributeError``, если цель операции
+set/deletion не существует.
 
-Consider the following scenarios:
+Рассмотрим следующие сценарии:
 
-1. Modifying the behavior of a function or the property of a class for a test e.g.
-there is an API call or database connection you will not make for a test but you know
-what the expected output should be. Use :py:meth:`monkeypatch.setattr <MonkeyPatch.setattr>` to patch the
-function or property with your desired testing behavior. This can include your own functions.
-Use :py:meth:`monkeypatch.delattr <MonkeyPatch.delattr>` to remove the function or property for the test.
+1. Изменение поведения функции или свойства класса для теста, например: есть вызов API или соединение с
+базой данных, которое вы не сделаете для теста, но вы знаете, каким должен быть ожидаемый результат.
+Примените :py:meth:`monkeypatch.setattr <MonkeyPatch.setattr>`, чтобы изменить функцию или свойство с
+желаемым поведением тестирования. Это может включать ваши собственные функции.
+Примените :py:meth:`monkeypatch.delattr <MonkeyPatch.delattr>`, чтобы удалить функцию или свойство для тестирования.
 
 2. Modifying the values of dictionaries e.g. you have a global configuration that
 you want to modify for certain test cases. Use :py:meth:`monkeypatch.setitem <MonkeyPatch.setitem>` to patch the
