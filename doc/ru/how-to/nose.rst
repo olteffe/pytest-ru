@@ -1,80 +1,76 @@
 .. _`noseintegration`:
 
-How to run tests written for nose
-=======================================
+Как запускать тесты, написанные для nose
+===========================================
 
-``pytest`` has basic support for running tests written for nose_.
+В ``pytest`` есть базовая поддержка для запуска тестов написанных для nose_.
 
 .. _nosestyle:
 
-Usage
--------------
+Использование
+---------------
 
-After :ref:`installation` type:
+После установки :ref:`installation` вводите:
 
 .. code-block:: bash
 
-    python setup.py develop  # make sure tests can import our package
-    pytest  # instead of 'nosetests'
+    python setup.py develop  # убедитесь, что тесты могут импортировать наш пакет
+    pytest  # вместо 'nosetests'
 
-and you should be able to run your nose style tests and
-make use of pytest's capabilities.
+и вы сможете запускать свои тесты в стиле nose и использовать возможности pytest.
 
-Supported nose Idioms
+Поддержка nose идиом
 ----------------------
 
-* setup and teardown at module/class/method level
-* SkipTest exceptions and markers
-* setup/teardown decorators
-* ``__test__`` attribute on modules/classes/functions
-* general usage of nose utilities
+* setup и teardown на уровне модуля/класса/метода
+* исключения SkipTest и маркеры
+* декораторы setup/teardown
+* атрибут ``__test__`` в модуле/классе/функции
+* общее использование nose утилит
 
-Unsupported idioms / known issues
-----------------------------------
+Не поддерживаемые идиомы / известные проблемы
+------------------------------------------------
 
-- unittest-style ``setUp, tearDown, setUpClass, tearDownClass``
-  are recognized only on ``unittest.TestCase`` classes but not
-  on plain classes.  ``nose`` supports these methods also on plain
-  classes but pytest deliberately does not.  As nose and pytest already
-  both support ``setup_class, teardown_class, setup_method, teardown_method``
-  it doesn't seem useful to duplicate the unittest-API like nose does.
-  If you however rather think pytest should support the unittest-spelling on
-  plain classes please post `to this issue
+- стиль unittest ``setUp, tearDown, setUpClass, tearDownClass``
+  признаются только в классах ``unittest.TestCase``, но не в простых классах.
+  ``nose`` поддерживает эти методы также в простых классах, но
+  pytest намеренно этого не делает. Как nose так и pytest уже оба поддерживают
+  ``setup_class, teardown_class, setup_method, teardown_method`` и
+  не кажется полезным дублировать unittest-API, как это делает nose.
+  Если вы, однако, думаете, что pytest должен поддерживать проверку правописания unittest в простых
+  классах, опубликуйте здесь `to this issue
   <https://github.com/pytest-dev/pytest/issues/377/>`_.
 
-- nose imports test modules with the same import path (e.g.
-  ``tests.test_mode``) but different file system paths
-  (e.g. ``tests/test_mode.py`` and ``other/tests/test_mode.py``)
-  by extending sys.path/import semantics.   pytest does not do that
-  but there is discussion in `#268 <https://github.com/pytest-dev/pytest/issues/268>`_ for adding some support.  Note that
+- nose импортирует тестовые модули с тем же путем импорта(например
+  ``tests.test_mode``), но разные пути в файловой системе
+  (например ``tests/test_mode.py`` и ``other/tests/test_mode.py``)
+  расширяя семантику sys.path/import. pytest не делает это,
+  но есть обсуждение в `#268 <https://github.com/pytest-dev/pytest/issues/268>`_ для добавления поддержки.  Обратите внимание, что
   `nose2 choose to avoid this sys.path/import hackery <https://nose2.readthedocs.io/en/latest/differences.html#test-discovery-and-loading>`_.
 
-  If you place a conftest.py file in the root directory of your project
-  (as determined by pytest) pytest will run tests "nose style" against
-  the code below that directory by adding it to your ``sys.path`` instead of
-  running against your installed code.
+  Если вы поместите файл conftest.py в корневой каталог вашего проекта (как определено в pytest), pytest
+  будет запускать тесты в стиле nose для кода ниже этого каталога, добавляя его в ваш ``sys.path`` вместо
+  запуска вопреки вашего установленного кода.
 
-  You may find yourself wanting to do this if you ran ``python setup.py install``
-  to set up your project, as opposed to ``python setup.py develop`` or any of
-  the package manager equivalents.  Installing with develop in a
-  virtual environment like tox is recommended over this pattern.
+  Вы можете захотеть это сделать, если вы запустите ``python setup.py install``
+  для настройки вашего проекта, в отличие от ``python setup.py develop`` или любой из
+  эквивалентов диспетчера пакетов. Вместо этого шаблона рекомендуется установка с develop
+  в виртуальной среде, такой как tox.
 
-- nose-style doctests are not collected and executed correctly,
-  also doctest fixtures don't work.
+- doctest в стиле nose не собираются и не выполняются правильно,
+  также фикстуры doctest не работают.
 
-- no nose-configuration is recognized.
+- конфигурации nose не распознается.
 
-- ``yield``-based methods are unsupported as of pytest 4.1.0.  They are
-  fundamentally incompatible with pytest because they don't support fixtures
-  properly since collection and test execution are separated.
+- ``yield``-методы не поддерживаются с pytest 4.1.0. Они принципиально несовместимы с pytest, потому
+  что они не поддерживают фикстуры должным образом, так как сборка и выполнение теста разделены.
 
-Migrating from nose to pytest
+Миграция из nose в pytest
 ------------------------------
 
-`nose2pytest <https://github.com/pytest-dev/nose2pytest>`_ is a Python script
-and pytest plugin to help convert Nose-based tests into pytest-based tests.
-Specifically, the script transforms nose.tools.assert_* function calls into
-raw assert statements, while preserving format of original arguments
-as much as possible.
+`nose2pytest <https://github.com/pytest-dev/nose2pytest>`_ - это скрипт Python и плагин pytest,
+помогающие преобразовать тесты на основе nose в тесты на основе pytest. В частности, скрипт преобразует
+вызовы функции nose.tools.assert_* в необработанные операторы assert, максимально сохраняя формат
+исходных аргументов.
 
 .. _nose: https://nose.readthedocs.io/en/latest/
