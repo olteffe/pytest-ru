@@ -2,47 +2,48 @@
 
 .. _skipping:
 
-How to use skip and xfail to deal with tests that cannot succeed
-=================================================================
+Как использовать ``Skip`` и ``xfail`` для работы с тестами, которые не могут быть пройдены
+==============================================================================================
 
-You can mark test functions that cannot be run on certain platforms
-or that you expect to fail so pytest can deal with them accordingly and
-present a summary of the test session, while keeping the test suite *green*.
+Тестовые функции, которые не могут быть запущены на определенных платформах
+или от которых вы ожидаете сбоя, можно пометить так, чтобы ``pytest``
+работал с ними соответствующим образом и представлял сводку сеанса тестирования,
+считая набор тестов пройденным и помечая его *зеленым*.
 
-A **skip** means that you expect your test to pass only if some conditions are met,
-otherwise pytest should skip running the test altogether. Common examples are skipping
-windows-only tests on non-windows platforms, or skipping tests that depend on an external
-resource which is not available at the moment (for example a database).
+**skip** (пропуск) используется в случае, когда вы ожидаете, что ваш тест пройдет
+только при соблюдении некоторых условий, в противном случае ``pytest``
+должен полностью пропустить выполнение теста. Распространенными примерами
+являются пропуск тестов только для windows на платформах, отличных от windows,
+или пропуск тестов, зависящих от внешнего ресурса, который в данный момент
+недоступен (например, базы данных).
 
-An **xfail** means that you expect a test to fail for some reason.
-A common example is a test for a feature not yet implemented, or a bug not yet fixed.
-When a test passes despite being expected to fail (marked with ``pytest.mark.xfail``),
-it's an **xpass** and will be reported in the test summary.
+**xfail** применяется, когда вы ожидаете, что тест по каким-то причинам должен упасть.
+Обычный пример - это тест на еще не реализованную функцию или еще не исправленную ошибку.
+Когда тест, помеченный ``pytest.mark.xfail``, проходит, несмотря на ожидаемое падение,
+в сводке результатов он будет помечен как **xpass**.
 
-``pytest`` counts and lists *skip* and *xfail* tests separately. Detailed
-information about skipped/xfailed tests is not shown by default to avoid
-cluttering the output.  You can use the ``-r`` option to see details
-corresponding to the "short" letters shown in the test progress:
+``pytest`` подсчитывает и перечисляет тесты, помеченные ``skip`` и ``xfail``,
+отдельно. Подробная информация о пропущенных / упавших тестах по умолчанию не отображается,
+чтобы не загромождать выходные данные. Чтобы увидеть детали, соответствующие "коротким" буквам,
+показанным в ходе выполнения теста, можно использовать параметр ``-r``, как показано ниже:
 
 .. code-block:: bash
 
     pytest -rxXs  # show extra info on xfailed, xpassed, and skipped tests
 
-More details on the ``-r`` option can be found by running ``pytest -h``.
+Больше информации о параметре  ``-r`` можно получить, выполнив команду ``pytest -h`` (вызов справки).
 
-(See :ref:`how to change command line options defaults`)
+(См. :ref:`how to change command line options defaults`)
 
 .. _skipif:
 .. _skip:
 .. _`condition booleans`:
 
-Skipping test functions
------------------------
+Пропуск тестовых функций
+---------------------------
 
-
-
-The simplest way to skip a test function is to mark it with the ``skip`` decorator
-which may be passed an optional ``reason``:
+Простейший способ пропустить тестовую функцию - пометить ее декоратором ``skip``,
+которому может быть передана в качестве параметра ``reason`` причина пропуска:
 
 .. code-block:: python
 
@@ -50,9 +51,8 @@ which may be passed an optional ``reason``:
     def test_the_unknown():
         ...
 
-
-Alternatively, it is also possible to skip imperatively during test execution or setup
-by calling the ``pytest.skip(reason)`` function:
+Также можно пропустить тест непосредственно во время выполнения,
+вызвав функцию ``pytest.skip(reason)``:
 
 .. code-block:: python
 
@@ -60,11 +60,10 @@ by calling the ``pytest.skip(reason)`` function:
         if not valid_config():
             pytest.skip("unsupported configuration")
 
-The imperative method is useful when it is not possible to evaluate the skip condition
-during import time.
+Такой способ может быть полезен, когда невозможно определить условие пропуска во время импорта.
 
-It is also possible to skip the whole module using
-``pytest.skip(reason, allow_module_level=True)`` at the module level:
+Можно также пропустить выполнение всего тестового модуля - для этого на уровне модуля
+используется метод ``pytest.skip(reason, allow_module_level = True)``:
 
 .. code-block:: python
 
@@ -80,11 +79,9 @@ It is also possible to skip the whole module using
 ``skipif``
 ~~~~~~~~~~
 
-
-
-If you wish to skip something conditionally then you can use ``skipif`` instead.
-Here is an example of marking a test function to be skipped
-when run on an interpreter earlier than Python3.6:
+Этот декоратор используется, если вы хотите пропускать или не пропускать тесты
+в зависимости от выполнения какого-либо условия. Ниже - пример тестовой функции,
+которую следует пропустить при запуске интерпретатора Python ниже версии 3.6:
 
 .. code-block:: python
 
@@ -95,14 +92,15 @@ when run on an interpreter earlier than Python3.6:
     def test_function():
         ...
 
-If the condition evaluates to ``True`` during collection, the test function will be skipped,
-with the specified reason appearing in the summary when using ``-rs``.
+Если во время сбора данных условие выполняется (принимает значение ``True``) - тестовая
+функция будет пропущена, а указанная причина при использовании параметра ``-rs`` отобразится в отчете.
 
-You can share ``skipif`` markers between modules.  Consider this test module:
+Маркер ``skipif`` можно использовать совместно для нескольких модулей.
+Рассмотрим следующий тестовый модуль:
 
 .. code-block:: python
 
-    # content of test_mymodule.py
+    # листинг test_mymodule.py
     import mymodule
 
     minversion = pytest.mark.skipif(
@@ -114,7 +112,7 @@ You can share ``skipif`` markers between modules.  Consider this test module:
     def test_function():
         ...
 
-You can import the marker and reuse it in another test module:
+Можно импортировать маркер и использовать его в другом тестовом модуле:
 
 .. code-block:: python
 
@@ -126,21 +124,20 @@ You can import the marker and reuse it in another test module:
     def test_anotherfunction():
         ...
 
-For larger test suites it's usually a good idea to have one file
-where you define the markers which you then consistently apply
-throughout your test suite.
+Для больших наборов тестов обычно рекомендуется иметь один файл,
+в котором определяются маркеры, которые затем последовательно применяются во всем наборе тестов.
 
-Alternatively, you can use :ref:`condition strings
-<string conditions>` instead of booleans, but they can't be shared between modules easily
-so they are supported mainly for backward compatibility reasons.
+Кроме того, можно  использовать строки условий :ref:`condition strings <string conditions>` вместо
+логических значений, но их нельзя легко переносить между модулями, поэтому они поддерживаются главным
+образом из соображений обратной совместимости.
 
-**Reference**: :ref:`pytest.mark.skipif ref`
+**Справка**: :ref:`pytest.mark.skipif ref`
 
 
-Skip all test functions of a class or module
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Пропуск всех тестовых функций класса или модуля
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can use the ``skipif`` marker (as any other marker) on classes:
+Маркер ``skipif`` (так же, как и остальные маркеры) можно использовать для класса:
 
 .. code-block:: python
 
@@ -149,71 +146,69 @@ You can use the ``skipif`` marker (as any other marker) on classes:
         def test_function(self):
             "will not be setup or run under 'win32' platform"
 
-If the condition is ``True``, this marker will produce a skip result for
-each of the test methods of that class.
+Если условие ``True``, этот маркер даст результат пропуска для каждого из тестовых методов этого класса.
 
-If you want to skip all test functions of a module, you may use the
-:globalvar:`pytestmark` global:
+Если вы хотите пропустить все тестовые функции модуля, вы можете использовать
+:globalvar:`pytestmark` на глобальном уровне:
 
 .. code-block:: python
 
     # test_module.py
     pytestmark = pytest.mark.skipif(...)
 
-If multiple ``skipif`` decorators are applied to a test function, it
-will be skipped if any of the skip conditions is true.
+Когда к тестовой функции применяется несколько декораторов ``skipif``,
+она будет пропущена, если верно любое из условий пропуска.
 
 .. _`whole class- or module level`: mark.html#scoped-marking
 
 
-Skipping files or directories
+Пропуск файлов и директорий
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Sometimes you may need to skip an entire file or directory, for example if the
-tests rely on Python version-specific features or contain code that you do not
-wish pytest to run. In this case, you must exclude the files and directories
-from collection. Refer to :ref:`customizing-test-collection` for more
-information.
+Иногда может потребоваться пропустить весь файл или каталог, например, если
+тесты основаны на специфических для версии Python функциях или содержат код,
+который вы не хотите запускать  с помощью ``pytest``. В этом случае необходимо
+исключить файлы и каталоги из коллекции. Дополнительную информацию
+смотрите в разделе :ref:`customizing-test-collection`.
 
 
-Skipping on a missing import dependency
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Пропуск тестов в зависимости от успешности импорта
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can skip tests on a missing import by using :ref:`pytest.importorskip ref`
-at module level, within a test, or test setup function.
+Вы можете пропустить тесты в случае неудачного импорта, используя :ref:`pytest.importorskip ref`
+на уровне модуля, в рамках теста или функции настройки теста.
 
 .. code-block:: python
 
     docutils = pytest.importorskip("docutils")
 
-If ``docutils`` cannot be imported here, this will lead to a skip outcome of
-the test. You can also skip based on the version number of a library:
+В данном случае, если  ``docutils`` не будет импортирован, то тест будет пропущен.
+Также можно пропустить тест в зависимости от версии импортируемой библиотеки:
 
 .. code-block:: python
 
     docutils = pytest.importorskip("docutils", minversion="0.3")
 
-The version will be read from the specified
-module's ``__version__`` attribute.
+При этом версия считывается из специального атрибута модуля ``__version__``.
 
-Summary
-~~~~~~~
+Краткая сводка
+~~~~~~~~~~~~~~~~~~~~~
 
-Here's a quick guide on how to skip tests in a module in different situations:
+Вот краткое руководство о том, как пропускать тесты в модуле в разных ситуациях:
 
-1. Skip all tests in a module unconditionally:
+1. Безоговорочно пропустить все тесты в модуле:
 
   .. code-block:: python
 
         pytestmark = pytest.mark.skip("all tests still WIP")
 
-2. Skip all tests in a module based on some condition:
+2. Пропустить все тесты в модуле по некоторому условию:
 
   .. code-block:: python
 
         pytestmark = pytest.mark.skipif(sys.platform == "win32", reason="tests for linux only")
 
-3. Skip all tests in a module if some import is missing:
+3. Пропустить все тесты в модуле, если отсутствует какой-либо импорт:
 
   .. code-block:: python
 
@@ -222,11 +217,10 @@ Here's a quick guide on how to skip tests in a module in different situations:
 
 .. _xfail:
 
-XFail: mark test functions as expected to fail
+XFail: маркируем тесты, которые должны упасть
 ----------------------------------------------
 
-You can use the ``xfail`` marker to indicate that you
-expect a test to fail:
+Маркер ``xfail`` используется для пометки ожидаемо падающих тестов:
 
 .. code-block:: python
 
@@ -234,12 +228,12 @@ expect a test to fail:
     def test_function():
         ...
 
-This test will run but no traceback will be reported when it fails. Instead, terminal
-reporting will list it in the "expected to fail" (``XFAIL``) or "unexpectedly
-passing" (``XPASS``) sections.
+Такой тест будет запущен, но при падении не вызовет сообщения об ошибке.
+В отчете он будет помещен в раздел ожидаемых сбоев (``XFAIL``) или неожиданно
+прошедших (``XPASS``).
 
-Alternatively, you can also mark a test as ``XFAIL`` from within the test or its setup function
-imperatively:
+В качестве альтернативы вы также можете пометить тест как ``XFAIL`` из теста или его функции
+настройки в обязательном порядке:
 
 .. code-block:: python
 
@@ -255,21 +249,21 @@ imperatively:
         if slow_module.slow_function():
             pytest.xfail("slow_module taking too long")
 
-These two examples illustrate situations where you don't want to check for a condition
-at the module level, which is when a condition would otherwise be evaluated for marks.
+Эти два примера иллюстрируют ситуации, когда вы не хотите проверять условие на уровне модуля, когда
+в противном случае условие оценивалось бы на предмет меток.
 
-This will make ``test_function`` ``XFAIL``. Note that no other code is executed after
-the :func:`pytest.xfail` call, differently from the marker. That's because it is implemented
-internally by raising a known exception.
+Это приведет ``test_function`` к ``XFAIL``. Обратите внимание, что никакой другой код не выполняется
+после вызова :func:`pytest.xfail`, в отличие от маркера. Это потому, что это реализовано внутри, вызывая
+известное исключение.
 
-**Reference**: :ref:`pytest.mark.xfail ref`
+**ссылка**: :ref:`pytest.mark.xfail ref`
 
 
-``condition`` parameter
+параметр ``condition``
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-If a test is only expected to fail under a certain condition, you can pass
-that condition as the first parameter:
+Если ожидается, что тест упадет только при определенных условиях, вы можете передать
+это условие в качестве первого параметра:
 
 .. code-block:: python
 
@@ -277,13 +271,13 @@ that condition as the first parameter:
     def test_function():
         ...
 
-Note that you have to pass a reason as well (see the parameter description at
+Обратите внимание, что вы также должны указать причину(см. описание параметра в
 :ref:`pytest.mark.xfail ref`).
 
-``reason`` parameter
+Параметр ``reason``
 ~~~~~~~~~~~~~~~~~~~~
 
-You can specify the motive of an expected failure with the ``reason`` parameter:
+Вы можете указать причину ожидаемого сбоя с помощью параметра ``reason``:
 
 .. code-block:: python
 
@@ -292,11 +286,11 @@ You can specify the motive of an expected failure with the ``reason`` parameter:
         ...
 
 
-``raises`` parameter
+Параметр ``raises``
 ~~~~~~~~~~~~~~~~~~~~
 
-If you want to be more specific as to why the test is failing, you can specify
-a single exception, or a tuple of exceptions, in the ``raises`` argument.
+Если вы хотите уточнить причину сбоя теста, вы можете указать одно исключение или кортеж исключений в
+аргументе ``raises``.
 
 .. code-block:: python
 
@@ -304,14 +298,14 @@ a single exception, or a tuple of exceptions, in the ``raises`` argument.
     def test_function():
         ...
 
-Then the test will be reported as a regular failure if it fails with an
-exception not mentioned in ``raises``.
+В этом случае тест будет объявлен в отчете, как обычный сбой,
+если он не выполняется с исключением, упомянутом в параметре ``raises``.
 
-``run`` parameter
+Параметр ``run``
 ~~~~~~~~~~~~~~~~~
 
-If a test should be marked as xfail and reported as such but should not be
-even executed, use the ``run`` parameter as ``False``:
+Если тест должен быть помечен и учитываться в отчете как маркированный ``xfail``,
+но при этом даже не должен выполняться, можно установить параметр ``run`` в значение ``False``:
 
 .. code-block:: python
 
@@ -319,16 +313,16 @@ even executed, use the ``run`` parameter as ``False``:
     def test_function():
         ...
 
-This is specially useful for xfailing tests that are crashing the interpreter and should be
-investigated later.
+Это особенно полезно для тестов ``xfail``, которые приводят к сбою интерпретатора
+и должны быть исследованы позже.
 
 .. _`xfail strict tutorial`:
 
-``strict`` parameter
+Параметр ``strict``
 ~~~~~~~~~~~~~~~~~~~~
 
-Both ``XFAIL`` and ``XPASS`` don't fail the test suite by default.
-You can change this by setting the ``strict`` keyword-only parameter to ``True``:
+Как ``XFAIL``, так и ``XPASS`` не проваливает набор тестов по умолчанию.
+Вы можете изменить это, установив параметр ``strict`` только для ключевых слов в ``True``:
 
 .. code-block:: python
 
@@ -337,10 +331,11 @@ You can change this by setting the ``strict`` keyword-only parameter to ``True``
         ...
 
 
-This will make ``XPASS`` ("unexpectedly passing") results from this test to fail the test suite.
+Это приведет к тому, что результаты этого теста ``XPASS`` («неожиданно успешно пройдены») не пройдут
+набор тестов.
 
-You can change the default value of the ``strict`` parameter using the
-``xfail_strict`` ini option:
+Вы можете изменить значение по умолчанию для параметра ``strict`` используя ini опцию
+``xfail_strict``:
 
 .. code-block:: ini
 
@@ -348,26 +343,26 @@ You can change the default value of the ``strict`` parameter using the
     xfail_strict=true
 
 
-Ignoring xfail
-~~~~~~~~~~~~~~
+Игнорирование ``xfail``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-By specifying on the commandline:
+Указав в командной строке:
 
 .. code-block:: bash
 
     pytest --runxfail
 
-you can force the running and reporting of an ``xfail`` marked test
-as if it weren't marked at all. This also causes :func:`pytest.xfail` to produce no effect.
+вы можете принудительно запустить тест с пометкой ``xfail`` и сообщить о нем, как если бы он вообще не был
+помечен. Это также приводит к тому, что :func:`pytest.xfail` не производит никакого эффекта.
 
-Examples
+Примеры
 ~~~~~~~~
 
-Here is a simple test file with the several usages:
+Простой тест с несколькими примерами:
 
 .. literalinclude:: /example/xfail_demo.py
 
-Running it with the report-on-xfail option gives this output:
+Запустив его с параметром ``-rx`` (report-on-xfail), получим следующий отчет:
 
 .. code-block:: pytest
 
@@ -397,11 +392,11 @@ Running it with the report-on-xfail option gives this output:
 
 .. _`skip/xfail with parametrize`:
 
-Skip/xfail with parametrize
----------------------------
+``Skip``/``xfail`` с параметризацией
+---------------------------------------------
 
-It is possible to apply markers like skip and xfail to individual
-test instances when using parametrize:
+При использовании параметризации можно применять маркеры, такие как ``skip/xfail``, к отдельным
+тестовым экземплярам:
 
 .. code-block:: python
 

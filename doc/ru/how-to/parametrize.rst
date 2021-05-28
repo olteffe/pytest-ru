@@ -6,41 +6,39 @@
 
 .. _`parametrize-basics`:
 
-How to parametrize fixtures and test functions
+Параметризация фикстур и тестовых функций
 ==========================================================================
 
-pytest enables test parametrization at several levels:
+``pytest`` обеспечивает параметризацию тестовых функций на нескольких уровнях:
 
-- :py:func:`pytest.fixture` allows one to :ref:`parametrize fixture
-  functions <fixture-parametrize>`.
+- :py:func:`pytest.fixture` позволяет :ref:`parametrize fixture functions <fixture-parametrize>`.
 
-* `@pytest.mark.parametrize`_ allows one to define multiple sets of
-  arguments and fixtures at the test function or class.
+* `@pytest.mark.parametrize`_ позволяет определить множество аргументов
+  и фикстур для тестовой функции или класса.
 
-* `pytest_generate_tests`_ allows one to define custom parametrization
-  schemes or extensions.
+* `pytest_generate_tests`_ позволяет определять пользовательские расширения
+  и схемы параметризации.
 
 .. _parametrizemark:
 .. _`@pytest.mark.parametrize`:
 
 
-``@pytest.mark.parametrize``: parametrizing test functions
+``@pytest.mark.parametrize``: параметризация тестовых функций
 ---------------------------------------------------------------------
 
 .. regendoc: wipe
 
 
 
-    Several improvements.
+    Несколько улучшений.
 
-The builtin :ref:`pytest.mark.parametrize ref` decorator enables
-parametrization of arguments for a test function.  Here is a typical example
-of a test function that implements checking that a certain input leads
-to an expected output:
+Встроенный декоратор :ref:`pytest.mark.parametrize ref`
+позволяет параметризовать аргументы тестовых функций. Ниже приведен типичный пример тестовой функции,
+реализующей проверку того, что определенный ввод приводит к ожидаемому выводу:
 
 .. code-block:: python
 
-    # content of test_expectation.py
+    # листинг test_expectation.py
     import pytest
 
 
@@ -48,9 +46,8 @@ to an expected output:
     def test_eval(test_input, expected):
         assert eval(test_input) == expected
 
-Here, the ``@parametrize`` decorator defines three different ``(test_input,expected)``
-tuples so that the ``test_eval`` function will run three times using
-them in turn:
+Здесь декоратор ``@parametrize`` определяет три различных кортежа ``(test_input, expected)``,
+так что функция ``test_eval`` будет запускаться три раза, используя их по очереди:
 
 .. code-block:: pytest
 
@@ -81,43 +78,42 @@ them in turn:
 
 .. note::
 
-    Parameter values are passed as-is to tests (no copy whatsoever).
+    Значения параметров передаются тестам как есть (без копирования).
 
-    For example, if you pass a list or a dict as a parameter value, and
-    the test case code mutates it, the mutations will be reflected in subsequent
-    test case calls.
+    Например, если вы передаете список или словарь в качестве значения параметра, и код тестового кейса
+    изменяет его, мутации будут отражены в последующих вызовах тестового кейса.
 
 .. note::
 
-    pytest by default escapes any non-ascii characters used in unicode strings
-    for the parametrization because it has several downsides.
-    If however you would like to use unicode strings in parametrization
-    and see them in the terminal as is (non-escaped), use this option
-    in your ``pytest.ini``:
+    По умолчанию ``pytest`` экранирует любые не ASCII-символы, которые используются в строках unicode для
+    параметризации, потому что существуют некоторые недостатки. Если вы хотите
+    использовать строки unicode в параметризации и видеть их в терминале
+    как есть (без экранирования), пропишите в файле ``pytest.ini`` следующее:
 
     .. code-block:: ini
 
         [pytest]
         disable_test_id_escaping_and_forfeit_all_rights_to_community_support = True
 
-    Keep in mind however that this might cause unwanted side effects and
-    even bugs depending on the OS used and plugins currently installed,
-    so use it at your own risk.
+    При этом имейте в виду, что в некоторых ОС и при установке некоторых плагинов
+    такое использование может приводить к неожиданным побочным эффектам и даже ошибкам,
+    так что используйте это на свой страх и риск.
 
 
-As designed in this example, only one pair of input/output values fails
-the simple test function.  And as usual with test function arguments,
-you can see the ``input`` and ``output`` values in the traceback.
+В примере выше только одна пара параметров приводит к падению теста.
+И, как обычно, в трассировке можно увидеть входные (``input``)
+и выходные (``output``) значения аргументов функции.
 
-Note that you could also use the parametrize marker on a class or a module
-(see :ref:`mark`) which would invoke several functions with the argument sets.
+Обратите внимание, что маркер ``parametrize``  можно использовать также
+и для классов и  модулей (см. :ref:`mark`)  и это также приведет к вызову
+нескольких функций с разным набором аргументов.
 
-It is also possible to mark individual test instances within parametrize,
-for example with the builtin ``mark.xfail``:
+Также есть возможность пометить отдельные тестовые экземпляры в параметризации,
+например со встроенным ``mark.xfail``:
 
 .. code-block:: python
 
-    # content of test_expectation.py
+    # листинг test_expectation.py
     import pytest
 
 
@@ -128,7 +124,7 @@ for example with the builtin ``mark.xfail``:
     def test_eval(test_input, expected):
         assert eval(test_input) == expected
 
-Let's run this:
+Давайте запустим:
 
 .. code-block:: pytest
 
@@ -143,15 +139,15 @@ Let's run this:
 
     ======================= 2 passed, 1 xfailed in 0.12s =======================
 
-The one parameter set which caused a failure previously now
-shows up as an "xfailed" (expected to fail) test.
+Тот набор параметров, который раньше вызывал сбой, теперь помечается  как
+``xfailed`` (ожидаемое падение).
 
-In case the values provided to ``parametrize`` result in an empty list - for
-example, if they're dynamically generated by some function - the behaviour of
-pytest is defined by the :confval:`empty_parameter_set_mark` option.
+Когда значения, передаваемые при параметризации, оказываются пустым
+списком - например, если они динамически генерируются некоторой
+функцией, то поведение ``pytest`` определяется опцией :confval:`empty_parameter_set_mark`.
 
-To get all combinations of multiple parametrized arguments you can stack
-``parametrize`` decorators:
+Чтобы получить все комбинации нескольких параметризованных аргументов, вы можете складывать
+``parametrize`` декораторы:
 
 .. code-block:: python
 
@@ -163,40 +159,38 @@ To get all combinations of multiple parametrized arguments you can stack
     def test_foo(x, y):
         pass
 
-This will run the test with the arguments set to ``x=0/y=2``, ``x=1/y=2``,
-``x=0/y=3``, and ``x=1/y=3`` exhausting parameters in the order of the decorators.
+Это запустит тест с аргументами, установленными в ``x=0/y=2``, ``x=1/y=2``,
+``x=0/y=3`` и ``x=1/y=3``, используя параметры в порядке следования декораторов.
 
 .. _`pytest_generate_tests`:
 
-Basic ``pytest_generate_tests`` example
+Базовый пример ``pytest_generate_tests``
 ---------------------------------------------
 
-Sometimes you may want to implement your own parametrization scheme
-or implement some dynamism for determining the parameters or scope
-of a fixture.   For this, you can use the ``pytest_generate_tests`` hook
-which is called when collecting a test function.  Through the passed in
-``metafunc`` object you can inspect the requesting test context and, most
-importantly, you can call ``metafunc.parametrize()`` to cause
-parametrization.
+Иногда вам может потребоваться реализовать собственную схему параметризации или  некоторый динамизм
+для определения параметров или области применения фикстуры. Для этого можно использовать hook-функцию
+``pytest_generate_tests``, которая вызывается при сборке тестовой функции.
+Через переданный ``metafunc``-объект можно запросить требуемый контекст тестов
+и, самое главное, можно вызвать ``metafunc.parametrize()`` для параметризации.
 
-For example, let's say we want to run a test taking string inputs which
-we want to set via a new ``pytest`` command line option.  Let's first write
-a simple test accepting a ``stringinput`` fixture function argument:
+Давайте предположим, что мы хотим запустить тест с использованием строковых входных данных, которые
+нужно устанавливать с помощью новой опции командной строки ``pytest``. Давайте сначала напишем
+простой тест, который принимает фикстуру ``stringinput`` в качестве аргумента:
 
 .. code-block:: python
 
-    # content of test_strings.py
+    # листинг test_strings.py
 
 
     def test_valid_string(stringinput):
         assert stringinput.isalpha()
 
-Now we add a ``conftest.py`` file containing the addition of a
-command line option and the parametrization of our test function:
+Затем мы пропишем в файл ``conftest.py`` добавление опции командной строки и параметризацию нашей
+тестовой функции:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
 
 
     def pytest_addoption(parser):
@@ -212,7 +206,7 @@ command line option and the parametrization of our test function:
         if "stringinput" in metafunc.fixturenames:
             metafunc.parametrize("stringinput", metafunc.config.getoption("stringinput"))
 
-If we now pass two stringinput values, our test will run twice:
+Теперь, если мы передадим две входных строки, наш тест будет выполнен дважды:
 
 .. code-block:: pytest
 
@@ -242,11 +236,10 @@ Let's also run with a stringinput that will lead to a failing test:
     FAILED test_strings.py::test_valid_string[!] - AssertionError: assert False
     1 failed in 0.12s
 
-As expected our test function fails.
+Как и ожидалось, наш тест упал.
 
-If you don't specify a stringinput it will be skipped because
-``metafunc.parametrize()`` will be called with an empty parameter
-list:
+Если при запуске вы не укажете строковое значение, то тест будет пропущен, поскольку функция
+``metafunc.parametrize()`` будет вызвана с пустым списком параметров:
 
 .. code-block:: pytest
 
@@ -256,11 +249,10 @@ list:
     SKIPPED [1] test_strings.py: got empty parameter set ['stringinput'], function test_valid_string at $REGENDOC_TMPDIR/test_strings.py:2
     1 skipped in 0.12s
 
-Note that when calling ``metafunc.parametrize`` multiple times with different parameter sets, all parameter names across
-those sets cannot be duplicated, otherwise an error will be raised.
+Обратите внимание, что при многократном вызове ``metafunc.parametrize`` с различными множествами
+параметров, имена параметров в множестве не должны дублироваться, иначе возникнет ошибка.
 
 More examples
 -------------
 
-For further examples, you might want to look at :ref:`more
-parametrization examples <paramexamples>`.
+Больше примеров можно увидеть здесь: :ref:`more parametrization examples <paramexamples>`.

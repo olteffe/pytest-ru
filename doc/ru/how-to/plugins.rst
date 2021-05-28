@@ -2,137 +2,131 @@
 .. _`extplugins`:
 .. _`using plugins`:
 
-How to install and use plugins
-===============================
+Установка и использование плагинов
+======================================
 
-This section talks about installing and using third party plugins.
-For writing your own plugins, please refer to :ref:`writing-plugins`.
+В этом разделе рассказывается об установке и использовании сторонних плагинов. Для написания
+собственных плагинов см. :ref:`writing-plugins`.
 
-Installing a third party plugin can be easily done with ``pip``:
+Установить сторонний плагин можно легко с помощью ``pip``:
 
 .. code-block:: bash
 
     pip install pytest-NAME
     pip uninstall pytest-NAME
 
-If a plugin is installed, ``pytest`` automatically finds and integrates it,
-there is no need to activate it.
+Если плагин установлен, pytest автоматически находит и интегрирует его, активировать его не нужно.
 
-Here is a little annotated list for some popular plugins:
+Вот небольшой аннотированный список некоторых популярных плагинов:
 
 .. _`django`: https://www.djangoproject.com/
 
-* `pytest-django <https://pypi.org/project/pytest-django/>`_: write tests
-  for `django`_ apps, using pytest integration.
+* `pytest-django <https://pypi.org/project/pytest-django/>`_: написание тестов для
+  `django`_ приложений, с использованием интеграции pytest.
 
-* `pytest-twisted <https://pypi.org/project/pytest-twisted/>`_: write tests
-  for `twisted <http://twistedmatrix.com>`_ apps, starting a reactor and
-  processing deferreds from test functions.
+* `pytest-twisted <https://pypi.org/project/pytest-twisted/>`_: написание тестов для
+  `twisted <http://twistedmatrix.com>`_ приложений, запуск реактора и
+  обработка отложенных от тестовых функций.
 
 * `pytest-cov <https://pypi.org/project/pytest-cov/>`__:
-  coverage reporting, compatible with distributed testing
+  отчетность о покрытии, совместимая с распределенным тестированием.
 
 * `pytest-xdist <https://pypi.org/project/pytest-xdist/>`_:
-  to distribute tests to CPUs and remote hosts, to run in boxed
-  mode which allows to survive segmentation faults, to run in
-  looponfailing mode, automatically re-running failing tests
-  on file changes.
+  для распределения тестов по процессорам и удаленным хостам, для работы в коробочном режиме,
+  который позволяет пережить ошибки сегментации, для работы в режиме loopponfailing, автоматического
+  повторного запуска упавших тестов при изменениях файлов.
 
 * `pytest-instafail <https://pypi.org/project/pytest-instafail/>`_:
-  to report failures while the test run is happening.
+  сообщает о сбоях во время тестового прогона.
 
 * `pytest-bdd <https://pypi.org/project/pytest-bdd/>`_:
-  to write tests using behaviour-driven testing.
+  записывает тесты с использованием поведенческого тестирования.
 
 * `pytest-timeout <https://pypi.org/project/pytest-timeout/>`_:
-  to timeout tests based on function marks or global definitions.
+  для проверки тайм-аута на основе функциональных меток или глобальных определений.
 
 * `pytest-pep8 <https://pypi.org/project/pytest-pep8/>`_:
-  a ``--pep8`` option to enable PEP8 compliance checking.
+  опция ``--pep8`` с возможностью включить проверку соответствия по PEP8.
 
 * `pytest-flakes <https://pypi.org/project/pytest-flakes/>`_:
-  check source code with pyflakes.
+  проверка исходного кода с помощью pyflakes.
 
 * `oejskit <https://pypi.org/project/oejskit/>`_:
-  a plugin to run javascript unittests in live browsers.
+  плагин для запуска модульных тестов javascript в реальных браузерах.
 
-To see a complete list of all plugins with their latest testing
-status against different pytest and Python versions, please visit
-:ref:`plugin-list`.
+Чтобы увидеть полный список всех плагинов с их последним статусом тестирования на различных версиях
+pytest и Python, посетите :ref:`plugin-list`.
 
-You may also discover more plugins through a `pytest- pypi.org search`_.
+Вы также можете найти больше плагинов через `pytest- pypi.org search`_.
 
 .. _`pytest- pypi.org search`: https://pypi.org/search/?q=pytest-
 
 
 .. _`available installable plugins`:
 
-Requiring/Loading plugins in a test module or conftest file
------------------------------------------------------------
+Требования/загрузка плагинов в тестовый модуль или файл conftest
+-------------------------------------------------------------------
 
-You can require plugins in a test module or a conftest file using :globalvar:`pytest_plugins`:
+Вы можете затребовать плагины в тестовом модуле или в файле conftest, используя :globalvar:`pytest_plugins`:
 
 .. code-block:: python
 
     pytest_plugins = ("myapp.testsupport.myplugin",)
 
-When the test module or conftest plugin is loaded the specified plugins
-will be loaded as well.
+Когда загружается тестовый модуль или подключаемый модуль conftest, также будут загружены указанные
+подключаемые модули.
 
 .. note::
 
-    Requiring plugins using a ``pytest_plugins`` variable in non-root
-    ``conftest.py`` files is deprecated. See
+    Требование плагинов с использованием ``pytest_plugins`` переменная в некорневом файле
+    ``conftest.py`` устарело. См.
     :ref:`full explanation <requiring plugins in non-root conftests>`
-    in the Writing plugins section.
+    в разделе Написание плагинов.
 
 .. note::
-   The name ``pytest_plugins`` is reserved and should not be used as a
-   name for a custom plugin module.
+   Имя ``pytest_plugins`` зарезервировано и не должно использоваться в качестве имени для настраиваемого
+   модуля плагина.
 
 
 .. _`findpluginname`:
 
-Finding out which plugins are active
+Узнаем, какие плагины активны
 ------------------------------------
 
-If you want to find out which plugins are active in your
-environment you can type:
+Если вы хотите узнать, какие плагины активны в вашей среде, вы можете ввести:
 
 .. code-block:: bash
 
     pytest --trace-config
 
-and will get an extended test header which shows activated plugins
-and their names. It will also print local plugins aka
-:ref:`conftest.py <conftest.py plugins>` files when they are loaded.
+и получите расширенный заголовок теста, который показывает активированные плагины и их названия.
+Также будут напечатаны локальные плагины, известные как файлы :ref:`conftest.py <conftest.py plugins>`,
+когда они загружаются.
 
 .. _`cmdunregister`:
 
-Deactivating / unregistering a plugin by name
----------------------------------------------
+Деактивация / отмена регистрации плагина по имени
+------------------------------------------------------
 
-You can prevent plugins from loading or unregister them:
+Вы можете запретить загрузку плагинов или отменить их регистрацию:
 
 .. code-block:: bash
 
     pytest -p no:NAME
 
-This means that any subsequent try to activate/load the named
-plugin will not work.
+Это означает, что любая последующая попытка активировать загрузку указанного плагина не будет работать.
 
-If you want to unconditionally disable a plugin for a project, you can add
-this option to your ``pytest.ini`` file:
+Если вы хотите безоговорочно отключить плагин для проекта, вы можете добавить эту опцию в свой
+файл ``pytest.ini``:
 
 .. code-block:: ini
 
       [pytest]
       addopts = -p no:NAME
 
-Alternatively to disable it only in certain environments (for example in a
-CI server), you can set ``PYTEST_ADDOPTS`` environment variable to
-``-p no:name``.
+В качестве альтернативы, чтобы отключить его только в определенных средах(например, на сервере CI),
+вы можете установить для переменной среды ``PYTEST_ADDOPTS`` значение ``-p no:name``.
 
-See :ref:`findpluginname` for how to obtain the name of a plugin.
+См. :ref:`findpluginname` как получить имя плагина.
 
 .. _`builtin plugins`:

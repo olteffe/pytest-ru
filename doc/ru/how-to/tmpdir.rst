@@ -2,21 +2,20 @@
 .. _`tmpdir handling`:
 .. _tmpdir:
 
-How to use temporary directories and files in tests
-===================================================
+Использование временных каталогов и файлов в тестах
+=====================================================
 
-The ``tmp_path`` fixture
+Фикстура ``tmp_path``
 ------------------------
 
-You can use the ``tmp_path`` fixture which will
-provide a temporary directory unique to the test invocation,
-created in the `base temporary directory`_.
+Вы можете использовать фикстуру ``tmp_path``, которая предоставит временный каталог, уникальный для
+вызова теста, созданный в `base temporary directory`_.
 
-``tmp_path`` is a :class:`pathlib.Path` object. Here is an example test usage:
+``tmp_path`` это объект :class:`pathlib.Path`. Вот пример использования теста:
 
 .. code-block:: python
 
-    # content of test_tmp_path.py
+    # cлистинг test_tmp_path.py
     CONTENT = "content"
 
 
@@ -29,8 +28,8 @@ created in the `base temporary directory`_.
         assert len(list(tmp_path.iterdir())) == 1
         assert 0
 
-Running this would result in a passed test except for the last
-``assert 0`` line which we use to look at values:
+Запуск приведет к пройденному тесту, за исключением последней строки ``assert 0``, которую мы
+используем для просмотра значений:
 
 .. code-block:: pytest
 
@@ -65,20 +64,20 @@ Running this would result in a passed test except for the last
 
 .. _`tmp_path_factory example`:
 
-The ``tmp_path_factory`` fixture
+Фикстура ``tmp_path_factory``
 --------------------------------
 
-The ``tmp_path_factory`` is a session-scoped fixture which can be used
-to create arbitrary temporary directories from any other fixture or test.
+``tmp_path_factory`` - это фикстура с ограниченным сеансом, которую можно использовать для создания
+произвольных временных каталогов из любой другой фикстуры или теста.
 
-For example, suppose your test suite needs a large image on disk, which is
-generated procedurally. Instead of computing the same image for each test
-that uses it into its own ``tmp_path``, you can generate it once per-session
-to save time:
+Например, предположим, что вашему набору тестов требуется большой образ на диске, который создается
+процедурно. Вместо того, чтобы вычислять один и тот же образ для каждого теста, который использует
+его в своем собственном ``tmp_path``, вы можете сгенерировать его один раз за сеанс, чтобы сэкономить
+время:
 
 .. code-block:: python
 
-    # contents of conftest.py
+    # листинг conftest.py
     import pytest
 
 
@@ -90,38 +89,36 @@ to save time:
         return fn
 
 
-    # contents of test_image.py
+    # листинг test_image.py
     def test_histogram(image_file):
         img = load_image(image_file)
-        # compute and test histogram
+        # вычисление и проверка гистограммы
 
-See :ref:`tmp_path_factory API <tmp_path_factory factory api>` for details.
+См. :ref:`tmp_path_factory API <tmp_path_factory factory api>` для подробностей.
 
 .. _`tmpdir and tmpdir_factory`:
 
-The ``tmpdir`` and ``tmpdir_factory`` fixtures
+Фикстуры ``tmpdir`` и ``tmpdir_factory``
 ---------------------------------------------------
 
-The ``tmpdir`` and ``tmpdir_factory`` fixtures are similar to ``tmp_path``
-and ``tmp_path_factory``, but use/return legacy `py.path.local`_ objects
-rather than standard :class:`pathlib.Path` objects. These days, prefer to
-use ``tmp_path`` and ``tmp_path_factory``.
+Фикстуры ``tmpdir`` и ``tmpdir_factory`` похожи на ``tmp_path``
+и ``tmp_path_factory``, но используют/возвращают устаревшие объекты `py.path.local`_
+а не стандартные объекты :class:`pathlib.Path`. В наши дни предпочитают использовать ``tmp_path`` и
+``tmp_path_factory``.
 
-See :fixture:`tmpdir <tmpdir>` :fixture:`tmpdir_factory <tmpdir_factory>`
-API for details.
+См. :fixture:`tmpdir <tmpdir>` :fixture:`tmpdir_factory <tmpdir_factory>` API для подробностей.
 
 
 .. _`base temporary directory`:
 
-The default base temporary directory
+Базовый временный каталог по умолчанию
 -----------------------------------------------
 
-Temporary directories are by default created as sub-directories of
-the system temporary directory.  The base name will be ``pytest-NUM`` where
-``NUM`` will be incremented with each test run.  Moreover, entries older
-than 3 temporary directories will be removed.
+Временные каталоги по умолчанию создаются как подкаталоги временного системного каталога. Базовое имя
+будет ``pytest-NUM``, где ``NUM`` будет увеличиваться с каждым запуском теста. Кроме того, будут
+удалены записи старше трех временных каталогов.
 
-You can override the default temporary directory setting like this:
+Вы можете переопределить настройку временного каталога по умолчанию следующим образом:
 
 .. code-block:: bash
 
@@ -129,11 +126,11 @@ You can override the default temporary directory setting like this:
 
 .. warning::
 
-    The contents of ``mydir`` will be completely removed, so make sure to use a directory
-    for that purpose only.
+    Содержание ``mydir`` будет полностью удален, поэтому обязательно используйте каталог только для
+    этой цели.
 
-When distributing tests on the local machine using ``pytest-xdist``, care is taken to
-automatically configure a basetemp directory for the sub processes such that all temporary
-data lands below a single per-test run basetemp directory.
+При распространении тестов на локальном компьютере с использованием ``pytest-xdist`` необходимо
+автоматически настроить каталог basetemp для подпроцессов, чтобы все временные данные располагались
+ниже одного каталога basetemp для каждого запуска теста.
 
 .. _`py.path.local`: https://py.readthedocs.io/en/latest/path.html
