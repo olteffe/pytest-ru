@@ -1,99 +1,103 @@
 
 .. _usage:
 
-How to invoke pytest
+Как вызвать pytest
 ==========================================
 
 ..  seealso:: :ref:`Complete pytest command-line flag reference <command-line-flags>`
 
-In general, pytest is invoked with the command ``pytest``. This will execute all tests in all files whose names follow
-the form ``test_*.py`` or ``\*_test.py`` in the current directory and its subdirectories. More generally, pytest
-follows :ref:`standard test discovery rules <test discovery>`.
+Обычно pytest вызывается с помощью команды ``pytest``. Это выполнит все тесты во всех файлах, имена
+которых соответствуют форме ``test_*.py`` или ``\*_test.py`` в текущем каталоге и его подкаталогах.
+В более общем плане pytest следует стандартным тестовым правилам обнаружения :ref:`standard test discovery rules <test discovery>`.
 
 ..  seealso:: :ref:`invoke-other`
 
 
 .. _select-tests:
 
-Specifying which tests to run
+Указание тестов для запуска
 ------------------------------
 
-Pytest supports several ways to run and select tests from the command-line.
+Pytest поддерживает несколько способов запуска и выбора тестов из командной строки.
 
-**Run tests in a module**
+**Запуск тестов в модуле**
 
 .. code-block:: bash
 
     pytest test_mod.py
 
-**Run tests in a directory**
+**Запуск тестов в каталоге**
 
 .. code-block:: bash
 
     pytest testing/
 
-**Run tests by keyword expressions**
+**Запуск тестов по ключевым словам**
 
 .. code-block:: bash
 
     pytest -k "MyClass and not method"
 
-This will run tests which contain names that match the given *string expression* (case-insensitive),
-which can include Python operators that use filenames, class names and function names as variables.
-The example above will run ``TestMyClass.test_something``  but not ``TestMyClass.test_method_simple``.
+Эта команда запустит тесты, имена которых удовлетворяют заданному строковому выражению (без учета
+регистра). Строковые выражения могут включать операторы ``Python``, которые используют имена файлов,
+классов и функций в качестве переменных. В приведенном выше примере будет запущен тест
+``MyClass.test_something``, но не  будет запущен тест ``TestMyClass.test_method_simple``.
 
 .. _nodeids:
 
-**Run tests by node ids**
+**Запуск тестов по идентификаторам узлов**
 
-Each collected test is assigned a unique ``nodeid`` which consist of the module filename followed
-by specifiers like class names, function names and parameters from parametrization, separated by ``::`` characters.
+Каждому собранному тесту присваивается уникальный идентификатор ``nodeid``,
+который состоит из имени файла модуля, за которым следуют спецификаторы,
+такие как имена классов, имена функций и параметры из параметризации, разделенные символами ``::``:
 
-To run a specific test within a module:
+Чтобы запустить конкретный тест из модуля, выполните:
 
 .. code-block:: bash
 
     pytest test_mod.py::test_func
 
 
-Another example specifying a test method in the command line:
+Другой пример указания метода тестирования в командной строке:
 
 .. code-block:: bash
 
     pytest test_mod.py::TestClass::test_method
 
-**Run tests by marker expressions**
+**Запуск маркированных тестов**
 
 .. code-block:: bash
 
     pytest -m slow
 
-Will run all tests which are decorated with the ``@pytest.mark.slow`` decorator.
+Будут запущены тесты, помеченные декоратором ``@pytest.mark.slow``.
 
-For more information see :ref:`marks <mark>`.
+Подробнее см. :ref:`marks <mark>`.
 
-**Run tests from packages**
+**Запуск тестов из пакетов**
 
 .. code-block:: bash
 
     pytest --pyargs pkg.testing
 
-This will import ``pkg.testing`` and use its filesystem location to find and run tests from.
+Будет импортирован пакет ``pkg.testing``, и его расположение в файловой системе
+будет использовано для поиска и запуска тестов.
 
 
-Possible exit codes
+Возможные коды выхода
 --------------------------------------------------------------
 
-Running ``pytest`` can result in six different exit codes:
+Запуск ``pytest`` может привести к шести различным кодам:
 
-:Exit code 0: All tests were collected and passed successfully
-:Exit code 1: Tests were collected and run but some of the tests failed
-:Exit code 2: Test execution was interrupted by the user
-:Exit code 3: Internal error happened while executing tests
-:Exit code 4: pytest command line usage error
-:Exit code 5: No tests were collected
+:Exit code 0: Все тесты собраны и пройдены успешно.
+:Exit code 1: Были собраны и запущены тесты, но некоторые из них не прошли.
+:Exit code 2: Выполнение теста было прервано пользователем.
+:Exit code 3: Произошла внутренняя ошибка при выполнении тестов.
+:Exit code 4: Ошибка использования командной строки pytest.
+:Exit code 5: Никаких тестов не собрано.
 
-They are represented by the :class:`pytest.ExitCode` enum. The exit codes being a part of the public API can be imported and accessed directly using:
+Они перечислены в :class:`pytest.ExitCode`. Выходные коды, являющиеся частью общедоступного API, могут быть
+импортированы и доступны напрямую с помощью:
 
 .. code-block:: python
 
@@ -101,14 +105,12 @@ They are represented by the :class:`pytest.ExitCode` enum. The exit codes being 
 
 .. note::
 
-    If you would like to customize the exit code in some scenarios, specially when
-    no tests are collected, consider using the
-    `pytest-custom_exit_code <https://github.com/yashtodi94/pytest-custom_exit_code>`__
-    plugin.
+    Если вы хотите настроить код выхода в некоторых сценариях, особенно когда тесты не собираются, рассмотрите возможность использования плагина
+    `pytest-custom_exit_code <https://github.com/yashtodi94/pytest-custom_exit_code>`__.
 
 
-Getting help on version, option names, environment variables
---------------------------------------------------------------
+Получение справки по версии, названиям опций, переменным среды
+-----------------------------------------------------------------
 
 .. code-block:: bash
 
@@ -120,60 +122,60 @@ Getting help on version, option names, environment variables
 
 .. _maxfail:
 
-Stopping after the first (or N) failures
+Остановка после первых (или N) падений
 ---------------------------------------------------
 
-To stop the testing process after the first (N) failures:
+Чтобы остановить процесс тестирования после первых N падений, используются параметры:
 
 .. code-block:: bash
 
-    pytest -x           # stop after first failure
-    pytest --maxfail=2  # stop after two failures
+    pytest -x           # остановка после первого упавшего теста
+    pytest --maxfail=2  # остановка после первых двух упавших тестов
 
 
-Managing pytest's output
+Управление выводом pytest
 --------------------------
 
-Modifying Python traceback printing
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Изменение вывода сообщений трассировки
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Examples for modifying traceback printing:
+Примеры вывода:
 
 .. code-block:: bash
 
-    pytest --showlocals # show local variables in tracebacks
-    pytest -l           # show local variables (shortcut)
+    pytest --showlocals # показать локальные переменные в трассировке
+    pytest -l           # показать локальные переменные(краткий вариант)
 
-    pytest --tb=auto    # (default) 'long' tracebacks for the first and last
-                         # entry, but 'short' style for the other entries
-    pytest --tb=long    # exhaustive, informative traceback formatting
-    pytest --tb=short   # shorter traceback format
-    pytest --tb=line    # only one line per failure
-    pytest --tb=native  # Python standard library formatting
-    pytest --tb=no      # no traceback at all
+    pytest --tb=auto    # (по умолчанию) "расширенный" вывод для первого и
+                         # последнего сообщений, и "короткий" для остальных
+    pytest --tb=long    # исчерпывающий, подробный формат сообщений
+    pytest --tb=short   # сокращенный формат сообщений
+    pytest --tb=line    # только одна строка на падение
+    pytest --tb=native  # стандартный формат из библиотеки Python
+    pytest --tb=no      # никаких сообщений
 
-The ``--full-trace`` causes very long traces to be printed on error (longer
-than ``--tb=long``). It also ensures that a stack trace is printed on
-**KeyboardInterrupt** (Ctrl+C).
-This is very useful if the tests are taking too long and you interrupt them
-with Ctrl+C to find out where the tests are *hanging*. By default no output
-will be shown (because KeyboardInterrupt is caught by pytest). By using this
-option you make sure a trace is shown.
+Использование ``--full-trace`` приводит к тому, что при ошибке печатаются очень длинные
+трассировки (длиннее, чем при ``--tb=long``). Параметр также гарантирует, что сообщения
+трассировки будут напечатаны при **прерывании выполнения c клавиатуры** с помощью Ctrl+C.
+Это очень полезно, если тесты занимают слишком много времени, и вы прерываете их
+с клавиатуры с помощью Ctrl+C, чтобы узнать, где они зависли. По умолчанию при прерывании
+вывод не будет показан (поскольку исключение ``KeyboardInterrupt`` будет поймано ``pytest``).
+Используя этот параметр, вы можете быть уверены, что увидите трассировку.
 
 
 Verbosity
 ---------
 
-The ``-v`` flag controls the verbosity of pytest output in various aspects: test session progress, assertion
-details when tests fail, fixtures details with ``--fixtures``, etc.
+Флаг ``-v`` контролирует подробность вывода pytest в различных аспектах: прогресс сеанса тестирования,
+подробности assert, когда тесты падают, детали фикстур с ``--fixtures``, и т.д.
 
 .. regendoc:wipe
 
-Consider this simple file:
+Рассмотрим этот простой файл:
 
 .. code-block:: python
 
-    # content of test_verbosity_example.py
+    # листинг test_verbosity_example.py
     def test_ok():
         pass
 
@@ -194,7 +196,7 @@ Consider this simple file:
         long_text = "Lorem ipsum dolor sit amet " * 10
         assert "hello world" in long_text
 
-Executing pytest normally gives us this output (we are skipping the header to focus on the rest):
+Выполнение pytest обычно дает нам этот результат (мы пропускаем заголовок, чтобы сосредоточиться на остальном):
 
 .. code-block:: pytest
 
@@ -245,15 +247,15 @@ Executing pytest normally gives us this output (we are skipping the header to fo
     FAILED test_verbosity_example.py::test_long_text_fail - AssertionError: a...
     ======================= 3 failed, 1 passed in 0.08s =======================
 
-Notice that:
+Заметьте:
 
-* Each test inside the file is shown by a single character in the output: ``.`` for passing, ``F`` for failure.
-* ``test_words_fail`` failed, and we are shown a short summary indicating the index 2 of the two lists differ.
-* ``test_numbers_fail`` failed, and we are shown a summary of left/right differences on dictionary items. Identical items are omitted.
-* ``test_long_text_fail`` failed, and the right hand side of the ``in`` statement is truncated using ``...```
-  because it is longer than an internal threshold (240 characters currently).
+* Каждый тест внутри файла отображается одним символом в выводе: ``.`` для прохождения, ``F`` для падения.
+* ``test_words_fail`` упал, и нам показывают краткую сводку, указывающую, что индекс 2 в двух списках различается.
+* ``test_numbers_fail`` упал, и нам показана сводка различий между левыми и правыми элементами словаря. Идентичные позиции пропущены.
+* ``test_long_text_fail`` упал, а правая часть оператора ``in`` обрезается с помощью``...``
+  потому что он длиннее внутреннего порога (в настоящее время 240 символов).
 
-Now we can increase pytest's verbosity:
+Теперь мы можем увеличить вывод pytest:
 
 .. code-block:: pytest
 
@@ -314,15 +316,15 @@ Now we can increase pytest's verbosity:
     FAILED test_verbosity_example.py::test_long_text_fail - AssertionError: a...
     ======================= 3 failed, 1 passed in 0.07s =======================
 
-Notice now that:
+Обратите внимание, что:
 
-* Each test inside the file gets its own line in the output.
-* ``test_words_fail`` now shows the two failing lists in full, in addition to which index differs.
-* ``test_numbers_fail`` now shows a text diff of the two dictionaries, truncated.
-* ``test_long_text_fail`` no longer truncates the right hand side of the ``in`` statement, because the internal
-  threshold for truncation is larger now (2400 characters currently).
+* Каждый тест внутри файла получает свою собственную строку на выходе.
+* ``test_words_fail`` теперь показывает два списка ошибок полностью, в дополнение к тому, какой индекс отличается.
+* ``test_numbers_fail`` теперь показывает текстовое различие двух словарей, усеченное.
+* ``test_long_text_fail`` больше не усекает правую часть оператора ``in``, потому что внутренний
+  порог усечения теперь больше (2400 символов в настоящее время).
 
-Now if we increase verbosity even more:
+Теперь, если мы еще больше увеличим многословность:
 
 .. code-block:: pytest
 
@@ -384,37 +386,37 @@ Now if we increase verbosity even more:
     FAILED test_verbosity_example.py::test_long_text_fail - AssertionError: a...
     ======================= 3 failed, 1 passed in 0.07s =======================
 
-Notice now that:
+Обратите внимание, что:
 
-* Each test inside the file gets its own line in the output.
-* ``test_words_fail`` gives the same output as before in this case.
-* ``test_numbers_fail`` now shows a full text diff of the two dictionaries.
-* ``test_long_text_fail`` also doesn't truncate on the right hand side as before, but now pytest won't truncate any
-  text at all, regardless of its size.
+* Каждый тест внутри файла получает свою собственную строку на выходе.
+* ``test_words_fail`` дает тот же результат, что и раньше, в этом случае.
+* ``test_numbers_fail`` теперь показывает полную текстовую разницу двух словарей.
+* ``test_long_text_fail`` также не обрезается с правой стороны, как раньше, но теперь pytest вообще
+не обрезает какой-либо текст, независимо от его размера.
 
-Those were examples of how verbosity affects normal test session output, but verbosity also is used in other
-situations, for example you are shown even fixtures that start with ``_`` if you use ``pytest --fixtures -v``.
+Это были примеры того, как многословность влияет на нормальный вывод тестового сеанса, но многословность также
+используется в других ситуациях, например, вам показаны даже фикстуры, которые начинаются с ``_`` если вы используете ``pytest --fixtures -v``.
 
-Using higher verbosity levels (``-vvv``, ``-vvvv``, ...) is supported, but has no effect in pytest itself at the moment,
-however some plugins might make use of higher verbosity.
+Использование более высоких уровней детализации (``-vvv``, ``-vvvv``, ...) поддерживается, но на данный момент не
+имеет никакого эффекта в самом pytest, однако некоторые плагины могут использовать более высокий уровень детализации.
 
 .. _`pytest.detailed_failed_tests_usage`:
 
-Producing a detailed summary report
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Детализация сводного отчета
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``-r`` flag can be used to display a "short test summary info" at the end of the test session,
-making it easy in large test suites to get a clear picture of all failures, skips, xfails, etc.
+Флаг ``-r`` можно использовать для отображения "краткой сводной информации по тестированию"
+в конце тестового сеанса, что упрощает получение четкой картины всех сбоев, пропусков, xfails и т. д.
 
-It defaults to ``fE`` to list failures and errors.
+По умолчанию для списка сбоев и ошибок используется добавочная комбинация ``fE``.
 
 .. regendoc:wipe
 
-Example:
+Пример:
 
 .. code-block:: python
 
-    # content of test_example.py
+    # листинг test_example.py
     import pytest
 
 
@@ -485,26 +487,27 @@ Example:
     FAILED test_example.py::test_fail - assert 0
     == 1 failed, 1 passed, 1 skipped, 1 xfailed, 1 xpassed, 1 error in 0.12s ===
 
-The ``-r`` options accepts a number of characters after it, with ``a`` used
-above meaning "all except passes".
+Параметр ``-r`` принимает ряд символов после себя. Использованный выше символ ``а`` означает
+“все, кроме успешных".
 
-Here is the full list of available characters that can be used:
+Вот полный список доступных символов, которые могут быть использованы:
 
- - ``f`` - failed
- - ``E`` - error
- - ``s`` - skipped
- - ``x`` - xfailed
- - ``X`` - xpassed
- - ``p`` - passed
- - ``P`` - passed with output
+ - ``f`` - упавшие
+ - ``E`` - ошибки
+ - ``s`` - пропущенные
+ - ``x`` - тесты XFAIL
+ - ``X`` - тесты XPASS
+ - ``p`` - успешные
+ - ``P`` - успешные с выводом
 
-Special characters for (de)selection of groups:
+Есть и специальные символы для пропуска отдельных групп:
 
- - ``a`` - all except ``pP``
- - ``A`` - all
- - ``N`` - none, this can be used to display nothing (since ``fE`` is the default)
+ - ``a`` - выводить все, кроме ``pP``
+ - ``A`` - выводить все
+ - ``N`` - ничего не выводить (может быть полезным, поскольку по умолчанию используется комбинация ``fE``).
 
-More than one character can be used, so for example to only see failed and skipped tests, you can execute:
+Можно использовать более одного символа. Например, для того, чтобы увидеть только
+упавшие и пропущенные тесты, можно выполнить:
 
 .. code-block:: pytest
 
@@ -539,8 +542,8 @@ More than one character can be used, so for example to only see failed and skipp
     SKIPPED [1] test_example.py:22: skipping this test
     == 1 failed, 1 passed, 1 skipped, 1 xfailed, 1 xpassed, 1 error in 0.12s ===
 
-Using ``p`` lists the passing tests, whilst ``P`` adds an extra section "PASSES" with those tests that passed but had
-captured output:
+Использование «p» перечисляет пройденные тесты, в то время как ``p`` добавляет дополнительный раздел «PASSES» с
+теми тестами, которые прошли, но перехватили вывод:
 
 .. code-block:: pytest
 
@@ -579,89 +582,88 @@ captured output:
     == 1 failed, 1 passed, 1 skipped, 1 xfailed, 1 xpassed, 1 error in 0.12s ===
 
 
-Creating resultlog format files
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Создание файлов формата resultlog
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To create plain-text machine-readable result files you can issue:
+Чтобы создать машиночитаемые файлы результатов в виде простого текста, вы можете выполнить:
 
 .. code-block:: bash
 
     pytest --resultlog=path
 
-and look at the content at the ``path`` location.  Such files are used e.g.
-by the `PyPy-test`_ web page to show test results over several revisions.
+и посмотрите на контент в локации ``path``. Такие файлы используются, например, на веб-странице `PyPy-test`_, чтобы
+показать результаты тестирования нескольких ревизий.
 
 .. warning::
 
-    This option is rarely used and is scheduled for removal in pytest 6.0.
+    Этот параметр используется редко и планируется удалить в pytest 6.0.
 
-    If you use this option, consider using the new `pytest-reportlog <https://github.com/pytest-dev/pytest-reportlog>`__ plugin instead.
+    Если вы используете эту опцию, рассмотрите возможность использования нового `pytest-reportlog <https://github.com/pytest-dev/pytest-reportlog>`__ plugin instead.
 
-    See `the deprecation docs <https://docs.pytest.org/en/stable/deprecations.html#result-log-result-log>`__
-    for more information.
+    См. `the deprecation docs <https://docs.pytest.org/en/stable/deprecations.html#result-log-result-log>`__
+    для большей информации.
 
 
 .. _`PyPy-test`: http://buildbot.pypy.org/summary
 
 
-Sending test report to online pastebin service
+Отправка отчетов на сервис pastebin
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Creating a URL for each test failure**:
+**Создание ссылки для каждого упавшего теста**:
 
 .. code-block:: bash
 
     pytest --pastebin=failed
 
-This will submit test run information to a remote Paste service and
-provide a URL for each failure.  You may select tests as usual or add
-for example ``-x`` if you only want to send one particular failure.
+Эта команда отправит информацию о прохождении теста на удаленный сервис регистрации и сгенерирует ссылку для
+каждого падения. Тесты можно отбирать как обычно, или, например, добавить ``-x``, если вы хотите отправить данные
+по конкретному упавшему тесту.
 
-**Creating a URL for a whole test session log**:
+**Создание ссылки для лога тестовой сессии**:
 
 .. code-block:: bash
 
     pytest --pastebin=all
 
-Currently only pasting to the http://bpaste.net service is implemented.
+В настоящее время реализована регистрация только в сервисе http://bpaste.net.
 
 .. versionchanged:: 5.2
 
-If creating the URL fails for any reason, a warning is generated instead of failing the
-entire test suite.
+Если по каким-то причинам не удалось создать ссылку, вместо падения всего тестового набора
+генерируется предупреждение.
 
 
 .. _pdb-option:
 
-Using PDB_ (Python Debugger) with pytest
+Использование PDB_ (отладчика Python) с pytest
 ----------------------------------------------------------
 
-Dropping to PDB_ (Python Debugger) on failures
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Запуск отладчика PDB_ (Python Debugger) при падении тестов
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _PDB: http://docs.python.org/library/pdb.html
 
-Python comes with a builtin Python debugger called PDB_.  ``pytest``
-allows one to drop into the PDB_ prompt via a command line option:
+``python`` содержит встроенный отладчик PDB_ (Python Debugger). ``pytest`` позволяет
+запустить отладчик с помощью параметра командной строки:
 
 .. code-block:: bash
 
     pytest --pdb
 
-This will invoke the Python debugger on every failure (or KeyboardInterrupt).
-Often you might only want to do this for the first failing test to understand
-a certain failure situation:
+Использование параметра позволяет запускать отладчик при каждом падении теста
+(или прерывании его с клавиатуры). Часто хочется сделать это для первого же упавшего теста,
+чтобы понять причину его падения:
 
 .. code-block:: bash
 
-    pytest -x --pdb   # drop to PDB on first failure, then end test session
-    pytest --pdb --maxfail=3  # drop to PDB for first three failures
+    pytest -x --pdb   # вызывает отладчик при первом падении и завершает тестовую сессию
+    pytest --pdb --maxfail=3  # вызывает отладчик для первых трех падений
 
-Note that on any failure the exception information is stored on
-``sys.last_value``, ``sys.last_type`` and ``sys.last_traceback``. In
-interactive use, this allows one to drop into postmortem debugging with
-any debug tool. One can also manually access the exception information,
-for example::
+Обратите внимание, что при любом падении информация об исключении сохраняется в
+``sys.last_value``, ``sys.last_type`` и ``sys.last_traceback``. При интерактивном использовании
+это позволяет перейти к отладке после падения с помощью любого инструмента отладки.
+Можно также вручную получить доступ к информации об исключениях, например::
 
     >>> import sys
     >>> sys.last_traceback.tb_lineno
@@ -672,142 +674,141 @@ for example::
 
 .. _trace-option:
 
-Dropping to PDB_ at the start of a test
+Переход на PDB_ в начале теста
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``pytest`` allows one to drop into the PDB_ prompt immediately at the start of each test via a command line option:
+``pytest`` позволяет сразу запустить отладчик PDB_ в начале каждого теста с помощью параметра командной строки:
 
 .. code-block:: bash
 
     pytest --trace
 
-This will invoke the Python debugger at the start of every test.
+В этом случае отладчик будет вызываться при запуске каждого теста.
 
 .. _breakpoints:
 
-Setting breakpoints
+Установка точек останова
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. versionadded: 2.4.0
 
-To set a breakpoint in your code use the native Python ``import pdb;pdb.set_trace()`` call
-in your code and pytest automatically disables its output capture for that test:
+Чтобы установить точку останова, вызовите в коде ``import pdb;pdb.set_trace()``, и
+``pytest`` автоматически отключит перехват вывода для этого теста, при этом:
 
-* Output capture in other tests is not affected.
-* Any prior test output that has already been captured and will be processed as
-  such.
-* Output capture gets resumed when ending the debugger session (via the
-  ``continue`` command).
+* на перехват вывода в других тестах это не повлияет;
+* весь перехваченный ранее вывод будет обработан как есть;
+* перехват вывода возобновится после завершения отладочной сессии (с помощью команды ``continue``).
 
 
 .. _`breakpoint-builtin`:
 
-Using the builtin breakpoint function
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Использование встроенной функции breakpoint
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Python 3.7 introduces a builtin ``breakpoint()`` function.
-Pytest supports the use of ``breakpoint()`` with the following behaviours:
+``Python 3.7`` содержит встроенную функцию ``breakpoint()``.
+``pytest`` поддерживает использование ``breakpoint()`` следующим образом:
 
- - When ``breakpoint()`` is called and ``PYTHONBREAKPOINT`` is set to the default value, pytest will use the custom internal PDB trace UI instead of the system default ``Pdb``.
- - When tests are complete, the system will default back to the system ``Pdb`` trace UI.
- - With ``--pdb`` passed to pytest, the custom internal Pdb trace UI is used with both ``breakpoint()`` and failed tests/unhandled exceptions.
- - ``--pdbcls`` can be used to specify a custom debugger class.
+ - если вызывается ``breakpoint()``, и при этом переменная ``PYTHONBREAKPOINT`` установлена в
+   значение по умолчанию, ``pytest`` использует расширяемый отладчик PDB_ вместо
+   системного;
+ - когда тестирование будет завершено, система снова будет использовать отладчик ``Pdb`` по умолчанию;
+ - если ``pytest`` вызывается с опцией ``--pdb`` то расширяемый отладчик PDB_ используется
+   как для функции ``breakpoint()``, так и для упавших тестов/необработанных исключений;
+ - для определения пользовательского класса отладчика можно использовать ``--pdbcls``.
 
 
 .. _durations:
 
-Profiling test execution duration
--------------------------------------
+Профилирование продолжительности выполнения теста
+-------------------------------------------------------
 
 .. versionchanged:: 6.0
 
-To get a list of the slowest 10 test durations over 1.0s long:
+Чтобы получить список из 10 самых медленных тестов длительностью более 1,0 с:
 
 .. code-block:: bash
 
     pytest --durations=10 --durations-min=1.0
 
-By default, pytest will not show test durations that are too small (<0.005s) unless ``-vv`` is passed on the command-line.
+По умолчанию pytest не будет показывать слишком малую продолжительность теста (<0,005 с), если в командной строке не передан параметр ``-vv``.
 
 
 .. _faulthandler:
 
-Fault Handler
--------------
+Модуль ``faulthandler``
+-----------------------
 
 .. versionadded:: 5.0
 
-The `faulthandler <https://docs.python.org/3/library/faulthandler.html>`__ standard module
-can be used to dump Python tracebacks on a segfault or after a timeout.
+Стандартный модуль `faulthandler <https://docs.python.org/3/library/faulthandler.html>`__
+можно использовать для сброса трассировок ``Python`` при ошибке или по истечении времени ожидания.
 
-The module is automatically enabled for pytest runs, unless the ``-p no:faulthandler`` is given
-on the command-line.
+При запуске ``pytest`` модуль автоматически подключается, если только в командной строке
+не используется опция ``-p no:faulthandler``.
 
-Also the :confval:`faulthandler_timeout=X<faulthandler_timeout>` configuration option can be used
-to dump the traceback of all threads if a test takes longer than ``X``
-seconds to finish (not available on Windows).
+Также :confval:`faulthandler_timeout=X<faulthandler_timeout>` параметр конфигурации может использоваться
+для сброса трассировки всех потоков, если для завершения теста требуется больше, чем ``X`` секунд
+(недоступно в Windows).
 
 .. note::
 
-    This functionality has been integrated from the external
-    `pytest-faulthandler <https://github.com/pytest-dev/pytest-faulthandler>`__ plugin, with two
-    small differences:
+    Эта функциональность была интегрирована из внешнего плагина
+    `pytest-faulthandler <https://github.com/pytest-dev/pytest-faulthandler>`__ , с двумя небольшими изменениями:
 
-    * To disable it, use ``-p no:faulthandler`` instead of ``--no-faulthandler``: the former
-      can be used with any plugin, so it saves one option.
+    * чтобы ее отключить, используйте ``-p no:faulthandler`` вместо ``--no-faulthandler``: первый может
+      быть использован с любым плагином, так что это экономит один вариант.
 
-    * The ``--faulthandler-timeout`` command-line option has become the
-      :confval:`faulthandler_timeout` configuration option. It can still be configured from
-      the command-line using ``-o faulthandler_timeout=X``.
+    * опция командной строки ``--faulthandler-timeout`` стала вариантом конфигурации
+      :confval:`faulthandler_timeout`. Ее по-прежнему можно настроить из команндной строки,
+      используя ``-o faulthandler_timeout=X``.
 
 
 .. _unraisable:
 
-Warning about unraisable exceptions and unhandled thread exceptions
--------------------------------------------------------------------
+Предупреждение о необрабатываемых исключениях и необработанных исключениях потоков
+--------------------------------------------------------------------------------------
 
 .. versionadded:: 6.2
 
 .. note::
 
-    These features only work on Python>=3.8.
+    Эти функции работают только на Python>=3.8.
 
-Unhandled exceptions are exceptions that are raised in a situation in which
-they cannot propagate to a caller. The most common case is an exception raised
-in a :meth:`__del__ <object.__del__>` implementation.
+Необработанные исключения - это исключения, которые возникают в ситуации, когда они не могут
+быть переданы вызывающему. Чаще всего возникает исключение, возникающее в реализации :meth:`__del__ <object.__del__>`.
 
-Unhandled thread exceptions are exceptions raised in a :class:`~threading.Thread`
-but not handled, causing the thread to terminate uncleanly.
+Необработанные исключения потока - это исключения, которые возникают в :class:`~threading.Thread`,
+но не обрабатываются, вызывая несанкционированное завершение потока.
 
-Both types of exceptions are normally considered bugs, but may go unnoticed
-because they don't cause the program itself to crash. Pytest detects these
-conditions and issues a warning that is visible in the test run summary.
+Оба типа исключений обычно считаются ошибками, но могут остаться незамеченными, потому что они не
+вызывают сбой самой программы. Pytest обнаруживает эти условия и выдает предупреждение, которое
+отображается в сводке тестового запуска.
 
-The plugins are automatically enabled for pytest runs, unless the
-``-p no:unraisableexception`` (for unraisable exceptions) and
-``-p no:threadexception`` (for thread exceptions) options are given on the
-command-line.
+Плагины автоматически включаются для запуска pytest, если только
+``-p no:unraisableexception`` (для неприемлемых исключений) и
+``-p no:threadexception`` (для исключений потоков) параметры указаны в командной строке.
 
-The warnings may be silenced selectively using the :ref:`pytest.mark.filterwarnings ref`
-mark. The warning categories are :class:`pytest.PytestUnraisableExceptionWarning` and
+Предупреждения можно отключить выборочно с помощью меток :ref:`pytest.mark.filterwarnings ref`.
+Категории предупреждений: :class:`pytest.PytestUnraisableExceptionWarning` и
 :class:`pytest.PytestUnhandledThreadExceptionWarning`.
 
 
-Creating JUnitXML format files
+Создание файлов формата JUnitXML
 ----------------------------------------------------
 
-To create result files which can be read by Jenkins_ or other Continuous
-integration servers, use this invocation:
+Чтобы создать результирующие файлы в формате, понятном  Jenkins_
+или другому серверу непрерывной интеграции, используйте вызов:
 
 .. code-block:: bash
 
     pytest --junitxml=path
 
-to create an XML file at ``path``.
+для создания xml-файл по указанному пути ``path``.
 
 
 
-To set the name of the root test suite xml item, you can configure the ``junit_suite_name`` option in your config file:
+Чтобы задать имя корневого xml-элемента для набора тестов, можно настроить параметр
+``junit_suite_name`` в конфигурационном файле:
 
 .. code-block:: ini
 
@@ -816,12 +817,12 @@ To set the name of the root test suite xml item, you can configure the ``junit_s
 
 .. versionadded:: 4.0
 
-JUnit XML specification seems to indicate that ``"time"`` attribute
-should report total test execution times, including setup and teardown
+Спецификация JUnit XML, по-видимому, указывает, что атрибут ``"time"`` должен сообщать
+об общем времени выполнения теста, включая выполнение setup- и teardown- методов
 (`1 <http://windyroad.com.au/dl/Open%20Source/JUnit.xsd>`_, `2
 <https://www.ibm.com/support/knowledgecenter/en/SSQ2R2_14.1.0/com.ibm.rsar.analysis.codereview.cobol.doc/topics/cac_useresults_junit.html>`_).
-It is the default pytest behavior. To report just call durations
-instead, configure the ``junit_duration_report`` option like this:
+Это поведение ``pytest`` по умолчанию. Чтобы вместо этого сообщать только о длительности вызовов,
+настройте параметр ``junit_duration_report`` следующим образом:
 
 .. code-block:: ini
 
@@ -833,8 +834,7 @@ instead, configure the ``junit_duration_report`` option like this:
 record_property
 ~~~~~~~~~~~~~~~~~
 
-If you want to log additional information for a test, you can use the
-``record_property`` fixture:
+Чтобы записать дополнительную информацию для теста, используйте фикстуру ``record_property``:
 
 .. code-block:: python
 
@@ -842,8 +842,7 @@ If you want to log additional information for a test, you can use the
         record_property("example_key", 1)
         assert True
 
-This will add an extra property ``example_key="1"`` to the generated
-``testcase`` tag:
+Такая запись добавит дополнительное свойство ``example_key="1"`` к сгенерированному тегу ``testcase``:
 
 .. code-block:: xml
 
@@ -853,11 +852,11 @@ This will add an extra property ``example_key="1"`` to the generated
       </properties>
     </testcase>
 
-Alternatively, you can integrate this functionality with custom markers:
+Эту функциональность также можно использовать совместно с пользовательскими маркерами:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
 
 
     def pytest_collection_modifyitems(session, config, items):
@@ -866,11 +865,11 @@ Alternatively, you can integrate this functionality with custom markers:
                 test_id = marker.args[0]
                 item.user_properties.append(("test_id", test_id))
 
-And in your tests:
+И в тесте:
 
 .. code-block:: python
 
-    # content of test_function.py
+    # листинг test_function.py
     import pytest
 
 
@@ -878,7 +877,7 @@ And in your tests:
     def test_function():
         assert True
 
-Will result in:
+В результате получится:
 
 .. code-block:: xml
 
@@ -897,8 +896,9 @@ Will result in:
 record_xml_attribute
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-To add an additional xml attribute to a testcase element, you can use
-``record_xml_attribute`` fixture. This can also be used to override existing values:
+Чтобы добавить дополнительный атрибут в элемент ``testcase``, можно использовать
+фикстуру ``record_xml_attribute``. Ее также можно использовать для переопределения
+существующих значений:
 
 .. code-block:: python
 
@@ -908,9 +908,9 @@ To add an additional xml attribute to a testcase element, you can use
         print("hello world")
         assert True
 
-Unlike ``record_property``, this will not add a new child element.
-Instead, this will add an attribute ``assertions="REQ-1234"`` inside the generated
-``testcase`` tag and override the default ``classname`` with ``"classname=custom_classname"``:
+В отличие от ``record_property``, дочерний элемент в данном случае не добавляется.
+Вместо этого в элемент ``testcase`` будет добавлен атрибут ``assertions="REQ-1234"``,
+а значение атрибута ``classname`` по умолчанию будет заменено на ``"classname=custom_classname"``:
 
 .. code-block:: xml
 
@@ -922,16 +922,15 @@ Instead, this will add an attribute ``assertions="REQ-1234"`` inside the generat
 
 .. warning::
 
-    ``record_xml_attribute`` is an experimental feature, and its interface might be replaced
-    by something more powerful and general in future versions. The
-    functionality per-se will be kept, however.
+    ``record_xml_attribute`` пока используется в режиме эксперимента, и в будущем может быть
+    заменен чем-то более мощным и/или общим. Однако сама функциональность как таковая будет сохранена.
 
-    Using this over ``record_xml_property`` can help when using ci tools to parse the xml report.
-    However, some parsers are quite strict about the elements and attributes that are allowed.
-    Many tools use an xsd schema (like the example below) to validate incoming xml.
-    Make sure you are using attribute names that are allowed by your parser.
+    Использование ``record_xml_attribute`` поверх ``record_xml_property``  может помочь при использовании инструментов ci для
+    анализа xml-отчета. Однако некоторые парсеры довольно строго относятся к разрешенным элементам и
+    атрибутам. Многие инструменты используют схему xsd (как в примере ниже) для проверки входящего xml.
+    Убедитесь, что вы используете имена атрибутов, разрешенные вашим парсером.
 
-    Below is the Scheme used by Jenkins to validate the XML report:
+    Ниже представлена схема, которую использует ``Jenkins`` для валидации xml-отчетов:
 
     .. code-block:: xml
 
@@ -954,8 +953,8 @@ Instead, this will add an attribute ``assertions="REQ-1234"`` inside the generat
 
 .. warning::
 
-    Please note that using this feature will break schema verifications for the latest JUnitXML schema.
-    This might be a problem when used with some CI servers.
+    Обратите внимание, что использование этой функции нарушит проверку схемы для последней схемы
+    JUnitXML. Это может быть проблемой при использовании с некоторыми серверами CI.
 
 .. _record_testsuite_property example:
 
@@ -964,11 +963,12 @@ record_testsuite_property
 
 .. versionadded:: 4.5
 
-If you want to add a properties node at the test-suite level, which may contains properties
-that are relevant to all tests, you can use the ``record_testsuite_property`` session-scoped fixture:
+Если вы хотите добавить узел свойств на уровне набора тестов, который может содержать свойства,
+относящиеся ко всем тестам, вы можете использовать фикстуру с привязкой к сеансу
+``record_testsuite_property``:
 
-The ``record_testsuite_property`` session-scoped fixture can be used to add properties relevant
-to all tests.
+Фикстура ``record_testsuite_property`` с привязкой к сеансу может использоваться для добавления свойств,
+относящихся ко всем тестам.
 
 .. code-block:: python
 
@@ -985,8 +985,8 @@ to all tests.
         def test_foo(self):
             assert True
 
-The fixture is a callable which receives ``name`` and ``value`` of a ``<property>`` tag
-added at the test-suite level of the generated xml:
+Этой фикстуре передаются имя (``name``) и значение (``value``) тэга ``<property>``, который
+добавляется на уровне тестового набора для генерируемого xml-файла:
 
 .. code-block:: xml
 
@@ -998,39 +998,38 @@ added at the test-suite level of the generated xml:
       <testcase classname="test_me.TestMe" file="test_me.py" line="16" name="test_foo" time="0.000243663787842"/>
     </testsuite>
 
-``name`` must be a string, ``value`` will be converted to a string and properly xml-escaped.
+``name`` должно быть строкой, а  ``value`` будет преобразовано в строку и корректно экранировано.
 
-The generated XML is compatible with the latest ``xunit`` standard, contrary to `record_property`_
-and `record_xml_attribute`_.
+В отличие от случаев использования `record_property`_ и `record_xml_attribute`_
+созданный xml-файл будет совместим с последним стандартом ``xunit``.
 
 
-Managing loading of plugins
+Управление загрузкой плагинов
 -------------------------------
 
-Early loading plugins
-~~~~~~~~~~~~~~~~~~~~~~~
+Плагины ранней загрузки
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can early-load plugins (internal and external) explicitly in the command-line with the ``-p`` option::
+В командной строке можно явно подгрузить какой-либо внутренний или внешний плагин, используя опцию ``-p``::
 
     pytest -p mypluginmodule
 
-The option receives a ``name`` parameter, which can be:
+Опция принимает параметр ``name``, который может быть:
 
-* A full module dotted name, for example ``myproject.plugins``. This dotted name must be importable.
-* The entry-point name of a plugin. This is the name passed to ``setuptools`` when the plugin is
-  registered. For example to early-load the `pytest-cov <https://pypi.org/project/pytest-cov/>`__ plugin you can use::
+* Полным именем модуля, записанным через точку, например ``myproject.plugins``. Имя должно быть импортируемым.
+* "Входным" именем плагина, которое передается в ``setuptools`` при регистрации плагина. К примеру, чтобы подгрузить
+  `pytest-cov <https://pypi.org/project/pytest-cov/>`__ , нужно использовать::
 
     pytest -p pytest_cov
 
 
-Disabling plugins
-~~~~~~~~~~~~~~~~~~
+Отключение плагинов
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To disable loading specific plugins at invocation time, use the ``-p`` option
-together with the prefix ``no:``.
+Чтобы отключить загрузку определенных плагинов во время вызова, используйте опцию ``-p`` с префиксом ``no:``.
 
-Example: to disable loading the plugin ``doctest``, which is responsible for
-executing doctest tests from text files, invoke pytest like this:
+Пример: чтобы отключить загрузку плагина ``doctest``, который отвечает за выполнение
+тестов из строк "docstring", вызовите  ``pytest`` следующим образом:
 
 .. code-block:: bash
 
@@ -1039,48 +1038,48 @@ executing doctest tests from text files, invoke pytest like this:
 
 .. _invoke-other:
 
-Other ways of calling pytest
+Другие способы вызова pytest
 -----------------------------------------------------
 
 .. _invoke-python:
 
-Calling pytest through ``python -m pytest``
+Вызов pytest через ``python -m pytest``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can invoke testing through the Python interpreter from the command line:
+Вы можете вызвать тестирование через интерпретатор Python из командной строки:
 
 .. code-block:: text
 
     python -m pytest [...]
 
-This is almost equivalent to invoking the command line script ``pytest [...]``
-directly, except that calling via ``python`` will also add the current directory to ``sys.path``.
+Это почти эквивалентно прямому вызову сценария командной строки ``pytest [...]``, за исключением того,
+что вызов через ``python`` также добавит текущий каталог в ``sys.path``.
 
 
 .. _`pytest.main-usage`:
 
-Calling pytest from Python code
+Вызов ``pytest`` из кода Python
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can invoke ``pytest`` from Python code directly:
+``pytest`` можно вызвать прямо в коде Python:
 
 .. code-block:: python
 
     pytest.main()
 
-this acts as if you would call "pytest" from the command line.
-It will not raise ``SystemExit`` but return the exitcode instead.
-You can pass in options and arguments:
+Такой способ эквивалентен вызову "pytest" из командной строки.
+В этом случае вместо исключения ``SystemExit`` возвращается статус завершения.
+Можно также передавать параметры и опции:
 
 .. code-block:: python
 
     pytest.main(["-x", "mytestdir"])
 
-You can specify additional plugins to ``pytest.main``:
+Вы можете указать дополнительные плагины в ``pytest.main``:
 
 .. code-block:: python
 
-    # content of myinvoke.py
+    # листинг myinvoke.py
     import pytest
 
 
@@ -1091,8 +1090,7 @@ You can specify additional plugins to ``pytest.main``:
 
     pytest.main(["-qq"], plugins=[MyPlugin()])
 
-Running it will show that ``MyPlugin`` was added and its
-hook was invoked:
+Запуск покажет, что ``MyPlugin`` был добавлен, и его хук был вызван:
 
 .. code-block:: pytest
 
@@ -1122,11 +1120,10 @@ hook was invoked:
 
 .. note::
 
-    Calling ``pytest.main()`` will result in importing your tests and any modules
-    that they import. Due to the caching mechanism of python's import system,
-    making subsequent calls to ``pytest.main()`` from the same process will not
-    reflect changes to those files between the calls. For this reason, making
-    multiple calls to ``pytest.main()`` from the same process (in order to re-run
-    tests, for example) is not recommended.
+    Вызов ``pytest.main()`` приводит к тому, что импортируются не только тесты,
+    но и все модули, которые они используют. Из-за механизма кэширования импорта
+    ``Python`` последующие вызовы ``pytest.main()`` из того же процесса не будут учитывать
+    изменения в файлах, внесенные между вызовами. Поэтому не рекомендуется многократное
+    использование ``pytest.main()`` в одном и том же процессе (например, при перезапуске тестов).
 
 .. _jenkins: http://jenkins-ci.org/

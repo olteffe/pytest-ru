@@ -2,27 +2,27 @@
 .. _`unittest.TestCase`:
 .. _`unittest`:
 
-How to use ``unittest``-based tests with pytest
-===============================================
+Как использовать тесты на основе ``unittest`` с помощью pytest
+================================================================
 
-``pytest`` supports running Python ``unittest``-based tests out of the box.
-It's meant for leveraging existing ``unittest``-based test suites
-to use pytest as a test runner and also allow to incrementally adapt
-the test suite to take full advantage of pytest's features.
+``pytest`` из коробки поддерживает запуск тестов на основе ``unittest``. Он предназначен для использования
+существующих наборов тестов на основе ``unittest`` для использования pytest в качестве средства запуска
+тестов, а также позволяет постепенно адаптировать набор тестов, чтобы в полной мере использовать
+возможности pytest.
 
-To run an existing ``unittest``-style test suite using ``pytest``, type:
+Для запуска с помощью ``pytest`` наборов тестов в стиле ``unittest`` , напечатайте:
 
 .. code-block:: bash
 
     pytest tests
 
 
-pytest will automatically collect ``unittest.TestCase`` subclasses and
-their ``test`` methods in ``test_*.py`` or ``*_test.py`` files.
+``pytest`` автоматически соберет  подклассы ``unittest.TestCase``и их тестовые методы ``test``
+в файлах ``test_*.py`` или ``*_test.py``.
 
-Almost all ``unittest`` features are supported:
+Поддерживаются почти все особенности ``unittest``:
 
-* ``@unittest.skip`` style decorators;
+* ``@unittest.skip`` декораторы стиля;
 * ``setUp/tearDown``;
 * ``setUpClass/tearDownClass``;
 * ``setUpModule/tearDownModule``;
@@ -30,64 +30,62 @@ Almost all ``unittest`` features are supported:
 .. _`load_tests protocol`: https://docs.python.org/3/library/unittest.html#load-tests-protocol
 .. _`subtests`: https://docs.python.org/3/library/unittest.html#distinguishing-test-iterations-using-subtests
 
-Up to this point pytest does not have support for the following features:
+На текущий момент pytest не поддерживает следующие функции:
 
 * `load_tests protocol`_;
 * `subtests`_;
 
-Benefits out of the box
------------------------
+Преимущества из коробки
+--------------------------
 
-By running your test suite with pytest you can make use of several features,
-in most cases without having to modify existing code:
+Запустив свой набор тестов с помощью pytest, вы можете использовать несколько функций, в большинстве
+случаев без изменения существующего кода:
 
-* Obtain :ref:`more informative tracebacks <tbreportdemo>`;
-* :ref:`stdout and stderr <captures>` capturing;
-* :ref:`Test selection options <select-tests>` using ``-k`` and ``-m`` flags;
+* Получение:ref:`more informative tracebacks <tbreportdemo>`;
+* захват :ref:`stdout and stderr <captures>` ;
+* :ref:`Test selection options <select-tests>` используя флаги ``-k`` и ``-m``;
 * :ref:`maxfail`;
-* :ref:`--pdb <pdb-option>` command-line option for debugging on test failures
-  (see :ref:`note <pdb-unittest-note>` below);
-* Distribute tests to multiple CPUs using the `pytest-xdist <https://pypi.org/project/pytest-xdist/>`_ plugin;
-* Use :ref:`plain assert-statements <assert>` instead of ``self.assert*`` functions (`unittest2pytest
-  <https://pypi.org/project/unittest2pytest/>`__ is immensely helpful in this);
+* :ref:`--pdb <pdb-option>` опция командной строки для отладки при сбоях теста
+  (см. :ref:`note <pdb-unittest-note>` ниже);
+* Распределение тестов на несколько процессоров, используя плагин `pytest-xdist <https://pypi.org/project/pytest-xdist/>`_ ;
+* Использование :ref:`plain assert-statements <assert>` взамен функции ``self.assert*``(`unittest2pytest
+  <https://pypi.org/project/unittest2pytest/>`__ очень помогает в этом);
 
 
-pytest features in ``unittest.TestCase`` subclasses
----------------------------------------------------
+Особенности pytest в подклассах ``unittest.TestCase``
+------------------------------------------------------
 
-The following pytest features work in ``unittest.TestCase`` subclasses:
+Следующие функции pytest работают в подклассах ``unittest.TestCase``:
 
 * :ref:`Marks <mark>`: :ref:`skip <skip>`, :ref:`skipif <skipif>`, :ref:`xfail <xfail>`;
 * :ref:`Auto-use fixtures <mixing-fixtures>`;
 
-The following pytest features **do not** work, and probably
-never will due to different design philosophies:
+Следующие функции pytest **НЕ** работают и, вероятно, никогда не будут работать из-за другой философии дизайна:
 
-* :ref:`Fixtures <fixture>` (except for ``autouse`` fixtures, see :ref:`below <mixing-fixtures>`);
+* :ref:`Fixtures <fixture>` (за исключением фикстур ``autouse``, см. :ref:`below <mixing-fixtures>`);
 * :ref:`Parametrization <parametrize>`;
 * :ref:`Custom hooks <writing-plugins>`;
 
 
-Third party plugins may or may not work well, depending on the plugin and the test suite.
+Сторонние плагины могут работать, а могут и не работать, в зависимости от плагина и набора тестов.
 
 .. _mixing-fixtures:
 
-Mixing pytest fixtures into ``unittest.TestCase`` subclasses using marks
-------------------------------------------------------------------------
+Смешивание фикстур pytest с подклассами ``unittest.TestCase`` с использованием меток
+--------------------------------------------------------------------------------------
 
-Running your unittest with ``pytest`` allows you to use its
-:ref:`fixture mechanism <fixture>` with ``unittest.TestCase`` style
-tests.  Assuming you have at least skimmed the pytest fixture features,
-let's jump-start into an example that integrates a pytest ``db_class``
-fixture, setting up a class-cached database object, and then reference
-it from a unittest-style test:
+Запуск unittest с помощью ``pytest`` позволяет использовать механику фикстур
+:ref:`fixture mechanism <fixture>` с тестами стиля ``unittest.TestCase``. Предполагая, что вы хотя бы
+ознакомились с функциями фикстур pytest, давайте перейдем к примеру, который интегрирует фикстуру
+pytest ``db_class``, настраивает объект базы данных в кэше классов, а затем ссылается на него из
+теста в стиле unittest:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # листинг conftest.py
 
-    # we define a fixture function below and it will be "used" by
-    # referencing its name from tests
+    # мы определяем функцию фикстуры ниже, и она будет "использоваться"
+    # ссылаясь на свое название из тестов
 
     import pytest
 
@@ -97,23 +95,20 @@ it from a unittest-style test:
         class DummyDB:
             pass
 
-        # set a class attribute on the invoking test context
+        # установка атрибута класса в вызывающем тестовом контексте
         request.cls.db = DummyDB()
 
-This defines a fixture function ``db_class`` which - if used - is
-called once for each test class and which sets the class-level
-``db`` attribute to a ``DummyDB`` instance.  The fixture function
-achieves this by receiving a special ``request`` object which gives
-access to :ref:`the requesting test context <request-context>` such
-as the ``cls`` attribute, denoting the class from which the fixture
-is used.  This architecture de-couples fixture writing from actual test
-code and allows re-use of the fixture by a minimal reference, the fixture
-name.  So let's write an actual ``unittest.TestCase`` class using our
-fixture definition:
+Это определяет функцию фикстуры ``db_class``, которая, если она используется, вызывается один раз для
+каждого тестового класса и устанавливает атрибут ``db`` уровня класса в экземпляр ``DummyDB``. Функция фикстуры
+достигает этого, получая специальный объект ``request``, который дает доступ к :ref:`the requesting test context <request-context>`,
+например, атрибуту ``cls``, обозначающему класс, из которого фикстура используется. Эта архитектура
+отделяет написание фикстуры от реального тестового кода и позволяет повторно использовать фикстуру по
+минимальной ссылке - имени фикстуры. Итак, давайте напишем реальный класс ``unittest.TestCase``, используя
+наше определение фикстуры:
 
 .. code-block:: python
 
-    # content of test_unittest_db.py
+    # листинг test_unittest_db.py
 
     import unittest
     import pytest
@@ -123,15 +118,14 @@ fixture definition:
     class MyTest(unittest.TestCase):
         def test_method1(self):
             assert hasattr(self, "db")
-            assert 0, self.db  # fail for demo purposes
+            assert 0, self.db  # падение теста для демонстрационных целей
 
         def test_method2(self):
-            assert 0, self.db  # fail for demo purposes
+            assert 0, self.db  # падение теста для демонстрационных целей
 
-The ``@pytest.mark.usefixtures("db_class")`` class-decorator makes sure that
-the pytest fixture function ``db_class`` is called once per class.
-Due to the deliberately failing assert statements, we can take a look at
-the ``self.db`` values in the traceback:
+Класс-декоратор ``@pytest.mark.usefixtures("db_class")`` гарантирует, что функция фикстуры pytest
+``db_class`` вызывается один раз для каждого класса.
+Из-за преднамеренного падения assert мы можем взглянуть на значения ``self.db`` в трассировке:
 
 .. code-block:: pytest
 
@@ -171,31 +165,28 @@ the ``self.db`` values in the traceback:
     FAILED test_unittest_db.py::MyTest::test_method2 - AssertionError: <conft...
     ============================ 2 failed in 0.12s =============================
 
-This default pytest traceback shows that the two test methods
-share the same ``self.db`` instance which was our intention
-when writing the class-scoped fixture function above.
+Эта трассировка pytest по умолчанию показывает, что два тестовых метода используют один и тот же
+экземпляр ``self.db``, что было нашим намерением при написании функции фикстуры с привязкой к классу выше.
 
 
-Using autouse fixtures and accessing other fixtures
----------------------------------------------------
+Использование фикстур autouse и доступ к другим фикстурам
+--------------------------------------------------------------
 
-Although it's usually better to explicitly declare use of fixtures you need
-for a given test, you may sometimes want to have fixtures that are
-automatically used in a given context.  After all, the traditional
-style of unittest-setup mandates the use of this implicit fixture writing
-and chances are, you are used to it or like it.
+Хотя обычно лучше явно декларировать использование фикстур, необходимых для данного теста, иногда вам
+могут понадобиться фикстуры, которые автоматически используются в данном контексте. В конце
+концов, традиционный стиль установки unittest требует использования этого неявного написания фикстуры,
+и, скорее всего, вы к этому привыкли или вам это нравится.
 
-You can flag fixture functions with ``@pytest.fixture(autouse=True)``
-and define the fixture function in the context where you want it used.
-Let's look at an ``initdir`` fixture which makes all test methods of a
-``TestCase`` class execute in a temporary directory with a
-pre-initialized ``samplefile.ini``.  Our ``initdir`` fixture itself uses
-the pytest builtin :fixture:`tmp_path` fixture to delegate the
-creation of a per-test temporary directory:
+Вы можете пометить функции фикстуры с помощью ``@pytest.fixture(autouse=True)``
+и определить функцию фикстуры в контексте, в котором вы хотите ее использовать.
+Давайте посмотрим на фикстуру ``initdir``, которая заставляет все тестовые методы класса ``TestCase``
+выполняться во временном каталоге с предварительно инициализированным файлом ``samplefile.ini``.
+Наша фикстура ``initdir`` самостоятельно использует встроенную в pytest фикстуру :fixture:`tmp_path`
+для делегирования создания временного каталога для каждого теста:
 
 .. code-block:: python
 
-    # content of test_unittest_cleandir.py
+    # листинг test_unittest_cleandir.py
     import os
     import pytest
     import unittest
@@ -204,7 +195,7 @@ creation of a per-test temporary directory:
     class MyTest(unittest.TestCase):
         @pytest.fixture(autouse=True)
         def initdir(self, tmp_path, monkeypatch):
-            monkeypatch.chdir(tmp_path)  # change to pytest-provided temporary directory
+            monkeypatch.chdir(tmp_path)  # изменение временной директории, предоставленной pytest
             tmp_path.joinpath("samplefile.ini").write_text("# testdata")
 
         def test_method(self):
@@ -212,12 +203,11 @@ creation of a per-test temporary directory:
                 s = f.read()
             assert "testdata" in s
 
-Due to the ``autouse`` flag the ``initdir`` fixture function will be
-used for all methods of the class where it is defined.  This is a
-shortcut for using a ``@pytest.mark.usefixtures("initdir")`` marker
-on the class like in the previous example.
+Из-за флага ``autouse`` функция фикстуры ``initdir`` будет использоваться для всех методов класса, в
+котором она определена.  Это ярлык для использования маркера ``@pytest.mark.usefixtures("initdir")``
+в классе, как в предыдущем примере.
 
-Running this test module ...:
+Запуск этого тестового модуля...:
 
 .. code-block:: pytest
 
@@ -225,29 +215,27 @@ Running this test module ...:
     .                                                                    [100%]
     1 passed in 0.12s
 
-... gives us one passed test because the ``initdir`` fixture function
-was executed ahead of the ``test_method``.
+... дает нам один пройденный тест, потому что функция фикстуры ``initdir`` была выполнена перед
+``test_method``.
 
 .. note::
 
-   ``unittest.TestCase`` methods cannot directly receive fixture
-   arguments as implementing that is likely to inflict
-   on the ability to run general unittest.TestCase test suites.
+   методы ``unittest.TestCase`` не могут напрямую получать аргументы фикстуры как реализацию, которая
+   может повлиять на возможность запуска общего набора тестов unittest.TestCase.
 
-   The above ``usefixtures`` and ``autouse`` examples should help to mix in
-   pytest fixtures into unittest suites.
+   Вышеприведенные примеры ``usefixtures`` и ``autouse`` должны помочь соединении фикстур pytest с
+   наборами unittest.
 
-   You can also gradually move away from subclassing from ``unittest.TestCase`` to *plain asserts*
-   and then start to benefit from the full pytest feature set step by step.
+   Вы также можете постепенно перейти от создания подклассов ``unittest.TestCase`` к *простым assert*,
+   а затем постепенно извлекать пользу из использования полного набора функций pytest.
 
 .. _pdb-unittest-note:
 
 .. note::
 
-    Due to architectural differences between the two frameworks, setup and
-    teardown for ``unittest``-based tests is performed during the ``call`` phase
-    of testing instead of in ``pytest``'s standard ``setup`` and ``teardown``
-    stages. This can be important to understand in some situations, particularly
-    when reasoning about errors. For example, if a ``unittest``-based suite
-    exhibits errors during setup, ``pytest`` will report no errors during its
-    ``setup`` phase and will instead raise the error during ``call``.
+   Из-за архитектурных различий между двумя фреймворками, этапы ``setup`` и ``teardown`` для тестов на
+   основе ``unittest`` выполняется во время фазы ``вызова`` тестирования, а не в стандартной ``setup`` и
+   ``teardown`` ``pytest``. Это может быть важно понимать в некоторых ситуациях, особенно при
+   рассмотрении ошибок. Например, если пакет на основе ``unittest`` обнаруживает ошибки во время
+   ``setup``, ``pytest`` не будет сообщать об ошибках во время фазы ``setup`` и вместо этого вызовет
+   ошибку во время ``вызова``.
