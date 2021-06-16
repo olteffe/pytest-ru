@@ -1,80 +1,74 @@
 .. _`writinghooks`:
 
-Writing hook functions
+Написание хук-функций
 ======================
 
 
 .. _validation:
 
-hook function validation and execution
+Проверка и выполнение хук-функций
 --------------------------------------
 
-pytest calls hook functions from registered plugins for any
-given hook specification.  Let's look at a typical hook function
-for the ``pytest_collection_modifyitems(session, config,
-items)`` hook which pytest calls after collection of all test items is
-completed.
+pytest вызывает хук-функции из зарегистрированных плагинов для любой заданной спецификации хука.
+Давайте посмотрим на типичную хук-функцию ``pytest_collection_modifyitems(session, config,
+items)``, которую pytest вызывает после завершения сбора всех тестовых элементов.
 
-When we implement a ``pytest_collection_modifyitems`` function in our plugin
-pytest will during registration verify that you use argument
-names which match the specification and bail out if not.
+Когда мы реализуем функцию ``pytest_collection_modifyitems`` в нашем плагине, pytest во время
+регистрации будет проверять, что вы используете имена аргументов, которые соответствуют спецификации,
+и выйдет из строя, если нет.
 
 Let's look at a possible implementation:
 
 .. code-block:: python
 
     def pytest_collection_modifyitems(config, items):
-        # called after collection is completed
-        # you can modify the ``items`` list
+        # вызывается после завершения сборки
+        # вы можете изменить список ``items``
         ...
 
-Here, ``pytest`` will pass in ``config`` (the pytest config object)
-and ``items`` (the list of collected test items) but will not pass
-in the ``session`` argument because we didn't list it in the function
-signature.  This dynamic "pruning" of arguments allows ``pytest`` to
-be "future-compatible": we can introduce new hook named parameters without
-breaking the signatures of existing hook implementations.  It is one of
-the reasons for the general long-lived compatibility of pytest plugins.
+Здесь, ``pytest`` передает в ``config`` (объект конфигурации pytest) и ``items`` (список собранных
+тестовых заданий), но не будет передавать аргумент ``session``, потому что мы не указали его в сигнатуре
+функции. Это динамическое «сокращение» аргументов позволяет ``pytest`` быть «совместимым с будущим»:
+мы можем ввести новые именованные параметры хука, не нарушая сигнатуры существующих реализаций хуков.
+Это одна из причин общей долгой совместимости плагинов pytest.
 
-Note that hook functions other than ``pytest_runtest_*`` are not
-allowed to raise exceptions.  Doing so will break the pytest run.
+Обратите внимание, что хук-функциям, отличным от ``pytest_runtest_*``, не разрешено вызывать
+исключения. Это нарушит запуск pytest.
 
 
 
 .. _firstresult:
 
-firstresult: stop at first non-None result
--------------------------------------------
+firstresult: остановиться при первом отличном от None результате
+-------------------------------------------------------------------
 
-Most calls to ``pytest`` hooks result in a **list of results** which contains
-all non-None results of the called hook functions.
+Большинство вызовов хуков ``pytest`` приводят к **списку результатов**, который содержит все отличные
+от None результаты вызываемых хук-функций.
 
-Some hook specifications use the ``firstresult=True`` option so that the hook
-call only executes until the first of N registered functions returns a
-non-None result which is then taken as result of the overall hook call.
-The remaining hook functions will not be called in this case.
+В некоторых спецификациях хуков используется опция ``firstresult=True``, так что вызов хука
+выполняется только до тех пор, пока первая из N зарегистрированных функций не вернет результат,
+отличный от None, который затем принимается как результат общего вызова хука. Остальные хук-функции
+в этом случае не вызываются.
 
 .. _`hookwrapper`:
 
-hookwrapper: executing around other hooks
+hookwrapper: выполнение вокруг других хуков
 -------------------------------------------------
 
 .. currentmodule:: _pytest.core
 
 
 
-pytest plugins can implement hook wrappers which wrap the execution
-of other hook implementations.  A hook wrapper is a generator function
-which yields exactly once. When pytest invokes hooks it first executes
-hook wrappers and passes the same arguments as to the regular hooks.
+Плагины pytest могут реализовывать обертки(wrappers) хуков, которые обертывают выполнение других реализаций хуков.
+Обертка хуков - это функция-генератор, которая возвращает ровно один раз. Когда pytest вызывает хуки,
+он сначала выполняет обертки хуков и передает те же аргументы, что и обычные хуки.
 
-At the yield point of the hook wrapper pytest will execute the next hook
-implementations and return their result to the yield point in the form of
-a :py:class:`Result <pluggy._Result>` instance which encapsulates a result or
-exception info.  The yield point itself will thus typically not raise
-exceptions (unless there are bugs).
+В точке yield обертки хука pytest выполнит следующие реализации хука и вернет
+их результат в точку yield в виде экземпляра :py:class:`Result <pluggy._Result>`, который
+инкапсулирует информацию о результате или исключении. Таким образом, сама точка yield обычно не вызывает
+исключений (если нет ошибок).
 
-Here is an example definition of a hook wrapper:
+Вот пример определения обертки хука:
 
 .. code-block:: python
 
@@ -86,148 +80,142 @@ Here is an example definition of a hook wrapper:
         do_something_before_next_hook_executes()
 
         outcome = yield
-        # outcome.excinfo may be None or a (cls, val, tb) tuple
+        # outcome.excinfo может быть None или (cls, val, tb) кортеж
 
-        res = outcome.get_result()  # will raise if outcome was exception
+        res = outcome.get_result()  # будет вызван, если результатом было исключение
 
         post_process_result(res)
 
-        outcome.force_result(new_res)  # to override the return value to the plugin system
+        outcome.force_result(new_res)  # чтобы переопределить возвращаемое значение в систему плагинов
 
-Note that hook wrappers don't return results themselves, they merely
-perform tracing or other side effects around the actual hook implementations.
-If the result of the underlying hook is a mutable object, they may modify
-that result but it's probably better to avoid it.
+Обратите внимание, что обертки хуков сами по себе не возвращают результаты, они просто выполняют
+трассировку или другие побочные эффекты вокруг фактических реализаций хуков. Если результатом базового
+хука является изменяемый объект, они могут изменить этот результат, но, вероятно, лучше этого избегать.
 
-For more information, consult the
+Для получения дополнительной информации обратитесь к
 :ref:`pluggy documentation about hookwrappers <pluggy:hookwrappers>`.
 
 .. _plugin-hookorder:
 
-Hook function ordering / call example
--------------------------------------
+Пример упорядочивания/вызова хук-функции
+-------------------------------------------------
 
-For any given hook specification there may be more than one
-implementation and we thus generally view ``hook`` execution as a
-``1:N`` function call where ``N`` is the number of registered functions.
-There are ways to influence if a hook implementation comes before or
-after others, i.e.  the position in the ``N``-sized list of functions:
+Для любой данной спецификации хука может быть более одной реализации, и поэтому мы обычно
+рассматриваем выполнение ``хука`` как вызов функции ``1:N``, где ``N`` - количество зарегистрированных функций.
+Есть способы повлиять на то, идет ли реализация хука до или после других, то есть на позицию в списке
+функций размером ``N``:
 
 .. code-block:: python
 
-    # Plugin 1
+    # Плагин 1
     @pytest.hookimpl(tryfirst=True)
     def pytest_collection_modifyitems(items):
-        # will execute as early as possible
+        # выполнится как можно раньше
         ...
 
 
-    # Plugin 2
+    # Плагин 2
     @pytest.hookimpl(trylast=True)
     def pytest_collection_modifyitems(items):
-        # will execute as late as possible
+        # выполнится как можно позже
         ...
 
 
-    # Plugin 3
+    # Плагин 3
     @pytest.hookimpl(hookwrapper=True)
     def pytest_collection_modifyitems(items):
-        # will execute even before the tryfirst one above!
+        # будет выполняться даже до того, как tryfirst выше!
         outcome = yield
-        # will execute after all non-hookwrappers executed
+        # будет выполняться после выполнения всех не hookwrapper
 
-Here is the order of execution:
+Вот порядок исполнения:
 
-1. Plugin3's pytest_collection_modifyitems called until the yield point
-   because it is a hook wrapper.
+1. Pytest_collection_modifyitems Плагина 3 вызывается до точки yield, потому что это обертка хука.
 
-2. Plugin1's pytest_collection_modifyitems is called because it is marked
-   with ``tryfirst=True``.
+2. Pytest_collection_modifyitems Плагина 1 вызывается следующим, потому что он отмечен
+   ``tryfirst=True``.
 
-3. Plugin2's pytest_collection_modifyitems is called because it is marked
-   with ``trylast=True`` (but even without this mark it would come after
-   Plugin1).
+3. pytest_collection_modifyitems Плагина 2 вызывается, потому что он отмечен
+   ``trylast=True`` (но даже без этой отметки это будет после Плагина 1).
 
-4. Plugin3's pytest_collection_modifyitems then executing the code after the yield
-   point.  The yield receives a :py:class:`Result <pluggy._Result>` instance which encapsulates
-   the result from calling the non-wrappers.  Wrappers shall not modify the result.
+4. pytest_collection_modifyitems Плагина 3 затем выполнение кода после точки yield.
+   Yield получает :py:class:`Result <pluggy._Result>` экземпляр, который инкапсулирует
+   результат вызова не-оберток. Обертки не должны изменять результат.
 
-It's possible to use ``tryfirst`` and ``trylast`` also in conjunction with
-``hookwrapper=True`` in which case it will influence the ordering of hookwrappers
-among each other.
+Можно использовать ``tryfirst`` и ``trylast`` также в сочетании с
+``hookwrapper=True``, в этом случае это повлияет на порядок *оборачивания хуков* между собой.
 
 
-Declaring new hooks
+Объявление новых хуков
 ------------------------
 
 .. note::
 
-    This is a quick overview on how to add new hooks and how they work in general, but a more complete
-    overview can be found in `the pluggy documentation <https://pluggy.readthedocs.io/en/latest/>`__.
+    Это краткий обзор того, как добавлять новые хуки и как они работают в целом, но более полный
+    обзор можно найти в `the pluggy documentation <https://pluggy.readthedocs.io/en/latest/>`__.
 
 .. currentmodule:: _pytest.hookspec
 
-Plugins and ``conftest.py`` files may declare new hooks that can then be
-implemented by other plugins in order to alter behaviour or interact with
-the new plugin:
+Плагины и файлы ``conftest.py`` может объявлять новые хуки, которые затем могут быть реализованы
+другими плагинами для изменения поведения или взаимодействия с новым плагином:
 
 .. autofunction:: pytest_addhooks
     :noindex:
 
-Hooks are usually declared as do-nothing functions that contain only
-documentation describing when the hook will be called and what return values
-are expected. The names of the functions must start with `pytest_` otherwise pytest won't recognize them.
+Хуки обычно объявляются как ничего не делающие функции, которые содержат только документацию,
+описывающую, когда будет вызван хук и какие возвращаемые значения ожидаются. Имена функций должны
+начинаться с `pytest_`, иначе pytest их не распознает.
 
-Here's an example. Let's assume this code is in the ``sample_hook.py`` module.
+Вот пример. Предположим, что этот код находится в модуле ``sample_hook.py``.
 
 .. code-block:: python
 
     def pytest_my_hook(config):
         """
-        Receives the pytest config and does things with it
+        Получаем конфигурацию pytest и выполняем с ней определенные действия
         """
 
-To register the hooks with pytest they need to be structured in their own module or class. This
-class or module can then be passed to the ``pluginmanager`` using the ``pytest_addhooks`` function
-(which itself is a hook exposed by pytest).
+Чтобы зарегистрировать хуки в pytest, они должны быть структурированы в собственном модуле или классе.
+Затем этот класс или модуль можно передать в ``pluginmanager`` с помощью функции ``pytest_addhooks``.
+(которая сама является хуком, выставляемым pytest).
 
 .. code-block:: python
 
     def pytest_addhooks(pluginmanager):
-        """ This example assumes the hooks are grouped in the 'sample_hook' module. """
+        """ В данном примере предполагается, что крючки сгруппированы в модуле 'sample_hook'. """
         from my_app.tests import sample_hook
 
         pluginmanager.add_hookspecs(sample_hook)
 
-For a real world example, see `newhooks.py`_ from `xdist <https://github.com/pytest-dev/pytest-xdist>`_.
+Реальные примеры см. в `newhooks.py`_ из `xdist <https://github.com/pytest-dev/pytest-xdist>`_.
 
 .. _`newhooks.py`: https://github.com/pytest-dev/pytest-xdist/blob/974bd566c599dc6a9ea291838c6f226197208b46/xdist/newhooks.py
 
-Hooks may be called both from fixtures or from other hooks. In both cases, hooks are called
-through the ``hook`` object, available in the ``config`` object. Most hooks receive a
-``config`` object directly, while fixtures may use the ``pytestconfig`` fixture which provides the same object.
+Хуки могут быть вызваны из фикстуры или другого хука. В обоих случаях, хуки вызываются через объект
+``hook``, доступный в объекте ``config``. Большинство хуков получают объект ``config`` напрямую,
+в то время как фикстуры могут использовать фикстуру ``pytestconfig``, которая предоставляет тот же объект.
 
 .. code-block:: python
 
     @pytest.fixture()
     def my_fixture(pytestconfig):
-        # call the hook called "pytest_my_hook"
-        # 'result' will be a list of return values from all registered functions.
+        # вызов хука с именем "pytest_my_hook"
+        # 'result' будет списком возвращаемых значений из всех зарегистрированных функций.
         result = pytestconfig.hook.pytest_my_hook(config=pytestconfig)
 
 .. note::
-    Hooks receive parameters using only keyword arguments.
+    Хуки получают параметры, используя только аргументы ключевых слов.
 
-Now your hook is ready to be used. To register a function at the hook, other plugins or users must
-now simply define the function ``pytest_my_hook`` with the correct signature in their ``conftest.py``.
+Теперь ваш хук готов к использованию. Чтобы зарегистрировать функцию в хуке, другие плагины или пользователи должны
+теперь просто определить функцию ``pytest_my_hook`` с правильной сигнатурой в своем ``conftest.py``..
 
-Example:
+Пример:
 
 .. code-block:: python
 
     def pytest_my_hook(config):
         """
-        Print all active hooks to the screen.
+        Вывести все активные хуки на экран.
         """
         print(config.hook)
 
@@ -235,32 +223,31 @@ Example:
 .. _`addoptionhooks`:
 
 
-Using hooks in pytest_addoption
--------------------------------
+Использование хуков в pytest_addoption
+---------------------------------------------
 
-Occasionally, it is necessary to change the way in which command line options
-are defined by one plugin based on hooks in another plugin. For example,
-a plugin may expose a command line option for which another plugin needs
-to define the default value. The pluginmanager can be used to install and
-use hooks to accomplish this. The plugin would define and add the hooks
-and use pytest_addoption as follows:
+Иногда необходимо изменить способ, которым опции командной строки определяются одним плагином на
+основе хуков в другом плагине. Например, плагин может открывать опцию командной строки, для которой
+другой плагин должен определить значение по умолчанию. pluginmanager может быть использован для
+установки и использования хуков. Плагин должен определить и добавить хуки
+и использовать pytest_addoption следующим образом:
 
 .. code-block:: python
 
-   # contents of hooks.py
+   # листинг hooks.py
 
-   # Use firstresult=True because we only want one plugin to define this
-   # default value
+   # Используем firstresult=True потому что мы хотим, чтобы только один плагин определял
+   # это значение по умолчанию
    @hookspec(firstresult=True)
    def pytest_config_file_default_value():
-       """ Return the default value for the config file command line option. """
+       """ Возвращает значение по умолчанию для параметра командной строки файла config. """
 
 
-   # contents of myplugin.py
+   # листинг myplugin.py
 
 
    def pytest_addhooks(pluginmanager):
-       """ This example assumes the hooks are grouped in the 'hooks' module. """
+       """ Этот пример предполагает, что хуки сгруппированы в модуле 'hooks'. """
        from . import hook
 
        pluginmanager.add_hookspecs(hook)
@@ -274,7 +261,7 @@ and use pytest_addoption as follows:
            default=default_value,
        )
 
-The conftest.py that is using myplugin would simply define the hook as follows:
+В файле conftest.py, использующем myplugin, хук будет просто определен следующим образом:
 
 .. code-block:: python
 
@@ -282,32 +269,32 @@ The conftest.py that is using myplugin would simply define the hook as follows:
         return "config.yaml"
 
 
-Optionally using hooks from 3rd party plugins
----------------------------------------------
+Дополнительно можно использовать хуки из сторонних плагинов
+-----------------------------------------------------------
 
-Using new hooks from plugins as explained above might be a little tricky
-because of the standard :ref:`validation mechanism <validation>`:
-if you depend on a plugin that is not installed, validation will fail and
-the error message will not make much sense to your users.
+Использование новых хуков из плагинов, как объяснялось выше, может быть немного затруднительным
+из-за стандартного механизма :ref:`validation mechanism <validation>`:
+если вы зависите от плагина, который не установлен, валидация будет провалена и
+сообщение об ошибке не будет иметь большого смысла для ваших пользователей.
 
-One approach is to defer the hook implementation to a new plugin instead of
-declaring the hook functions directly in your plugin module, for example:
+Один из подходов заключается в том, чтобы отложить реализацию хуков в новый плагин вместо того, чтобы
+объявлять функции хука непосредственно в модуле плагина, например:
 
 .. code-block:: python
 
-    # contents of myplugin.py
+    # листинг myplugin.py
 
 
     class DeferPlugin:
-        """Simple plugin to defer pytest-xdist hook functions."""
+        """Простой плагин для откладывания хук-функции pytest-xdist."""
 
         def pytest_testnodedown(self, node, error):
-            """standard xdist hook function."""
+            """стандартная хук-функция xdist."""
 
 
     def pytest_configure(config):
         if config.pluginmanager.hasplugin("xdist"):
             config.pluginmanager.register(DeferPlugin())
 
-This has the added benefit of allowing you to conditionally install hooks
-depending on which plugins are installed.
+Это имеет дополнительное преимущество, позволяя вам условно устанавливать хуки
+в зависимости от того, какие плагины установлены.

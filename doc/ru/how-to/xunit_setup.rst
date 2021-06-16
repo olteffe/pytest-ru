@@ -2,118 +2,109 @@
 .. _`classic xunit`:
 .. _xunitsetup:
 
-How to implement xunit-style set-up
+Реализация "setup" в стиле ``xunit``
 ========================================
 
-This section describes a classic and popular way how you can implement
-fixtures (setup and teardown test state) on a per-module/class/function basis.
+Этот раздел описывает популярный классический способ реализации
+фикстур ("setup/teardown" методов) на уровнях модулей/классов/функций.
 
 
 .. note::
 
-    While these setup/teardown methods are simple and familiar to those
-    coming from a ``unittest`` or ``nose`` background, you may also consider
-    using pytest's more powerful :ref:`fixture mechanism
-    <fixture>` which leverages the concept of dependency injection, allowing
-    for a more modular and more scalable approach for managing test state,
-    especially for larger projects and for functional testing.  You can
-    mix both fixture mechanisms in the same file but
-    test methods of ``unittest.TestCase`` subclasses
-    cannot receive fixture arguments.
+    Хотя эти методы setup/teardown просты и хорошо знакомы тем, кто уже использовал
+    ``unittest`` или ``nose``, вы также можете рассмотреть применение более мощного механизма фикстур
+    :ref:`fixture mechanism <fixture>` который использует концепцию внедрения зависимостей, позволяя
+    создавать более модальные и масштабируемые тесты, что особенно важно в больших проектах или при
+    функциональном тестировании. В одном и том же файле можно использовать оба механизма,
+    однако нужно иметь в виду, что подклассы ``unittest.TestCase`` не способны принимать аргументы-фикстуры.
 
 
-Module level setup/teardown
+Уровень модуля setup/teardown
 --------------------------------------
 
-If you have multiple test functions and test classes in a single
-module you can optionally implement the following fixture methods
-which will usually be called once for all the functions:
+Если у вас есть несколько тестовых функций и тестовых классов в одном
+вы можете дополнительно реализовать следующие фикстуры, которые обычно вызываются один раз для
+всех функций:
 
 .. code-block:: python
 
     def setup_module(module):
-        """ setup any state specific to the execution of the given module."""
+        """ настройка любых состояний, специфичных для выполнения этого модуля """
 
 
     def teardown_module(module):
-        """teardown any state that was previously setup with a setup_module
-        method.
-        """
+        """teardown любого состояния, которое ранее было настроено с помощью метода setup_module. """
 
-As of pytest-3.0, the ``module`` parameter is optional.
+С версии pytest-3.0, параметр ``module`` не обязателен.
 
-Class level setup/teardown
+Setup/teardown уровня класса
 ----------------------------------
 
-Similarly, the following methods are called at class level before
-and after all test methods of the class are called:
+Аналогичные методы существуют и на уровне класса- они будут вызваны до и после всех тестовых
+методов класса:
 
 .. code-block:: python
 
     @classmethod
     def setup_class(cls):
-        """setup any state specific to the execution of the given class (which
-        usually contains tests).
+        """ настройка любых состояний, специфичных для выполнения этого класса (который обычно содержит тесты).
         """
 
 
     @classmethod
     def teardown_class(cls):
-        """teardown any state that was previously setup with a call to
+        """очистка(teardown) любых состояний, настроенных ранее с помощью метода
         setup_class.
         """
 
-Method and function level setup/teardown
+"setup/teardown" для функций и методов
 -----------------------------------------------
 
-Similarly, the following methods are called around each method invocation:
+Аналогично, следующими методами можно "обернуть" каждый вызов метода класса:
 
 .. code-block:: python
 
     def setup_method(self, method):
-        """setup any state tied to the execution of the given method in a
-        class.  setup_method is invoked for every test method of a class.
+        """ настройка любого состояния, связанного с выполнением этого метода класса.
+        setup_method вызывается для каждого метода класса.
         """
 
 
     def teardown_method(self, method):
-        """teardown any state that was previously setup with a setup_method
-        call.
+        """ очистка любого состояния, настроенного ранее с помощью вызова setup_method
         """
 
-As of pytest-3.0, the ``method`` parameter is optional.
+С версии pytest-3.0, параметр ``method`` не обязателен.
 
-If you would rather define test functions directly at module level
-you can also use the following functions to implement fixtures:
+Если же вы предпочитаете определять тестовые функции на уровне модуля(без разнесения по классам),
+для них тоже можно реализовать фикстуры:
 
 .. code-block:: python
 
     def setup_function(function):
-        """setup any state tied to the execution of the given function.
-        Invoked for every test function in the module.
+        """ настройка любого состояния, связанного с выполнением данной функции.
+        Вызывается для каждой тестовой функции модуля.
         """
 
 
     def teardown_function(function):
-        """teardown any state that was previously setup with a setup_function
-        call.
+        """ очистка любого состояния, настроенного ранее с помощью вызова setup_function
         """
 
-As of pytest-3.0, the ``function`` parameter is optional.
+Начиная с ``pytest-3.0``, параметр ``function`` указывать не обязательно.
 
-Remarks:
+Замечания:
 
-* It is possible for setup/teardown pairs to be invoked multiple times
-  per testing process.
+* Пары "setup/teardown" во время тестирования могут вызываться многократно.
 
-* teardown functions are not called if the corresponding setup function existed
-  and failed/was skipped.
+* Функция "teardown" не будет вызвана, если соответствующая "setup" функция
+  существует, но была пропущена или выдала ошибку.
 
-* Prior to pytest-4.2, xunit-style functions did not obey the scope rules of fixtures, so
-  it was possible, for example, for a ``setup_method`` to be called before a
-  session-scoped autouse fixture.
+* До ``pytest-4.2`` функции в стиле ``xunit`` не подчинялись правилам области видимости фикстур, поэтому
+  например, можно было вызвать ``setup_method`` до того, как ``setup_method`` вызывался до ``autouse``
+  фикстуры уровня сессии.
 
-  Now the xunit-style functions are integrated with the fixture mechanism and obey the proper
-  scope rules of fixtures involved in the call.
+  Сейчас функции ``xunit`` интегрированы с механизмом фикстур, и для них применяются те же правила
+  области действия, что и для вызова фикстур.
 
 .. _`unittest.py module`: http://docs.python.org/library/unittest.html

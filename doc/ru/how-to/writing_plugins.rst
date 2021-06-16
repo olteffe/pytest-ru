@@ -1,66 +1,63 @@
 .. _plugins:
 .. _`writing-plugins`:
 
-Writing plugins
-===============
+Написание плагинов
+=====================
 
-It is easy to implement `local conftest plugins`_ for your own project
-or `pip-installable plugins`_ that can be used throughout many projects,
-including third party projects.  Please refer to :ref:`using plugins` if you
-only want to use but not write plugins.
+Легко реализовать локальные плагины conftest `local conftest plugins`_ для вашего проекта
+или устанавливаемые через pip плагины `pip-installable plugins`_, которые можно использовать во многих проектах, в том числе в сторонних.
+Пожалуйста, обратитесь к :ref:`using plugins` если вы хотите использовать только плагины, но не писать их.
 
-A plugin contains one or multiple hook functions. :ref:`Writing hooks <writinghooks>`
-explains the basics and details of how you can write a hook function yourself.
-``pytest`` implements all aspects of configuration, collection, running and
-reporting by calling :ref:`well specified hooks <hook-reference>` of the following plugins:
+Плагин содержит одну или несколько хук-функций. :ref:`Writing hooks <writinghooks>` написание хуков
+объясняет основы и детали того, как вы можете написать хук-функцию самостоятельно.
+``pytest`` реализует все аспекты конфигурации, сбора, запуска и отчетности, вызывая
+:ref:`well specified hooks <hook-reference>` хорошо продуманные хуки из следующих плагинов:
 
-* builtin plugins: loaded from pytest's internal ``_pytest`` directory.
+* встроенные плагины: загружаются из внутреннего каталога ``_pytest``.
 
-* :ref:`external plugins <extplugins>`: modules discovered through
+* :ref:`external plugins <extplugins>`: модули, обнаруженные через
   `setuptools entry points`_
 
-* `conftest.py plugins`_: modules auto-discovered in test directories
+* `conftest.py plugins`_: модули автоматически обнаруживаемые в тестовых каталогах.
 
-In principle, each hook call is a ``1:N`` Python function call where ``N`` is the
-number of registered implementation functions for a given specification.
-All specifications and implementations follow the ``pytest_`` prefix
-naming convention, making them easy to distinguish and find.
+В принципе, каждый вызов хука является вызовом функции Python ``1:N``, где ``N`` - количество
+зарегистрированных функций реализации для данной спецификации. Все спецификации и реализации следуют
+соглашению об именах префиксов ``pytest_``, что упрощает их распознавание и поиск.
 
 .. _`pluginorder`:
 
-Plugin discovery order at tool startup
---------------------------------------
+Порядок обнаружения плагина при запуске инструмента
+-------------------------------------------------------
 
-``pytest`` loads plugin modules at tool startup in the following way:
+``pytest`` загружает подключаемые модули при запуске следующим образом:
 
-1. by scanning the command line for the ``-p no:name`` option
-   and *blocking* that plugin from being loaded (even builtin plugins can
-   be blocked this way). This happens before normal command-line parsing.
+1. путем сканирования командной строки для опции ``-p no:name``
+   и *блокирование* загрузки этого плагина (таким образом можно заблокировать даже встроенные плагины).
+   Это происходит до обычного синтаксического анализа командной строки.
 
-2. by loading all builtin plugins.
+2. загрузка всех встроенных плагинов.
 
-3. by scanning the command line for the ``-p name`` option
-   and loading the specified plugin. This happens before normal command-line parsing.
+3. путем сканирования командной строки на наличие опции ``-p no:name``
+   и загружает указанный плагин. Это происходит до обычного синтаксического анализа командной строки.
 
-4. by loading all plugins registered through `setuptools entry points`_.
+4. загрузкой всех плагинов, зарегистрированные через точку входа setuptools `setuptools entry points`_.
 
-5. by loading all plugins specified through the :envvar:`PYTEST_PLUGINS` environment variable.
+5. загрузив все плагины, указанные в :envvar:`PYTEST_PLUGINS` переменной окружения.
 
-6. by loading all :file:`conftest.py` files as inferred by the command line
-   invocation:
+6. загрузив все conftest.py файлы :file:`conftest.py` как следует из вызова командной строки:
 
-   - if no test paths are specified, use the current dir as a test path
-   - if exists, load ``conftest.py`` and ``test*/conftest.py`` relative
-     to the directory part of the first test path. After the ``conftest.py``
-     file is loaded, load all plugins specified in its
-     :globalvar:`pytest_plugins` variable if present.
+   - если тестовые пути не указаны, используется текущий каталог в качестве тестового пути
+   - если существует, загружается ``conftest.py`` и ``test*/conftest.py`` относительно
+     каталога первого тестового пути. После загрузки файла ``conftest.py``,
+     загружаются все плагины, указанные в его переменной
+     :globalvar:`pytest_plugins`, если таковые существуют.
 
-   Note that pytest does not find ``conftest.py`` files in deeper nested
-   sub directories at tool startup.  It is usually a good idea to keep
-   your ``conftest.py`` file in the top level test or project root directory.
+   Обратите внимание, что pytest не ищет файлы ``conftest.py`` в более глубоко вложенных
+   подкаталоги при запуске. Обычно рекомендуется сохранять файл ``conftest.py`` в корневом каталоге
+   теста или проекта верхнего уровня.
 
-7. by recursively loading all plugins specified by the
-   :globalvar:`pytest_plugins` variable in ``conftest.py`` files.
+7. рекурсивно загружаются все плагины, указанные в переменной
+   :globalvar:`pytest_plugins` в файле ``conftest.py``.
 
 
 .. _`pytest/plugin`: http://bitbucket.org/pytest-dev/pytest/src/tip/pytest/plugin/
@@ -68,15 +65,13 @@ Plugin discovery order at tool startup
 .. _`localplugin`:
 .. _`local conftest plugins`:
 
-conftest.py: local per-directory plugins
-----------------------------------------
+conftest.py: локальные плагины для каждого каталога
+----------------------------------------------------
 
-Local ``conftest.py`` plugins contain directory-specific hook
-implementations.  Hook Session and test running activities will
-invoke all hooks defined in ``conftest.py`` files closer to the
-root of the filesystem.  Example of implementing the
-``pytest_runtest_setup`` hook so that is called for tests in the ``a``
-sub directory but not for other directories::
+Локальный плагин ``conftest.py`` содержит реализации хуков для конкретных каталогов.
+Действия с обработкой сеанса и тестирования будут вызывать все хуки, определенные в файлах ``conftest.py``
+ближе к корню файловой системы. Пример реализации хука ``pytest_runtest_setup``, который вызывается
+для тестов в подкаталоге ``a``, но не для других каталогов::
 
     a/conftest.py:
         def pytest_runtest_setup(item):
@@ -91,143 +86,129 @@ sub directory but not for other directories::
         def test_flat():
             pass
 
-Here is how you might run it::
+Вот как вы можете его запустить::
 
      pytest test_flat.py --capture=no  # will not show "setting up"
      pytest a/test_sub.py --capture=no  # will show "setting up"
 
 .. note::
-    If you have ``conftest.py`` files which do not reside in a
-    python package directory (i.e. one containing an ``__init__.py``) then
-    "import conftest" can be ambiguous because there might be other
-    ``conftest.py`` files as well on your ``PYTHONPATH`` or ``sys.path``.
-    It is thus good practice for projects to either put ``conftest.py``
-    under a package scope or to never import anything from a
-    ``conftest.py`` file.
+    Если существует файл ``conftest.py``, который не находится в
+    каталоге пакета python (то есть содержащий ``__init__.py``), то
+    "import conftest" может быть двусмысленным, потому что могут быть другие файлы
+    ``conftest.py`` в вашем ``PYTHONPATH`` или ``sys.path``.
+    Таким образом, для проектов хорошей практикой является размещение ``conftest.py``
+    в рамках пакета или никогда ничего не импортировать из файла ``conftest.py``.
 
-    See also: :ref:`pythonpath`.
+    См. также: :ref:`pythonpath`.
 
 .. note::
-    Some hooks should be implemented only in plugins or conftest.py files situated at the
-    tests root directory due to how pytest discovers plugins during startup,
-    see the documentation of each hook for details.
+    Некоторые хуки должны быть реализованы только в плагинах или файлах conftest.py, расположенных в
+    корневом каталоге тестов, из-за того, как pytest обнаруживает плагины во время запуска,
+    подробности см. в документации по каждому хуку.
 
-Writing your own plugin
------------------------
+Написание собственного плагина
+-------------------------------
 
 .. _`setuptools`: https://pypi.org/project/setuptools/
 
-If you want to write a plugin, there are many real-life examples
-you can copy from:
+Если вы хотите написать плагин, есть много реальных примеров, из которых вы можете скопировать:
 
-* a custom collection example plugin: :ref:`yaml plugin`
-* builtin plugins which provide pytest's own functionality
-* many :ref:`external plugins <plugin-list>` providing additional features
+* пример плагина пользовательской коллекции: :ref:`yaml plugin`
+* встроенные плагины, которые обеспечивают собственную функциональность pytest
+* множество внешних плагинов :ref:`external plugins <plugin-list>`, предоставляющие дополнительные возможности
 
-All of these plugins implement :ref:`hooks <hook-reference>` and/or :ref:`fixtures <fixture>`
-to extend and add functionality.
+Все эти плагины реализуют хуки :ref:`hooks <hook-reference>` и/или фикстуры :ref:`fixtures <fixture>`
+для расширения и добавления функциональности.
 
 .. note::
-    Make sure to check out the excellent
-    `cookiecutter-pytest-plugin <https://github.com/pytest-dev/cookiecutter-pytest-plugin>`_
-    project, which is a `cookiecutter template <https://github.com/audreyr/cookiecutter>`_
-    for authoring plugins.
+    Обязательно ознакомьтесь с отличным проектом
+    `cookiecutter-pytest-plugin <https://github.com/pytest-dev/cookiecutter-pytest-plugin>`_,
+    который является шаблоном `cookiecutter template <https://github.com/audreyr/cookiecutter>`_
+    для создания плагинов.
 
-    The template provides an excellent starting point with a working plugin,
-    tests running with tox, a comprehensive README file as well as a
-    pre-configured entry-point.
+    Шаблон обеспечивает отличную отправную точку с работающим плагином, тестами, выполняемыми с помощью
+    tox, всеобъемлющим файлом README, а также предварительно настроенной точкой входа.
 
-Also consider :ref:`contributing your plugin to pytest-dev<submitplugin>`
-once it has some happy users other than yourself.
+Также рассмотрите возможность контрибьютить свой плагин в pytest-dev :ref:`contributing your plugin to pytest-dev<submitplugin>`
+как только у него появятся довольные пользователи, кроме вас.
 
 
 .. _`setuptools entry points`:
 .. _`pip-installable plugins`:
 
-Making your plugin installable by others
-----------------------------------------
+Создание своего плагина, доступного для установки другими
+------------------------------------------------------------
 
-If you want to make your plugin externally available, you
-may define a so-called entry point for your distribution so
-that ``pytest`` finds your plugin module.  Entry points are
-a feature that is provided by `setuptools`_. pytest looks up
-the ``pytest11`` entrypoint to discover its
-plugins and you can thus make your plugin available by defining
-it in your setuptools-invocation:
+Если вы хотите сделать свой плагин доступным извне, вы можете определить так называемую точку входа для
+вашего дистрибутива, чтобы pytest нашел ваш модуль плагина. Точки входа - это функция, предоставляемая
+`setuptools`_. pytest ищет точку входа ``pytest11``, чтобы обнаружить свои плагины, и, таким образом,
+вы можете сделать свой плагин доступным, определив его в своем вызове setuptools:
 
 .. sourcecode:: python
 
-    # sample ./setup.py file
+    # пример файла ./setup.py
     from setuptools import setup
 
     setup(
         name="myproject",
         packages=["myproject"],
-        # the following makes a plugin available to pytest
+        # следующее делает плагин доступным для pytest
         entry_points={"pytest11": ["name_of_plugin = myproject.pluginmodule"]},
-        # custom PyPI classifier for pytest plugins
+        # собственный классификатор PyPI для плагинов pytest
         classifiers=["Framework :: Pytest"],
     )
 
-If a package is installed this way, ``pytest`` will load
-``myproject.pluginmodule`` as a plugin which can define
+Если пакет установлен таким образом, ``pytest`` загрузит
+``myproject.pluginmodule`` как плагин, который может определять хуки
 :ref:`hooks <hook-reference>`.
 
 .. note::
 
-    Make sure to include ``Framework :: Pytest`` in your list of
-    `PyPI classifiers <https://pypi.org/classifiers/>`_
-    to make it easy for users to find your plugin.
+    Не забудьте включить ``Framework :: Pytest`` в ваш список
+    `PyPI classifiers <https://pypi.org/classifiers/>`_,
+    чтобы пользователям было проще найти ваш плагин.
 
 
 .. _assertion-rewriting:
 
-Assertion Rewriting
--------------------
+Перезапись assertion
+----------------------
 
-One of the main features of ``pytest`` is the use of plain assert
-statements and the detailed introspection of expressions upon
-assertion failures.  This is provided by "assertion rewriting" which
-modifies the parsed AST before it gets compiled to bytecode.  This is
-done via a :pep:`302` import hook which gets installed early on when
-``pytest`` starts up and will perform this rewriting when modules get
-imported.  However, since we do not want to test different bytecode
-from what you will run in production, this hook only rewrites test modules
-themselves (as defined by the :confval:`python_files` configuration option),
-and any modules which are part of plugins.
-Any other imported module will not be rewritten and normal assertion behaviour
-will happen.
+Одной из основных особенностей pytest является использование простых assert-ов и подробный анализ выражений
+при падениях. Это обеспечивается «перезаписью assertion», который изменяет проанализированный AST перед
+его компиляцией в байт-код. Это делается с помощью хука импорта :pep:`302`, который устанавливается на
+ранней стадии при запуске pytest и выполняет эту перезапись при импорте модулей. Однако, поскольку мы
+не хотим тестировать байт-код, отличный от того, который вы будете запускать в производственной среде,
+этот хук перезаписывает только сами тестовые модули (как определено параметром конфигурации
+:confval:`python_files`) и любые модули, которые являются частью плагинов. Любой другой импортированный
+модуль не будет перезаписан, и произойдет нормальное поведение assert-а.
 
-If you have assertion helpers in other modules where you would need
-assertion rewriting to be enabled you need to ask ``pytest``
-explicitly to rewrite this module before it gets imported.
+Если у вас есть вспомогательные assert-ы в других модулях, где вам может потребоваться перезапись assert для
+включения, вам необходимо явно попросить pytest переписать этот модуль перед его импортом.
 
 .. autofunction:: pytest.register_assert_rewrite
     :noindex:
 
-This is especially important when you write a pytest plugin which is
-created using a package.  The import hook only treats ``conftest.py``
-files and any modules which are listed in the ``pytest11`` entrypoint
-as plugins.  As an example consider the following package::
+Это особенно важно, когда вы пишете плагин pytest, который создается с использованием пакета.
+Хук импорта обрабатывает только файлы ``conftest.py`` и любые модули, перечисленные в точке входа
+``pytest11``, как плагины. В качестве примера рассмотрим следующий пакет::
 
    pytest_foo/__init__.py
    pytest_foo/plugin.py
    pytest_foo/helper.py
 
-With the following typical ``setup.py`` extract:
+Со следующим основным содержимым ``setup.py``:
 
 .. code-block:: python
 
    setup(..., entry_points={"pytest11": ["foo = pytest_foo.plugin"]}, ...)
 
-In this case only ``pytest_foo/plugin.py`` will be rewritten.  If the
-helper module also contains assert statements which need to be
-rewritten it needs to be marked as such, before it gets imported.
-This is easiest by marking it for rewriting inside the
-``__init__.py`` module, which will always be imported first when a
-module inside a package is imported.  This way ``plugin.py`` can still
-import ``helper.py`` normally.  The contents of
-``pytest_foo/__init__.py`` will then need to look like this:
+В этом кейсе ``pytest_foo/plugin.py`` будет перезаписан. Если вспомогательный модуль также содержит
+операторы assert, которые необходимо переписать, его необходимо пометить как таковые, прежде чем он
+будет импортирован.
+Проще всего пометить его для перезаписи внутри модуля ``__init__.py``, который всегда будет импортирован
+первым при импорте модуля внутри пакета. Таким образом, ``plugin.py`` может по-прежнему
+импортировать ``helper.py`` нормально.  Содержимое ``pytest_foo/__init__.py`` тогда должно выглядеть так:
 
 .. code-block:: python
 
@@ -236,78 +217,76 @@ import ``helper.py`` normally.  The contents of
    pytest.register_assert_rewrite("pytest_foo.helper")
 
 
-Requiring/Loading plugins in a test module or conftest file
------------------------------------------------------------
+Требование/загрузка плагинов в тестовый модуль или файл conftest
+--------------------------------------------------------------------
 
-You can require plugins in a test module or a ``conftest.py`` file using :globalvar:`pytest_plugins`:
+Вам могут потребоваться плагины в тестовом модуле или файле ``conftest.py`` с использованием :globalvar:`pytest_plugins`:
 
 .. code-block:: python
 
     pytest_plugins = ["name1", "name2"]
 
-When the test module or conftest plugin is loaded the specified plugins
-will be loaded as well. Any module can be blessed as a plugin, including internal
-application modules:
+Когда загружается тестовый модуль или подключаемый модуль conftest, также будут загружены указанные
+подключаемые модули. Любой модуль может быть объявлен как плагин, включая внутренние модули
+приложения:
 
 .. code-block:: python
 
     pytest_plugins = "myapp.testsupport.myplugin"
 
-:globalvar:`pytest_plugins` are processed recursively, so note that in the example above
-if ``myapp.testsupport.myplugin`` also declares :globalvar:`pytest_plugins`, the contents
-of the variable will also be loaded as plugins, and so on.
+:globalvar:`pytest_plugins` обрабатываются рекурсивно, поэтому обратите внимание, что в примере выше
+если ``myapp.testsupport.myplugin`` также объявляет :globalvar:`pytest_plugins``, содержимое
+переменной также будет загружено как плагины, и так далее.
 
 .. _`requiring plugins in non-root conftests`:
 
 .. note::
-    Requiring plugins using :globalvar:`pytest_plugins` variable in non-root
-    ``conftest.py`` files is deprecated.
+    Требование подключаемых модулей с помощью переменной :globalvar:`pytest_plugins` в некорневых
+    файлах ``conftest.py`` устарело.
 
-    This is important because ``conftest.py`` files implement per-directory
-    hook implementations, but once a plugin is imported, it will affect the
-    entire directory tree. In order to avoid confusion, defining
-    :globalvar:`pytest_plugins` in any ``conftest.py`` file which is not located in the
-    tests root directory is deprecated, and will raise a warning.
+    Это важно, потому что файлы ``conftest.py`` реализуют хуки для каждого каталога,
+    но когда плагин импортирован, он будет влиять на
+    все дерево каталогов. Чтобы избежать путаницы, определение
+    :globalvar:`pytest_plugins` в любом файле ``conftest.py``, который не находится в
+    корневом каталоге тестов, является устаревшим и вызовет предупреждение.
 
-This mechanism makes it easy to share fixtures within applications or even
-external applications without the need to create external plugins using
-the ``setuptools``'s entry point technique.
+Этот механизм упрощает совместное использование фикстур внутри приложений или даже
+внешних приложений без необходимости создавать внешние плагины, используя
+технику точки входа ``setuptools``.
 
-Plugins imported by :globalvar:`pytest_plugins` will also automatically be marked
-for assertion rewriting (see :func:`pytest.register_assert_rewrite`).
-However for this to have any effect the module must not be
-imported already; if it was already imported at the time the
-:globalvar:`pytest_plugins` statement is processed, a warning will result and
-assertions inside the plugin will not be rewritten.  To fix this you
-can either call :func:`pytest.register_assert_rewrite` yourself before
-the module is imported, or you can arrange the code to delay the
-importing until after the plugin is registered.
+Плагины, импортированные с помощью :globalvar:`pytest_plugins` будут также автоматически промаркированы
+для переписывания assert-ов (см. :func:`pytest.register_assert_rewrite`).
+Однако для того, чтобы это имело какой-либо эффект, модуль не должен быть
+импортирован; если он уже был импортирован на момент обработки оператора
+:globalvar:`pytest_plugins`, будет выдано предупреждение и
+assertion внутри плагина не будут переписаны.  Чтобы исправить это, вы можете
+либо самостоятельно вызвать :func:`pytest.register_assert_rewrite` до того, как
+модуль импортируется, либо вы можете настроить код так, чтобы отложить
+импортирование до тех пор, пока плагин не будет зарегистрирован.
 
 
-Accessing another plugin by name
---------------------------------
+Доступ к другому плагину по имени
+----------------------------------
 
-If a plugin wants to collaborate with code from
-another plugin it can obtain a reference through
-the plugin manager like this:
+Если плагин хочет взаимодействовать с кодом из другого плагина, он может получить ссылку через диспетчер
+плагинов следующим образом:
 
 .. sourcecode:: python
 
     plugin = config.pluginmanager.get_plugin("name_of_plugin")
 
-If you want to look at the names of existing plugins, use
-the ``--trace-config`` option.
+Если вы хотите увидеть имена существующих плагинов, используйте опцию  ``--trace-config``.
 
 
 .. _registering-markers:
 
-Registering custom markers
---------------------------
+Регистрация пользовательских маркеров
+----------------------------------------
 
-If your plugin uses any markers, you should register them so that they appear in
-pytest's help text and do not :ref:`cause spurious warnings <unknown-marks>`.
-For example, the following plugin would register ``cool_marker`` and
-``mark_with`` for all users:
+Если ваш плагин использует какие-либо маркеры, вы должны зарегистрировать их так, чтобы они отображались в
+pytest и не вызывали ложных предупреждений :ref:`cause spurious warnings <unknown-marks>`.
+Например, следующий плагин зарегистрирует ``cool_marker`` и
+``mark_with`` для всех пользователей:
 
 .. code-block:: python
 
@@ -318,33 +297,32 @@ For example, the following plugin would register ``cool_marker`` and
         )
 
 
-Testing plugins
----------------
+Тестирование плагинов
+--------------------------
 
-pytest comes with a plugin named ``pytester`` that helps you write tests for
-your plugin code. The plugin is disabled by default, so you will have to enable
-it before you can use it.
+pytest поставляется с плагином под названием ``pytester``, который помогает вам писать тесты для
+вашего кода плагина. По умолчанию плагин отключен, поэтому вам придется включить его.
+прежде чем вы сможете его использовать.
 
-You can do so by adding the following line to a ``conftest.py`` file in your
-testing directory:
+Вы можете сделать это, добавив следующую строку в файл ``conftest.py`` в вашем
+каталог тестирования:
 
 .. code-block:: python
 
-    # content of conftest.py
+    # содержимое файла conftest.py
 
     pytest_plugins = ["pytester"]
 
-Alternatively you can invoke pytest with the ``-p pytester`` command line
-option.
+Также вы можете вызвать pytest с помощью опции командной строки ``-p pytester``.
 
-This will allow you to use the :py:class:`pytester <_pytest.pytester.Pytester>`
-fixture for testing your plugin code.
+Это позволит использовать фикстуру :py:class:`pytester <_pytest.pytester.Pytester>`
+для тестирования вашего плагина.
 
-Let's demonstrate what you can do with the plugin with an example. Imagine we
-developed a plugin that provides a fixture ``hello`` which yields a function
-and we can invoke this function with one optional parameter. It will return a
-string value of ``Hello World!`` if we do not supply a value or ``Hello
-{value}!`` if we do supply a string value.
+Давайте продемонстрируем, что можно сделать с помощью плагина на примере. Представьте, что мы
+разработали плагин, который предоставляет фикстуру ``hello``, которая yields функцию
+и мы можем вызвать эту функцию с одним необязательным параметром. Она вернет
+строковое значение ``Hello World!``, если мы не предоставим значение, или ``Hello {value}!``,
+если мы передадим строковое значение.
 
 .. code-block:: python
 
@@ -374,16 +352,16 @@ string value of ``Hello World!`` if we do not supply a value or ``Hello
         return _hello
 
 
-Now the ``pytester`` fixture provides a convenient API for creating temporary
-``conftest.py`` files and test files. It also allows us to run the tests and
-return a result object, with which we can assert the tests' outcomes.
+Теперь фикстура ``pytester`` предоставляет удобный API для создания временных
+``conftest.py`` файлов и файлов тестов. Она также позволяет нам запускать тесты и
+возвращать объект результата, с помощью которого мы можем подтвердить результаты тестов.
 
 .. code-block:: python
 
     def test_hello(pytester):
-        """Make sure that our plugin works."""
+        """Убедимся, что наш плагин работает."""
 
-        # create a temporary conftest.py file
+        # создаем временный файл conftest.py
         pytester.makeconftest(
             """
             import pytest
@@ -398,7 +376,7 @@ return a result object, with which we can assert the tests' outcomes.
         """
         )
 
-        # create a temporary pytest test file
+        # создаем временный тестовый файл pytest
         pytester.makepyfile(
             """
             def test_hello_default(hello):
@@ -409,14 +387,14 @@ return a result object, with which we can assert the tests' outcomes.
         """
         )
 
-        # run all tests with pytest
+        # запускаем все тесты с помощью pytest
         result = pytester.runpytest()
 
-        # check that all 4 tests passed
+        # проверяем, что все 4 теста пройдены
         result.assert_outcomes(passed=4)
 
 
-Additionally it is possible to copy examples for an example folder before running pytest on it.
+Кроме того, можно скопировать примеры для папки с примерами перед запуском pytest в ней.
 
 .. code-block:: ini
 
@@ -427,7 +405,7 @@ Additionally it is possible to copy examples for an example folder before runnin
 
 .. code-block:: python
 
-    # content of test_example.py
+    # содержимое файла test_example.py
 
 
     def test_plugin(pytester):
@@ -451,6 +429,6 @@ Additionally it is possible to copy examples for an example folder before runnin
 
     ============================ 2 passed in 0.12s =============================
 
-For more information about the result object that ``runpytest()`` returns, and
-the methods that it provides please check out the :py:class:`RunResult
-<_pytest.pytester.RunResult>` documentation.
+Для получения дополнительной информации об объекте, который возвращает ``runpytest()``, и
+методах, которые он предоставляет, пожалуйста, ознакомьтесь с документацией
+:py:class:`RunResult <_pytest.pytester.RunResult>`.
