@@ -5,7 +5,7 @@
 .. _`pytest.fixture`:
 
 
-Fixtures reference
+Ссылка на фикстуры
 ========================================================
 
 .. seealso:: :ref:`about-fixtures`
@@ -17,129 +17,125 @@ Fixtures reference
 .. _`Dependency injection`: https://en.wikipedia.org/wiki/Dependency_injection
 
 
-Built-in fixtures
------------------
+Встроенные фикстуры
+--------------------
 
-:ref:`Fixtures <fixtures-api>` are defined using the :ref:`@pytest.fixture
-<pytest.fixture-api>` decorator. Pytest has several useful built-in fixtures:
+:ref:`Фикстуры <fixtures-api>` определяются с помощью декоратора :ref:`@pytest.fixture <pytest.fixture-api>`.
+В Pytest есть несколько полезных встроенных фикстур:
 
    :fixture:`capfd`
-        Capture, as text, output to file descriptors ``1`` and ``2``.
+        Захват в виде текста, вывод в файловые дескрипторы ``1`` и ``2``.
 
    :fixture:`capfdbinary`
-        Capture, as bytes, output to file descriptors ``1`` and ``2``.
+        Захват в виде байтов, вывод в файловые дескрипторы ``1`` и ``2``.
 
    :fixture:`caplog`
-        Control logging and access log entries.
+        Контроль регистрации и доступа к записям журнала.
 
    :fixture:`capsys`
-        Capture, as text, output to ``sys.stdout`` and ``sys.stderr``.
+        Захват в виде текста, вывод в ``sys.stdout`` и ``sys.stderr``.
 
    :fixture:`capsysbinary`
-        Capture, as bytes, output to ``sys.stdout`` and ``sys.stderr``.
+        Захват в виде байтов, вывод в ``sys.stdout`` и ``sys.stderr``.
 
    :fixture:`cache`
-        Store and retrieve values across pytest runs.
+        Сохранение и получение значений при запуске pytest.
 
    :fixture:`doctest_namespace`
-        Provide a dict injected into the docstests namespace.
+        Предоставление словаря, введенного в пространство имен docstests.
 
    :fixture:`monkeypatch`
-       Temporarily modify classes, functions, dictionaries,
-       ``os.environ``, and other objects.
+       Временное изменение классов, функций, словарей,
+       ``os.environ``, и других объектов.
 
    :fixture:`pytestconfig`
-        Access to configuration values, pluginmanager and plugin hooks.
+        Доступ к значениям конфигурации, диспетчеру плагинов и хукам плагинов.
 
    :fixture:`record_property`
-       Add extra properties to the test.
+       Добавление дополнительных свойств к тесту.
 
    :fixture:`record_testsuite_property`
-       Add extra properties to the test suite.
+       Добавление дополнительных свойств в набор тестов.
 
    :fixture:`recwarn`
-        Record warnings emitted by test functions.
+        Записывание предупреждений, выдаваемые тестовыми функциями.
 
    :fixture:`request`
-       Provide information on the executing test function.
+       Предоставление информации о выполнении функции тестирования.
 
    :fixture:`testdir`
-        Provide a temporary test directory to aid in running, and
-        testing, pytest plugins.
+        Предоставляет временный тестовый каталог для помощи в запуске и
+        тестирования подключаемых модулей pytest.
 
    :fixture:`tmp_path`
-       Provide a :class:`pathlib.Path` object to a temporary directory
-       which is unique to each test function.
+       Предоставляет объект :class:`pathlib.Path` для временной папки,
+       который уникален для каждой тестовой функции.
 
    :fixture:`tmp_path_factory`
-        Make session-scoped temporary directories and return
-        :class:`pathlib.Path` objects.
+        Создает временные каталоги с привязкой к сеансу и возвращает объект
+        :class:`pathlib.Path`.
 
    :fixture:`tmpdir`
-        Provide a :class:`py.path.local` object to a temporary
-        directory which is unique to each test function;
-        replaced by :fixture:`tmp_path`.
+        Предоставляет объект  :class:`py.path.local` для временной папки,
+        который уникален для каждой тестовой функции;
+        заменен на :fixture:`tmp_path`.
 
         .. _`py.path.local`: https://py.readthedocs.io/en/latest/path.html
 
    :fixture:`tmpdir_factory`
-        Make session-scoped temporary directories and return
-        :class:`py.path.local` objects;
-        replaced by :fixture:`tmp_path_factory`.
+        Создает временные каталоги с привязкой к сеансу и возвращает объект
+        :class:`py.path.local`;
+        заменен на :fixture:`tmp_path_factory`.
 
 
 .. _`conftest.py`:
 .. _`conftest`:
 
-Fixture availability
+Доступность фикстур
 ---------------------
 
-Fixture availability is determined from the perspective of the test. A fixture
-is only available for tests to request if they are in the scope that fixture is
-defined in. If a fixture is defined inside a class, it can only be requested by
-tests inside that class. But if a fixture is defined inside the global scope of
-the module, than every test in that module, even if it's defined inside a class,
-can request it.
+Доступность фикстур определяется с точки зрения теста. Фикстура доступна для запросов тестов только
+в том случае, если она находятся в области видимости, в которой определена фикстура.
+Если фикстура определена внутри класса, она может быть запрошена только тестами внутри этого класса.
+Но если фикстура определена в глобальной области видимости модуля, то каждый тест в этом модуле, даже
+если он определен внутри класса, может запросить ее.
 
-Similarly, a test can also only be affected by an autouse fixture if that test
-is in the same scope that autouse fixture is defined in (see
+Аналогично, тест может быть использован фикстурой autouse, только если этот тест
+находится в той же области видимости, в которой определена фикстура autouse (см.
 :ref:`autouse order`).
 
-A fixture can also request any other fixture, no matter where it's defined, so
-long as the test requesting them can see all fixtures involved.
+Фикстура также может запрашивать любые другие фикстуры, независимо от того, где она определена, при условии,
+что запрашивающий их тест может видеть все задействованные фикстуры.
 
-For example, here's a test file with a fixture (``outer``) that requests a
-fixture (``inner``) from a scope it wasn't defined in:
+Например: есть тестовый файл с фикстурой (``outer``), которая запрашивает фикстуру (``inner``) из области видимости,
+в которой она не была определена:
 
 .. literalinclude:: /example/fixtures/test_fixtures_request_different_scope.py
 
-From the tests' perspectives, they have no problem seeing each of the fixtures
-they're dependent on:
+С точки зрения тестов, у них нет проблем с видимостью каждой из фикстур, от которых они зависят.
 
 .. image:: /example/fixtures/test_fixtures_request_different_scope.svg
     :align: center
 
-So when they run, ``outer`` will have no problem finding ``inner``, because
-pytest searched from the tests' perspectives.
+Таким образом при запуске, ``outer`` легко обнаруживает ``inner``, потому что
+pytest ищет с точки зрения тестов.
 
 .. note::
-    The scope a fixture is defined in has no bearing on the order it will be
-    instantiated in: the order is mandated by the logic described
-    :ref:`here <fixture order>`.
+    Область видимости, в которой определена фикстура, не влияет на порядок, в котором она будет
+    создана: порядок определяется логикой, описанной :ref:`здесь <fixture order>`.
 
-``conftest.py``: sharing fixtures across multiple files
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``conftest.py``: совместное использование фикстур в нескольких файлах
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``conftest.py`` file serves as a means of providing fixtures for an entire
-directory. Fixtures defined in a ``conftest.py`` can be used by any test
-in that package without needing to import them (pytest will automatically
-discover them).
+Файл ``conftest.py`` служит средством предоставления фикстур для всего каталога. Фикстуры, определенные
+в ``conftest.py``, могут быть использованы любым тестом в этом пакете без необходимости их импортировать
+(pytest автоматически обнаружит их).
 
-You can have multiple nested directories/packages containing your tests, and
-each directory can have its own ``conftest.py`` with its own fixtures, adding on
-to the ones provided by the ``conftest.py`` files in parent directories.
+Вы можете иметь несколько вложенных каталогов/пакетов, содержащих ваши тесты, и
+каждая директория может иметь свой ``conftest.py`` со своими собственными фикстурами, в дополнении
+к тем, которые предоставляются файлами ``conftest.py`` в родительских каталогах.
 
-For example, given a test file structure like this:
+Например, при такой структуре тестовых файлов:
 
 ::
 
@@ -191,44 +187,43 @@ For example, given a test file structure like this:
                 def test_order(order, top):
                     assert order == ["mid subpackage", "innermost subpackage", "top"]
 
-The boundaries of the scopes can be visualized like this:
+Границы областей видимости можно визуализировать так:
 
 .. image:: /example/fixtures/fixture_availability.svg
     :align: center
 
-The directories become their own sort of scope where fixtures that are defined
-in a ``conftest.py`` file in that directory become available for that whole
-scope.
+Каталоги становятся своего рода областью действия, где фикстуры, которые определены
+в файле ``conftest.py`` в этой директории, становятся доступными для всей области видимости.
 
-Tests are allowed to search upward (stepping outside a circle) for fixtures, but
-can never go down (stepping inside a circle) to continue their search. So
-``tests/subpackage/test_subpackage.py::test_order`` would be able to find the
-``innermost`` fixture defined in ``tests/subpackage/test_subpackage.py``, but
-the one defined in ``tests/test_top.py`` would be unavailable to it because it
-would have to step down a level (step inside a circle) to find it.
+Тестам разрешается искать фикстуры вверх (выходя за пределы круга), но
+никогда не могут спуститься вниз (шагнуть внутрь круга), чтобы продолжить поиск. Поэтому
+``tests/subpackage/test_subpackage.py::test_order`` сможет найти фикстуру
+``innermost``, определенную в ``tests/subpackage/test_subpackage.py``, но
+та, которая определена в ``tests/test_top.py``, будет недоступна для нее, потому что
+придется спуститься на уровень ниже (шагнуть внутрь круга), чтобы найти ее.
 
-The first fixture the test finds is the one that will be used, so
-:ref:`fixtures can be overriden <override fixtures>` if you need to change or
-extend what one does for a particular scope.
+Первая фикстура, найденная тестом, и будет использоваться, таким образом
+:ref:`фикстуры могут быть переопределены <override fixtures>`, если вам нужно изменить или
+расширить то, что делает одна фикстура для конкретной области.
 
-You can also use the ``conftest.py`` file to implement
-:ref:`local per-directory plugins <conftest.py plugins>`.
+Вы также можете использовать файл ``conftest.py`` для реализации
+:ref:`локальных плагинов для каждого каталога <conftest.py plugins>`.
 
-Fixtures from third-party plugins
+Фикстуры из сторонних плагинов
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Fixtures don't have to be defined in this structure to be available for tests,
-though. They can also be provided by third-party plugins that are installed, and
-this is how many pytest plugins operate. As long as those plugins are installed,
-the fixtures they provide can be requested from anywhere in your test suite.
+Однако фикстуры не обязательно должны быть определены в самой структуре, чтобы они были доступны для тестов.
+Они также могут быть предоставлены сторонними плагинами, которые устанавливаются, и
+именно так работают многие плагины pytest. Если эти плагины установлены,
+предоставляемые ими фикстуры могут быть запрошены из любой точки вашего набора тестов.
 
-Because they're provided from outside the structure of your test suite,
-third-party plugins don't really provide a scope like `conftest.py` files and
-the directories in your test suite do. As a result, pytest will search for
-fixtures stepping out through scopes as explained previously, only reaching
-fixtures defined in plugins *last*.
+Из-за того, что они предоставляются извне структуры вашего тестового набора,
+сторонние плагины не предоставляют такой области видимости, как файлы `conftest.py` и
+каталоги в вашем тестовом наборе. В результате, pytest будет искать
+фикстуры по шагам через диапазоны, как объяснялось ранее, достигая только
+фикстур, определенных в плагинах *последними*.
 
-For example, given the following file structure:
+Например, учитывая следующую файловую структуру:
 
 ::
 
@@ -265,188 +260,180 @@ For example, given the following file structure:
                 def test_order(order, inner):
                     assert order == ["b_fix", "mid subpackage", "a_fix", "inner subpackage"]
 
-If ``plugin_a`` is installed and provides the fixture ``a_fix``, and
-``plugin_b`` is installed and provides the fixture ``b_fix``, then this is what
-the test's search for fixtures would look like:
+Если ``plugin_a`` установлен и предоставляет фикстуру ``a_fix``, и
+``plugin_b`` установлен и предоставляет фикстуру ``b_fix``, то вот как будет выглядеть
+поиск фикстур в тесте:
 
 .. image:: /example/fixtures/fixture_availability_plugins.svg
     :align: center
 
-pytest will only search for ``a_fix`` and ``b_fix`` in the plugins after
-searching for them first in the scopes inside ``tests/``.
+pytest будет искать ``a_fix`` и ``b_fix`` в плагинах только после
+первоначального поиска их внутри ``tests/``.
 
 .. note:
 
-    pytest can tell you what fixtures are available for a given test if you call
-    ``pytests`` along with the test's name (or the scope it's in), and provide
-    the ``--fixtures`` flag, e.g. ``pytest --fixtures test_something.py``
-    (fixtures with names that start with ``_`` will only be shown if you also
-    provide the ``-v`` flag).
+    pytest может сообщить вам, какие фикстуры доступны для данного теста, если вы вызовете команду
+    ``pytests`` вместе с именем теста (или областью видимости, в которой он находится), и указать флаг
+    флаг ``--fixtures``, например, ``pytest --fixtures test_something.py``.
+    (фикстуры с именами, начинающимися с ``_``, будут показаны, только если вы также укажете
+    флаг ``-v``).
 
 
 .. _`fixture order`:
 
-Fixture instantiation order
----------------------------
+Порядок создания экземпляров фикстур
+----------------------------------------------
 
-When pytest wants to execute a test, once it knows what fixtures will be
-executed, it has to figure out the order they'll be executed in. To do this, it
-considers 3 factors:
+Перед выполнением теста, pytest узнает какие фикстуры и в каком порядке будут выполняться.
+Для определения порядка выполнения pytest учитывает 3 фактора:
 
-1. scope
-2. dependencies
+1. область действия(scope)
+2. зависимости
 3. autouse
 
-Names of fixtures or tests, where they're defined, the order they're defined in,
-and the order fixtures are requested in have no bearing on execution order
-beyond coincidence. While pytest will try to make sure coincidences like these
-stay consistent from run to run, it's not something that should be depended on.
-If you want to control the order, it's safest to rely on these 3 things and make
-sure dependencies are clearly established.
+Имена фикстур или тестов, в которых они определены, порядок, в котором они определены, и порядок, в
+котором запрашиваются фикстуры, не имеют никакого отношения к порядку выполнения вне зависимости от
+совпадения. Хотя pytest будет стараться, чтобы такие совпадения оставались неизменными от запуска к
+запуску, на это не стоит полагаться. Если вы хотите контролировать порядок выполнения, безопаснее
+всего полагаться на эти три вещи и убедиться, что зависимости точно установлены.
 
-Higher-scoped fixtures are executed first
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+В первую очередь выполняются фикстуры с более высокой областью видимости
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Within a function request for fixtures, those of higher-scopes (such as
-``session``) are executed before lower-scoped fixtures (such as ``function`` or
+Внутри функционального запроса на фикстуры, фикстуры более высокого уровня (такие как
+``session``) выполняются раньше, чем фикстуры более низкого уровня (например, ``function`` или
 ``class``).
 
-Here's an example:
+Вот пример:
 
 .. literalinclude:: /example/fixtures/test_fixtures_order_scope.py
 
-The test will pass because the larger scoped fixtures are executing first.
+Тест будет пройден, потому что первыми выполняются фикстуры с большей областью видимости.
 
-The order breaks down to this:
+Порядок сводится к этому:
 
 .. image:: /example/fixtures/test_fixtures_order_scope.svg
     :align: center
 
-Fixtures of the same order execute based on dependencies
+Фикстуры одного порядка выполняются на основе зависимостей
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-When a fixture requests another fixture, the other fixture is executed first.
-So if fixture ``a`` requests fixture ``b``, fixture ``b`` will execute first,
-because ``a`` depends on ``b`` and can't operate without it. Even if ``a``
-doesn't need the result of ``b``, it can still request ``b`` if it needs to make
-sure it is executed after ``b``.
+Когда одна фикстура запрашивает вторую фикстуру, то сначала выполняется вторая фикстура.
+Таким образом, если фикстура ``a`` запрашивает фикстуру ``b``, фикстура ``b`` будет выполнена первой,
+потому что ``a`` зависит от ``b`` и не может работать без нее. Даже если ``a``
+не нужен результат ``b``, она все равно может запросить ``b``, если ей нужно убедиться в том,
+что она будет выполнена после ``b``.
 
-For example:
+Например:
 
 .. literalinclude:: /example/fixtures/test_fixtures_order_dependencies.py
 
-If we map out what depends on what, we get something that look like this:
+Если мы нарисуем, что от чего зависит, мы получим что-то вроде этого:
 
 .. image:: /example/fixtures/test_fixtures_order_dependencies.svg
     :align: center
 
-The rules provided by each fixture (as to what fixture(s) each one has to come
-after) are comprehensive enough that it can be flattened to this:
+Правила, предоставляемые каждой фикстурой(относительно того, как каждая фикстура(фикстуры)
+должна использовать друг друга) достаточно подробны, чтобы их можно было свести к следующему:
 
 .. image:: /example/fixtures/test_fixtures_order_dependencies_flat.svg
     :align: center
 
-Enough information has to be provided through these requests in order for pytest
-to be able to figure out a clear, linear chain of dependencies, and as a result,
-an order of operations for a given test. If there's any ambiguity, and the order
-of operations can be interpreted more than one way, you should assume pytest
-could go with any one of those interpretations at any point.
+Через эти запросы должно быть предоставлено достаточно информации для того, чтобы pytest
+смог определить четкую, линейную цепочку зависимостей и, как результат,
+порядок действий для данного теста. Если существует какая-либо двусмысленность, и порядок
+операций может быть интерпретирован более чем одним способом, вы должны предположить, что pytest
+может выбрать любую из этих интерпретаций в любой момент.
 
-For example, if ``d`` didn't request ``c``, i.e.the graph would look like this:
+Например, если ``d`` не запрашивает ``c``, т.е. график будет выглядеть так:
 
 .. image:: /example/fixtures/test_fixtures_order_dependencies_unclear.svg
     :align: center
 
-Because nothing requested ``c`` other than ``g``, and ``g`` also requests ``f``,
-it's now unclear if ``c`` should go before/after ``f``, ``e``, or ``d``. The
-only rules that were set for ``c`` is that it must execute after ``b`` and
-before ``g``.
+Так как никто не запрашивал ``c``, кроме ``g``, а ``g`` также запрашивает ``f``,
+и теперь не ясно, должна ли ``c`` идти до/после ``f``, ``e`` или ``d``. Единственные правила, которые
+были установлены для ``c``, это то, что она должна выполняться после ``b`` и до ``g``.
 
-pytest doesn't know where ``c`` should go in the case, so it should be assumed
-that it could go anywhere between ``g`` and ``b``.
+pytest не знает, куда в данном случае следует поместить ``c``, поэтому следует предположить,
+что она может находиться в любом месте между ``g`` и ``b``.
 
-This isn't necessarily bad, but it's something to keep in mind. If the order
-they execute in could affect the behavior a test is targeting, or could
-otherwise influence the result of a test, then the order should be defined
-explicitly in a way that allows pytest to linearize/"flatten" that order.
+Это не обязательно плохо, но об этом следует помнить. Если порядок
+их выполнения может повлиять на поведение, на которое нацелен тест, или может
+иначе повлиять на результат теста, то порядок должен быть определен
+явно таким образом, чтобы pytest мог линеаризовать/"выравнивать" этот порядок.
 
 .. _`autouse order`:
 
-Autouse fixtures are executed first within their scope
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Фикстуры autouse выполняются первыми в пределах их области
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Autouse fixtures are assumed to apply to every test that could reference them,
-so they are executed before other fixtures in that scope. Fixtures that are
-requested by autouse fixtures effectively become autouse fixtures themselves for
-the tests that the real autouse fixture applies to.
+Предполагается, что фикстуры autouse применяются к каждому тесту, который может на них ссылаться,
+поэтому они выполняются перед другими фикстурами в этой области видимости. Фикстуры, которые
+запрашиваются фикстурами autouse, фактически сами становятся autouse фикстурами для тестов,
+к которым применяется реальная autouse фикстура.
 
-So if fixture ``a`` is autouse and fixture ``b`` is not, but fixture ``a``
-requests fixture ``b``, then fixture ``b`` will effectively be an autouse
-fixture as well, but only for the tests that ``a`` applies to.
+Итак, если фикстура ``a`` является autouse, а фикстура ``b`` не является, но фикстура ``a``
+запрашивает фикстуру ``b``, то фикстура ``b`` фактически будет фикстурой autouse
+но только для тех тестов, к которым применяется ``a``.
 
-In the last example, the graph became unclear if ``d`` didn't request ``c``. But
-if ``c`` was autouse, then ``b`` and ``a`` would effectively also be autouse
-because ``c`` depends on them. As a result, they would all be shifted above
-non-autouse fixtures within that scope.
+В последнем примере граф стал неясным, если ``d`` не запросила ``c``. Но
+если бы ``c`` был autouse, то ``b`` и ``a`` также были бы autouse,
+потому что ``c`` зависит от них. В результате, все они будут смещены выше
+не-autouse элементов в этой области видимости.
 
-So if the test file looked like this:
+Итак, если тестовый файл выглядел так:
 
 .. literalinclude:: /example/fixtures/test_fixtures_order_autouse.py
 
-the graph would look like this:
+граф будет выглядеть так:
 
 .. image:: /example/fixtures/test_fixtures_order_autouse.svg
     :align: center
 
-Because ``c`` can now be put above ``d`` in the graph, pytest can once again
-linearize the graph to this:
+Поскольку ``c`` теперь можно поместить выше ``d`` на графе, pytest может снова
+линеаризовать граф в соответствии с этим:
 
-In this example, ``c`` makes ``b`` and ``a`` effectively autouse fixtures as
-well.
+В этом примере ``c`` также делает ``b`` и ``a`` эффективными autouse фикстурами.
 
-Be careful with autouse, though, as an autouse fixture will automatically
-execute for every test that can reach it, even if they don't request it. For
-example, consider this file:
+Однако будьте осторожны с autouse, так как фикстуры autouse будут автоматически
+выполняться для каждого теста, который может его достичь, даже если они не запрашивают его.
+Например, рассмотрим этот файл:
 
 .. literalinclude:: /example/fixtures/test_fixtures_order_autouse_multiple_scopes.py
 
-Even though nothing in ``TestClassWithC1Request`` is requesting ``c1``, it still
-is executed for the tests inside it anyway:
+Даже если ничто в ``TestClassWithC1Request`` не запрашивает ``c1``, она все равно
+выполняется для тестов внутри него:
 
 .. image:: /example/fixtures/test_fixtures_order_autouse_multiple_scopes.svg
     :align: center
 
-But just because one autouse fixture requested a non-autouse fixture, that
-doesn't mean the non-autouse fixture becomes an autouse fixture for all contexts
-that it can apply to. It only effectively becomes an auotuse fixture for the
-contexts the real autouse fixture (the one that requested the non-autouse
-fixture) can apply to.
+Но только потому, что одна фикстура autouse запросила фикстуру не-autouse, это
+не означает, что не-autouse фикстура становится autouse фикстурой для всех контекстов
+к которым она может применяться. Фактически она становится фикстурой auotuse только в тех контекстах,
+к которым может применяться настоящая фикстура auotuse(та, которая запросила фикстуру без auotuse).
 
-For example, take a look at this test file:
+Например, взгляните на этот тестовый файл:
 
 .. literalinclude:: /example/fixtures/test_fixtures_order_autouse_temp_effects.py
 
-It would break down to something like this:
+Это будет выглядеть примерно так:
 
 .. image:: /example/fixtures/test_fixtures_order_autouse_temp_effects.svg
     :align: center
 
-For ``test_req`` and ``test_no_req`` inside ``TestClassWithAutouse``, ``c3``
-effectively makes ``c2`` an autouse fixture, which is why ``c2`` and ``c3`` are
-executed for both tests, despite not being requested, and why ``c2`` and ``c3``
-are executed before ``c1`` for ``test_req``.
+Для ``test_req`` и ``test_no_req`` внутри ``TestClassWithAutouse``, ``c3`` фактически делает ``c2``
+autouse фикстурой, поэтому ``c2`` и ``c3`` выполняются для обоих тестов, несмотря на то, что не
+запрашивается, и почему ``c2`` и ``c3`` выполняются перед ``c1`` для ``test_req``.
 
-If this made ``c2`` an *actual* autouse fixture, then ``c2`` would also execute
-for the tests inside ``TestClassWithoutAutouse``, since they can reference
-``c2`` if they wanted to. But it doesn't, because from the perspective of the
-``TestClassWithoutAutouse`` tests, ``c2`` isn't an autouse fixture, since they
-can't see ``c3``.
+Если это сделало ``c2`` *фактически* фикстурой autouse, то ``c2`` также будет выполняться для тестов
+внутри ``TestClassWithoutAutouse``, поскольку они могут ссылаться на ``c2``, если захотят. Но это не так,
+потому что с точки зрения тестов ``TestClassWithoutAutouse``, ``c2`` не является фикстурой autouse,
+поскольку они не могут видеть ``c3``.
 
 
 .. note:
 
-    pytest can tell you what order the fixtures will execute in for a given test
-    if you call ``pytests`` along with the test's name (or the scope it's in),
-    and provide the ``--setup-plan`` flag, e.g.
-    ``pytest --setup-plan test_something.py`` (fixtures with names that start
-    with ``_`` will only be shown if you also provide the ``-v`` flag).
+    pytest может сказать вам, в каком порядке фикстуры будут выполняться для данного теста, если вы
+    вызовете ``pytests`` вместе с именем теста (или его областью) и предоставите флаг ``--setup-plan``,
+    например ``pytest --setup-plan test_something.py``(фикстуры с именами, начинающимися с ``_``, будут
+    показаны, только если вы также укажете флаг ``-v``).
