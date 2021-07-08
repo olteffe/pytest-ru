@@ -1,15 +1,15 @@
 .. _`api-reference`:
 
-API Reference
-=============
+Справочник по API
+===================
 
-This page contains the full reference to pytest's API.
+Эта страница содержит полную справку на API pytest.
 
 .. contents::
     :depth: 3
     :local:
 
-Functions
+Функции
 ---------
 
 pytest.approx
@@ -20,7 +20,7 @@ pytest.approx
 pytest.fail
 ~~~~~~~~~~~
 
-**Tutorial**: :ref:`skipping`
+**руководство**: :ref:`skipping`
 
 .. autofunction:: pytest.fail
 
@@ -75,14 +75,14 @@ pytest.deprecated_call
 pytest.register_assert_rewrite
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Tutorial**: :ref:`assertion-rewriting`.
+**Руководство**: :ref:`assertion-rewriting`.
 
 .. autofunction:: pytest.register_assert_rewrite
 
 pytest.warns
 ~~~~~~~~~~~~
 
-**Tutorial**: :ref:`assertwarnings`
+**Руководство**: :ref:`assertwarnings`
 
 .. autofunction:: pytest.warns(expected_warning: Exception, [match])
     :with:
@@ -90,17 +90,17 @@ pytest.warns
 pytest.freeze_includes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Tutorial**: :ref:`freezing-pytest`.
+**Руководство**: :ref:`freezing-pytest`.
 
 .. autofunction:: pytest.freeze_includes
 
 .. _`marks ref`:
 
-Marks
------
+Маркировки
+------------
 
-Marks can be used apply meta data to *test functions* (but not fixtures), which can then be accessed by
-fixtures or plugins.
+Маркировки можно использовать для метаданных *тестовых функций* (но не фикстур), к которым затем могут обращаться
+фикстуры или плагины.
 
 
 
@@ -110,19 +110,19 @@ fixtures or plugins.
 pytest.mark.filterwarnings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Tutorial**: :ref:`filterwarnings`.
+**Руководство**: :ref:`filterwarnings`.
 
-Add warning filters to marked test items.
+Добавление предупреждающих фильтров к маркированным элементам теста.
 
 .. py:function:: pytest.mark.filterwarnings(filter)
 
     :keyword str filter:
-        A *warning specification string*, which is composed of contents of the tuple ``(action, message, category, module, lineno)``
-        as specified in `The Warnings filter <https://docs.python.org/3/library/warnings.html#warning-filter>`_ section of
-        the Python documentation, separated by ``":"``. Optional fields can be omitted.
-        Module names passed for filtering are not regex-escaped.
+        *Строка спецификации предупреждения*, которая состоит из содержимого кортежа ``(action, message, category, module, lineno)``
+        как указано в разделе ``Фильтр предупреждений'' <https://docs.python.org/3/library/warnings.html#warning-filter>`_
+        документации Python, разделенных знаком ``":"``. Необязательные поля могут быть опущены.
+        Имена модулей, переданные для фильтрации, не экранируются с помощью регулярных выражений.
 
-        For example:
+        Например:
 
         .. code-block:: python
 
@@ -138,7 +138,7 @@ pytest.mark.parametrize
 
 :ref:`parametrize`.
 
-This mark has the same signature as :py:meth:`pytest.Metafunc.parametrize`; see there.
+Эта маркировка имеет ту же сигнатуру, что и :py:meth:`pytest.Metafunc.parametrize`; см. здесь.
 
 
 .. _`pytest.mark.skip ref`:
@@ -148,11 +148,11 @@ pytest.mark.skip
 
 :ref:`skip`.
 
-Unconditionally skip a test function.
+Безоговорочно пропустить тестовую функцию.
 
 .. py:function:: pytest.mark.skip(reason=None)
 
-    :keyword str reason: Reason why the test function is being skipped.
+    :keyword str reason: Причина, по которой функция тестирования пропускается.
 
 
 .. _`pytest.mark.skipif ref`:
@@ -162,13 +162,13 @@ pytest.mark.skipif
 
 :ref:`skipif`.
 
-Skip a test function if a condition is ``True``.
+Пропустить тестовую функцию, если условие ``True``.
 
 .. py:function:: pytest.mark.skipif(condition, *, reason=None)
 
-    :type condition: bool or str
-    :param condition: ``True/False`` if the condition should be skipped or a :ref:`condition string <string conditions>`.
-    :keyword str reason: Reason why the test function is being skipped.
+    :type condition: bool или str
+    :param condition: ``True/False`` если условие следует пропустить или :ref:`строка условия <string conditions>`.
+    :keyword str reason: Причина, по которой функция тестирования пропускается.
 
 
 .. _`pytest.mark.usefixtures ref`:
@@ -176,20 +176,20 @@ Skip a test function if a condition is ``True``.
 pytest.mark.usefixtures
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-**Tutorial**: :ref:`usefixtures`.
+**Руководство**: :ref:`usefixtures`.
 
-Mark a test function as using the given fixture names.
+Маркировка тестовой функции как использующую указанные имена фикстур.
 
 .. py:function:: pytest.mark.usefixtures(*names)
 
-    :param args: The names of the fixture to use, as strings.
+    :param args: Имена используемых фикстур в виде строк.
 
 .. note::
 
-    When using `usefixtures` in hooks, it can only load fixtures when applied to a test function before test setup
-    (for example in the `pytest_collection_modifyitems` hook).
+    Когда используете `usefixtures` в хуках, они могут загружать фикстуры только тогда, когда применяется к функции тестирования перед настройкой теста
+    (например в хуке `pytest_collection_modifyitems`.
 
-    Also note that this mark has no effect when applied to **fixtures**.
+    Также обратите внимание, что эта маркировка не действует при применении к фикстурам.
 
 
 
@@ -198,40 +198,40 @@ Mark a test function as using the given fixture names.
 pytest.mark.xfail
 ~~~~~~~~~~~~~~~~~~
 
-**Tutorial**: :ref:`xfail`.
+**Руководство**: :ref:`xfail`.
 
-Marks a test function as *expected to fail*.
+Маркировка тестовой функции как *ожидаемое падение*.
 
 .. py:function:: pytest.mark.xfail(condition=None, *, reason=None, raises=None, run=True, strict=False)
 
-    :type condition: bool or str
+    :type condition: bool или str
     :param condition:
-        Condition for marking the test function as xfail (``True/False`` or a
-        :ref:`condition string <string conditions>`). If a bool, you also have
-        to specify ``reason`` (see :ref:`condition string <string conditions>`).
+        Условие маркировки тестовой функции как xfail (``True/False`` или
+        :ref:`строка условия <string conditions>`). Если bool, вы также должны
+        указать ``причину`` (см. :ref:`строка условия <string conditions>`).
     :keyword str reason:
-        Reason why the test function is marked as xfail.
+        Причина, по которой функция тестирования отмечена как xfail.
     :keyword Type[Exception] raises:
-        Exception subclass expected to be raised by the test function; other exceptions will fail the test.
+        Подкласс исключения, который должен быть вызван тестовой функцией; другие исключения не пройдут тест.
     :keyword bool run:
-        If the test function should actually be executed. If ``False``, the function will always xfail and will
-        not be executed (useful if a function is segfaulting).
+        Если тестовая функция действительно должна выполняться. Если ``False``, функция всегда будет xfail и не будет
+        выполнена (полезно, если функция вызывает падение).
     :keyword bool strict:
-        * If ``False`` (the default) the function will be shown in the terminal output as ``xfailed`` if it fails
-          and as ``xpass`` if it passes. In both cases this will not cause the test suite to fail as a whole. This
-          is particularly useful to mark *flaky* tests (tests that fail at random) to be tackled later.
-        * If ``True``, the function will be shown in the terminal output as ``xfailed`` if it fails, but if it
-          unexpectedly passes then it will **fail** the test suite. This is particularly useful to mark functions
-          that are always failing and there should be a clear indication if they unexpectedly start to pass (for example
-          a new release of a library fixes a known bug).
+        * Если ``False`` (по умолчанию), функция будет показана в выводе терминала как ``xfailed`` в случае падения
+          и как ``xpass``, если она прошла. В обоих случаях это не приведет к сбою тестового набора в целом. Это
+          особенно полезно для пометки *flaky* тестов (тестов, которые отказывают случайным образом), чтобы заняться ими позже.
+        * Если ``True``, функция будет показана в выводе терминала как ``xfailed``, если она не прошла, но если она
+          неожиданно пройдет, то она **провалит** набор тестов. Это особенно полезно для пометки функций
+          которые постоянно падают, и должно быть четкое указание, если они неожиданно начинают проходить (например
+          в новом выпуске библиотеки исправлена известная ошибка).
 
 
-Custom marks
-~~~~~~~~~~~~
+Пользовательские маркировки
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Marks are created dynamically using the factory object ``pytest.mark`` and applied as a decorator.
+Маркировки создаются динамически с помощью объекта-фабрики ``pytest.mark`` и применяются как декораторы.
 
-For example:
+Например:
 
 .. code-block:: python
 
@@ -239,16 +239,16 @@ For example:
     def test_function():
         ...
 
-Will create and attach a :class:`Mark <pytest.Mark>` object to the collected
-:class:`Item <pytest.Item>`, which can then be accessed by fixtures or hooks with
-:meth:`Node.iter_markers <_pytest.nodes.Node.iter_markers>`. The ``mark`` object will have the following attributes:
+Создадим и прикрепим объект :class:`Mark <pytest.Mark>` к собранным
+:class:`Item <pytest.Item>`, к которым затем можно получить доступ с помощью фикстур или хуков с помощью
+:meth:`Node.iter_markers <_pytest.nodes.Node.iter_markers>`. У объекта ``mark`` будут следующие атрибуты:
 
 .. code-block:: python
 
     mark.args == (10, "slow")
     mark.kwargs == {"method": "thread"}
 
-Example for using multiple custom markers:
+Пример использования нескольких пользовательских маркеров:
 
 .. code-block:: python
 
@@ -257,19 +257,21 @@ Example for using multiple custom markers:
     def test_function():
         ...
 
-When :meth:`Node.iter_markers <_pytest.nodes.Node.iter_markers>` or :meth:`Node.iter_markers <_pytest.nodes.Node.iter_markers_with_node>` is used with multiple markers, the marker closest to the function will be iterated over first. The above example will result in ``@pytest.mark.slow`` followed by ``@pytest.mark.timeout(...)``.
+Когда :meth:`Node.iter_markers <_pytest.nodes.Node.iter_markers>` или :meth:`Node.iter_markers <_pytest.nodes.Node.iter_markers_with_node>`
+используется с несколькими маркерами, маркер, ближайший к функции, будет итерироваться сначала.
+Приведенный выше пример приведет к ``@pytest.mark.slow``, за которым последует ``@pytest.mark.timeout(...)``.
 
 .. _`fixtures-api`:
 
-Fixtures
---------
+Фикстуры
+----------
 
-**Tutorial**: :ref:`fixture`.
+**Руководство**: :ref:`fixture`.
 
-Fixtures are requested by test functions or other fixtures by declaring them as argument names.
+Фикстуры запрашиваются тестовыми функциями или другими фикстурами, объявляя их как имена аргументов.
 
 
-Example of a test requiring a fixture:
+Пример теста, требующего фикстуру:
 
 .. code-block:: python
 
@@ -279,7 +281,7 @@ Example of a test requiring a fixture:
         assert out == "hello\n"
 
 
-Example of a fixture requiring another fixture:
+Пример фикстуры, требующей другую фикстуру:
 
 .. code-block:: python
 
@@ -288,7 +290,7 @@ Example of a fixture requiring another fixture:
         fn = tmp_path / "db.file"
         return connect(fn)
 
-For more details, consult the full :ref:`fixtures docs <fixture>`.
+Для получения более подробной информации обратитесь к полной :ref:`документации по фикстурам <fixture>`.
 
 
 .. _`pytest.fixture-api`:
@@ -305,16 +307,16 @@ For more details, consult the full :ref:`fixtures docs <fixture>`.
 config.cache
 ~~~~~~~~~~~~
 
-**Tutorial**: :ref:`cache`.
+**Руководство**: :ref:`cache`.
 
-The ``config.cache`` object allows other plugins and fixtures
-to store and retrieve values across test runs. To access it from fixtures
-request ``pytestconfig`` into your fixture and get it with ``pytestconfig.cache``.
+Объект ``config.cache`` позволяет другим плагинам и фикстурам
+хранить и извлекать значения во время выполнения тестов. Чтобы получить доступ к нему из фикстуры
+запросите ``pytestconfig`` в вашей фикстуре и получите его с помощью ``pytestconfig.cache``.
 
-Under the hood, the cache plugin uses the simple
-``dumps``/``loads`` API of the :py:mod:`json` stdlib module.
+Под капотом, плагин кэша использует простой
+API ``dumps``/ ``loads`` модуля :py:mod:`json`` stdlib.
 
-``config.cache`` is an instance of :class:`pytest.Cache`:
+``config.cache`` это пример :class:`pytest.Cache`:
 
 .. autoclass:: pytest.Cache()
    :members:
@@ -330,9 +332,9 @@ capsys
 .. autofunction:: _pytest.capture.capsys()
     :no-auto-options:
 
-    Returns an instance of :class:`CaptureFixture[str] <pytest.CaptureFixture>`.
+    Возвращает экземпляр :class:`CaptureFixture[str] <pytest.CaptureFixture>`.
 
-    Example:
+    Например:
 
     .. code-block:: python
 
@@ -355,9 +357,9 @@ capsysbinary
 .. autofunction:: _pytest.capture.capsysbinary()
     :no-auto-options:
 
-    Returns an instance of :class:`CaptureFixture[bytes] <pytest.CaptureFixture>`.
+    Возвращает экземпляр :class:`CaptureFixture[bytes] <pytest.CaptureFixture>`.
 
-    Example:
+    Например:
 
     .. code-block:: python
 
@@ -377,9 +379,9 @@ capfd
 .. autofunction:: _pytest.capture.capfd()
     :no-auto-options:
 
-    Returns an instance of :class:`CaptureFixture[str] <pytest.CaptureFixture>`.
+    Возвращает экземпляр :class:`CaptureFixture[str] <pytest.CaptureFixture>`.
 
-    Example:
+    Например:
 
     .. code-block:: python
 
@@ -399,9 +401,9 @@ capfdbinary
 .. autofunction:: _pytest.capture.capfdbinary()
     :no-auto-options:
 
-    Returns an instance of :class:`CaptureFixture[bytes] <pytest.CaptureFixture>`.
+    Возвращает экземпляр :class:`CaptureFixture[bytes] <pytest.CaptureFixture>`.
 
-    Example:
+    Например:
 
     .. code-block:: python
 
@@ -420,7 +422,7 @@ doctest_namespace
 
 .. autofunction:: _pytest.doctest.doctest_namespace()
 
-    Usually this fixture is used in conjunction with another ``autouse`` fixture:
+    Обычно эта фикстура используется вместе с другими ``autouse`` фикстурами:
 
     .. code-block:: python
 
@@ -428,7 +430,7 @@ doctest_namespace
         def add_np(doctest_namespace):
             doctest_namespace["np"] = numpy
 
-    For more details: :ref:`doctest_namespace`.
+    Больше информации см.: :ref:`doctest_namespace`.
 
 
 .. fixture:: request
@@ -438,7 +440,7 @@ request
 
 :ref:`request example`.
 
-The ``request`` fixture is a special fixture providing information of the requesting test function.
+Фикстура ``request`` fixture - это специальная фикстура, предоставляющая информацию о запрашиваемой функции тестирования.
 
 .. autoclass:: pytest.FixtureRequest()
     :members:
@@ -467,7 +469,7 @@ record_property
 record_testsuite_property
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Tutorial**: :ref:`record_testsuite_property example`.
+**Руководство**: :ref:`record_testsuite_property example`.
 
 .. autofunction:: _pytest.junitxml.record_testsuite_property()
 
@@ -482,7 +484,7 @@ caplog
 .. autofunction:: _pytest.logging.caplog()
     :no-auto-options:
 
-    Returns a :class:`pytest.LogCaptureFixture` instance.
+    Возвращает экземпляр :class:`pytest.LogCaptureFixture`.
 
 .. autoclass:: pytest.LogCaptureFixture()
     :members:
@@ -498,7 +500,7 @@ monkeypatch
 .. autofunction:: _pytest.monkeypatch.monkeypatch()
     :no-auto-options:
 
-    Returns a :class:`~pytest.MonkeyPatch` instance.
+    Возвращает экземпляр :class:`~pytest.MonkeyPatch`.
 
 .. autoclass:: pytest.MonkeyPatch
     :members:
@@ -511,12 +513,12 @@ pytester
 
 .. versionadded:: 6.2
 
-Provides a :class:`~pytest.Pytester` instance that can be used to run and test pytest itself.
+Предоставляет экземпляр :class:`~pytest.Pytester`, который можно использовать для запуска и тестирования самого pytest.
 
-It provides an empty directory where pytest can be executed in isolation, and contains facilities
-to write tests, configuration files, and match against expected output.
+Предоставляет пустой каталог, в котором pytest может выполняться изолированно, и содержит средства
+для написания тестов, конфигурационных файлов и сопоставления с ожидаемым результатом.
 
-To use it, include in your topmost ``conftest.py`` file:
+Чтобы использовать, поместите в самый верхний файл ``conftest.py``:
 
 .. code-block:: python
 
@@ -542,10 +544,10 @@ To use it, include in your topmost ``conftest.py`` file:
 testdir
 ~~~~~~~
 
-Identical to :fixture:`pytester`, but provides an instance whose methods return
-legacy ``py.path.local`` objects instead when applicable.
+Идентичен :fixture:`pytester`, но предоставляет экземпляр, чьи методы возвращают
+унаследованные объекты ``py.path.local``, когда это применимо.
 
-New code should avoid using :fixture:`testdir` in favor of :fixture:`pytester`.
+Новый код должен избегать использования :fixture:`testdir` в пользу :fixture:`pytester`.
 
 .. autoclass:: pytest.Testdir()
     :members:
@@ -556,7 +558,7 @@ New code should avoid using :fixture:`testdir` in favor of :fixture:`pytester`.
 recwarn
 ~~~~~~~
 
-**Tutorial**: :ref:`assertwarnings`
+**Руководство**: :ref:`assertwarnings`
 
 .. autofunction:: _pytest.recwarn.recwarn()
     :no-auto-options:
@@ -564,11 +566,11 @@ recwarn
 .. autoclass:: pytest.WarningsRecorder()
     :members:
 
-Each recorded warning is an instance of :class:`warnings.WarningMessage`.
+Каждое записанное предупреждение является экземпляром :class:`warnings.WarningMessage`.
 
 .. note::
-    ``DeprecationWarning`` and ``PendingDeprecationWarning`` are treated
-    differently; see :ref:`ensuring_function_triggers`.
+    ``DeprecationWarning`` и ``PendingDeprecationWarning`` рассматриваются
+    по-разному; см. :ref:`ensuring_function_triggers`.
 
 
 .. fixture:: tmp_path
@@ -591,7 +593,7 @@ tmp_path_factory
 
 .. _`tmp_path_factory factory api`:
 
-``tmp_path_factory`` is an instance of :class:`~pytest.TempPathFactory`:
+``tmp_path_factory`` - это экземпляр :class:`~pytest.TempPathFactory`:
 
 .. autoclass:: pytest.TempPathFactory()
 
@@ -614,26 +616,26 @@ tmpdir_factory
 
 :ref:`tmpdir and tmpdir_factory`
 
-``tmp_path_factory`` is an instance of :class:`~pytest.TempdirFactory`:
+``tmp_path_factory`` это экземпляр :class:`~pytest.TempdirFactory`:
 
 .. autoclass:: pytest.TempdirFactory()
 
 
 .. _`hook-reference`:
 
-Hooks
+Хуки
 -----
 
 :ref:`writing-plugins`.
 
 .. currentmodule:: _pytest.hookspec
 
-Reference to all hooks which can be implemented by :ref:`conftest.py files <localplugin>` and :ref:`plugins <plugins>`.
+Ссылка на все хуки, которые могут быть реализованы :ref:`conftest.py files <localplugin>` и :ref:`plugins <plugins>`.
 
-Bootstrapping hooks
+Загрузочные хуки
 ~~~~~~~~~~~~~~~~~~~
 
-Bootstrapping hooks called for plugins registered early enough (internal and setuptools plugins).
+Хукм начальной загрузки вызываются для плагинов, зарегистрированных достаточно *рано* (внутренние плагины и плагины setuptools).
 
 .. autofunction:: pytest_load_initial_conftests
 .. autofunction:: pytest_cmdline_preparse
@@ -642,10 +644,10 @@ Bootstrapping hooks called for plugins registered early enough (internal and set
 
 .. _`initialization-hooks`:
 
-Initialization hooks
+Хуки инициализации
 ~~~~~~~~~~~~~~~~~~~~
 
-Initialization hooks called for plugins and ``conftest.py`` files.
+Инициализационные хуки вызываются для плагинов и файлов ``conftest.py``.
 
 .. autofunction:: pytest_addoption
 .. autofunction:: pytest_addhooks
@@ -656,38 +658,38 @@ Initialization hooks called for plugins and ``conftest.py`` files.
 
 .. autofunction:: pytest_plugin_registered
 
-Collection hooks
+Хуки для сбора
 ~~~~~~~~~~~~~~~~
 
-``pytest`` calls the following hooks for collecting files and directories:
+``pytest`` вызывает следующие хуки для сбора файлов и каталогов
 
 .. autofunction:: pytest_collection
 .. autofunction:: pytest_ignore_collect
 .. autofunction:: pytest_collect_file
 .. autofunction:: pytest_pycollect_makemodule
 
-For influencing the collection of objects in Python modules
-you can use the following hook:
+Для воздействия на коллекцию объектов в модулях Python
+можно использовать следующий хук:
 
 .. autofunction:: pytest_pycollect_makeitem
 .. autofunction:: pytest_generate_tests
 .. autofunction:: pytest_make_parametrize_id
 
-After collection is complete, you can modify the order of
-items, delete or otherwise amend the test items:
+После завершения сбора можно изменить порядок расположения
+элементов, удалить или иным образом изменить элементы теста:
 
 .. autofunction:: pytest_collection_modifyitems
 
 .. note::
-    If this hook is implemented in ``conftest.py`` files, it always receives all collected items, not only those
-    under the ``conftest.py`` where it is implemented.
+    Если этот хук реализован в файлах ``conftest.py``, он всегда получает все собранные элементы, а не только те,
+    которые находятся в ``conftest.py``, где он реализован.
 
 .. autofunction:: pytest_collection_finish
 
-Test running (runtest) hooks
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Хуки для запуска тестов (runtest)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-All runtest related hooks receive a :py:class:`pytest.Item <pytest.Item>` object.
+Все связанные с runtest хуки получают объект :py:class:`pytest.Item <pytest.Item>`.
 
 .. autofunction:: pytest_runtestloop
 .. autofunction:: pytest_runtest_protocol
@@ -698,18 +700,18 @@ All runtest related hooks receive a :py:class:`pytest.Item <pytest.Item>` object
 .. autofunction:: pytest_runtest_teardown
 .. autofunction:: pytest_runtest_makereport
 
-For deeper understanding you may look at the default implementation of
-these hooks in ``_pytest.runner`` and maybe also
-in ``_pytest.pdb`` which interacts with ``_pytest.capture``
-and its input/output capturing in order to immediately drop
-into interactive debugging when a test failure occurs.
+Для более глубокого понимания вы можете посмотреть на стандартную реализацию
+этих хуков в ``_pytest.runner`` и, возможно, также
+в ``_pytest.pdb``, который взаимодействует с ``_pytest.capture``
+и его перехватом ввода/вывода, чтобы немедленно перейти
+в интерактивную отладку, когда происходит падение теста.
 
 .. autofunction:: pytest_pyfunc_call
 
-Reporting hooks
-~~~~~~~~~~~~~~~
+Хуки для составления отчетов
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Session related reporting hooks:
+Связанные с сеансом обработчики отчетов:
 
 .. autofunction:: pytest_collectstart
 .. autofunction:: pytest_make_collect_report
@@ -725,21 +727,21 @@ Session related reporting hooks:
 .. autofunction:: pytest_warning_captured
 .. autofunction:: pytest_warning_recorded
 
-Central hook for reporting about test execution:
+Центральный хук для отчетов о выполнении теста:
 
 .. autofunction:: pytest_runtest_logreport
 
-Assertion related hooks:
+Хуки, связанные с ассертами:
 
 .. autofunction:: pytest_assertrepr_compare
 .. autofunction:: pytest_assertion_pass
 
 
-Debugging/Interaction hooks
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Хуки отладки/взаимодействия
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are few hooks which can be used for special
-reporting or interaction with exceptions:
+Есть несколько хуков, которые могут быть использованы для специальных
+отчетов или взаимодействия с исключениями:
 
 .. autofunction:: pytest_internalerror
 .. autofunction:: pytest_keyboard_interrupt
@@ -747,10 +749,10 @@ reporting or interaction with exceptions:
 .. autofunction:: pytest_enter_pdb
 
 
-Objects
--------
+Объекты
+--------
 
-Full reference to objects accessible from :ref:`fixtures <fixture>` or :ref:`hooks <hook-reference>`.
+Полная ссылка на объекты, доступные из :ref:`фикстур <fixture>` или :ref:`хуков <hook-reference>`.
 
 
 CallInfo
@@ -918,25 +920,25 @@ TestReport
 _Result
 ~~~~~~~
 
-Result used within :ref:`hook wrappers <hookwrapper>`.
+Result, используемый внутри :ref:`обертки хуков <hookwrapper>`.
 
 .. autoclass:: pluggy.callers._Result
 .. automethod:: pluggy.callers._Result.get_result
 .. automethod:: pluggy.callers._Result.force_result
 
-Global Variables
-----------------
+Глобальные переменные
+-----------------------
 
-pytest treats some global variables in a special manner when defined in a test module or
-``conftest.py`` files.
+pytest обрабатывает некоторые глобальные переменные особым образом, когда они определены в тестовом модуле или в
+файлах ``conftest.py``.
 
 
 .. globalvar:: collect_ignore
 
-**Tutorial**: :ref:`customizing-test-collection`
+**Руководство**: :ref:`customizing-test-collection`
 
-Can be declared in *conftest.py files* to exclude test directories or modules.
-Needs to be a list of paths (``str``, :class:`pathlib.Path` or any :class:`os.PathLike`).
+Могут быть объявлены в файлах *conftest.py* для исключения тестовых каталогов или модулей.
+Должны представлять собой список путей (``str``, :class:`pathlib.Path`` или любой :class:`os.PathLike``).
 
 .. code-block:: python
 
@@ -945,11 +947,11 @@ Needs to be a list of paths (``str``, :class:`pathlib.Path` or any :class:`os.Pa
 
 .. globalvar:: collect_ignore_glob
 
-**Tutorial**: :ref:`customizing-test-collection`
+**Руководство**: :ref:`customizing-test-collection`
 
-Can be declared in *conftest.py files* to exclude test directories or modules
-with Unix shell-style wildcards. Needs to be ``list[str]`` where ``str`` can
-contain glob patterns.
+Могут быть объявлены в файлах *conftest.py* для исключения тестовых каталогов или модулей
+с помощью подстановочных знаков в стиле оболочки Unix. Должны быть ``списком[str]``, где ``str`` может
+содержать шаблоны поиска.
 
 .. code-block:: python
 
@@ -974,10 +976,10 @@ Can be either a ``str`` or ``Sequence[str]``.
 
 .. globalvar:: pytestmark
 
-**Tutorial**: :ref:`scoped-marking`
+**Руководство**: :ref:`scoped-marking`
 
-Can be declared at the **global** level in *test modules* to apply one or more :ref:`marks <marks ref>` to all
-test functions and methods. Can be either a single mark or a list of marks (applied in left-to-right order).
+Могут быть объявлены на **глобальном** уровне в *тестовых модулях* для применения одной или нескольких :ref:`иаркировок <marks ref>` ко всем
+тестовым функциям и методам. Это может быть как одна маркировка, так и список маркировок (применяемых в порядке слева направо).
 
 .. code-block:: python
 
@@ -993,33 +995,32 @@ test functions and methods. Can be either a single mark or a list of marks (appl
     pytestmark = [pytest.mark.integration, pytest.mark.slow]
 
 
-Environment Variables
+Переменные среды
 ---------------------
 
-Environment variables that can be used to change pytest's behavior.
+Переменные среды, которые можно использовать для изменения поведения pytest.
 
 .. envvar:: PYTEST_ADDOPTS
 
-This contains a command-line (parsed by the py:mod:`shlex` module) that will be **prepended** to the command line given
-by the user, see :ref:`adding default options` for more information.
+Содержит командную строку (разбираемую модулем py:mod:`shlex`), которая будет **дополнена** к командной строке, заданной
+пользователем, более подробную информацию смотрите в :ref:`adding default options`.
 
 .. envvar:: PYTEST_CURRENT_TEST
 
-This is not meant to be set by users, but is set by pytest internally with the name of the current test so other
-processes can inspect it, see :ref:`pytest current test env` for more information.
+Этот параметр не предназначен для установки пользователями, но устанавливается внутри pytest с именем текущего теста, поэтому другие
+процессы могут изменить его, смотрите :ref:`pytest current test env` для дополнительной информации.
 
 .. envvar:: PYTEST_DEBUG
 
-When set, pytest will print tracing and debug information.
+Когда установлено, pytest будет печатать трассировку и отладочную информацию..
 
 .. envvar:: PYTEST_DISABLE_PLUGIN_AUTOLOAD
 
-When set, disables plugin auto-loading through setuptools entrypoints. Only explicitly specified plugins will be
-loaded.
+Если установлено, отключает автоматическую загрузку плагина через точки входа setuptools. Будут загружены только явно указанные плагины.
 
 .. envvar:: PYTEST_PLUGINS
 
-Contains comma-separated list of modules that should be loaded as plugins:
+Содержит разделенный запятыми список модулей, которые должны быть загружены как плагины:
 
 .. code-block:: bash
 
@@ -1027,33 +1028,33 @@ Contains comma-separated list of modules that should be loaded as plugins:
 
 .. envvar:: PY_COLORS
 
-When set to ``1``, pytest will use color in terminal output.
-When set to ``0``, pytest will not use color.
-``PY_COLORS`` takes precedence over ``NO_COLOR`` and ``FORCE_COLOR``.
+Если установлено значение ``1``, pytest будет использовать цветовой выводе в терминале.
+При значении ``0`` pytest не будет использовать цветовой вывод.
+``PY_COLORS`` имеет приоритет над ``NO_COLOR`` и ``FORCE_COLOR``.
 
 .. envvar:: NO_COLOR
 
-When set (regardless of value), pytest will not use color in terminal output.
-``PY_COLORS`` takes precedence over ``NO_COLOR``, which takes precedence over ``FORCE_COLOR``.
-See `no-color.org <https://no-color.org/>`__ for other libraries supporting this community standard.
+Если установлено(независимо от значения), pytest не будет использовать цветовой вывод в терминале.
+``PY_COLORS`` имеет приоритет над ``NO_COLOR``, который имеет приоритет над ``FORCE_COLOR``.
+Смотрите `no-color.org <https://no-color.org/>`__ для других библиотек, поддерживающих этот стандарт сообщества.
 
 .. envvar:: FORCE_COLOR
 
-When set (regardless of value), pytest will use color in terminal output.
-``PY_COLORS`` and ``NO_COLOR`` take precedence over ``FORCE_COLOR``.
+Если установлено(независимо от значения), pytest будет использовать цветовой вывод в терминале.
+``PY_COLORS`` и ``NO_COLOR`` иметь приоритет над ``FORCE_COLOR``.
 
-Exceptions
-----------
+Исключения
+-----------
 
 .. autoclass:: pytest.UsageError()
     :show-inheritance:
 
 .. _`warnings ref`:
 
-Warnings
---------
+Предупреждения
+---------------
 
-Custom warnings generated in some situations such as improper usage or deprecated features.
+Пользовательские предупреждения, генерируемые в некоторых ситуациях, таких как неправильное использование или устаревшие функции.
 
 .. autoclass:: pytest.PytestWarning
    :show-inheritance:
@@ -1089,84 +1090,83 @@ Custom warnings generated in some situations such as improper usage or deprecate
    :show-inheritance:
 
 
-Consult the :ref:`internal-warnings` section in the documentation for more information.
+Обратитесь к разделу :ref:`internal-warnings` в документации для получения дополнительной информации.
 
 
 .. _`ini options ref`:
 
-Configuration Options
----------------------
+Опции конфигурации
+-----------------------
 
-Here is a list of builtin configuration options that may be written in a ``pytest.ini``, ``pyproject.toml``, ``tox.ini`` or ``setup.cfg``
-file, usually located at the root of your repository. To see each file format in details, see
+Здесь приведен список встроенных опций конфигурации, которые могут быть записаны в файлы ``pytest.ini``, ``pyproject.toml``, ``tox.ini`` или ``setup.cfg``,
+обычно расположенные в корне вашего репозитория. Для подробного ознакомления с каждым форматом файла см.
 :ref:`config file formats`.
 
 .. warning::
-    Usage of ``setup.cfg`` is not recommended except for very simple use cases. ``.cfg``
-    files use a different parser than ``pytest.ini`` and ``tox.ini`` which might cause hard to track
-    down problems.
-    When possible, it is recommended to use the latter files, or ``pyproject.toml``, to hold your pytest configuration.
+    Использование ``setup.cfg`` не рекомендуется, за исключением очень простых случаев. ``.cfg``
+    файлы используют парсер, отличный от ``pytest.ini`` и ``tox.ini``, что может привести к трудно отслеживаемым проблемам.
+    Когда это возможно, рекомендуется использовать вышеперечисленные файлы, или ``pyproject.toml``, для хранения конфигурации pytest.
 
-Configuration options may be overwritten in the command-line by using ``-o/--override-ini``, which can also be
-passed multiple times. The expected format is ``name=value``. For example::
+Параметры конфигурации могут быть перезаписаны командной строкой с помощью ``-o/--override-ini``, которые также могут быть
+передаваться несколько раз. Ожидаемый формат - ``имя = значение``. Например::
 
    pytest -o console_output_style=classic -o cache_dir=/tmp/mycache
 
 
 .. confval:: addopts
 
-   Add the specified ``OPTS`` to the set of command line arguments as if they
-   had been specified by the user. Example: if you have this ini file content:
+   Добавляет указанные ``OPTS`` к набору аргументов командной строки, как если бы они были
+   указаны пользователем. Пример: при следующем содержимое ini файла:
 
    .. code-block:: ini
 
-        # content of pytest.ini
+        # листинг pytest.ini
         [pytest]
         addopts = --maxfail=2 -rf  # exit after 2 failures, report fail info
 
-   issuing ``pytest test_hello.py`` actually means:
+   выдача ``pytest test_hello.py`` на самом деле означает:
 
    .. code-block:: bash
 
         pytest --maxfail=2 -rf test_hello.py
 
-   Default is to add no options.
+   По умолчанию параметры не добавляются.
 
 
 .. confval:: cache_dir
 
-   Sets a directory where stores content of cache plugin. Default directory is
-   ``.pytest_cache`` which is created in :ref:`rootdir <rootdir>`. Directory may be
-   relative or absolute path. If setting relative path, then directory is created
-   relative to :ref:`rootdir <rootdir>`. Additionally path may contain environment
-   variables, that will be expanded. For more information about cache plugin
-   please refer to :ref:`cache_provider`.
+   Устанавливает директорию, в которой хранится содержимое плагина кэша. По умолчанию это каталог
+   ``.pytest_cache``, который создается в :ref:`rootdir <rootdir>`. У каталога может быть
+   относительный или абсолютный путь. Если задан относительный путь, то каталог создается
+   относительно :ref:`rootdir <rootdir>`. Кроме того, путь может содержать переменные
+   окружения, которые будут расширены. Для получения дополнительной информации о плагине кэширования
+   обратитесь к :ref:`cache_provider`.
 
 
 .. confval:: confcutdir
 
-   Sets a directory where search upwards for ``conftest.py`` files stops.
-   By default, pytest will stop searching for ``conftest.py`` files upwards
-   from ``pytest.ini``/``tox.ini``/``setup.cfg`` of the project if any,
-   or up to the file-system root.
+   Задает директорию, в которой прекращается поиск *снизу-вверх* файлов ``conftest.py``.
+   По умолчанию pytest прекращает поиск файлов ``conftest.py`` вверх по каталогу
+   от ``pytest.ini``/ ``tox.ini``/ ``setup.cfg`` проекта, если таковой имеется,
+   или до корня файловой системы.
 
 
 .. confval:: console_output_style
 
 
 
-   Sets the console output style while running tests:
+   Устанавливает стиль вывода консоли при запуске тестов:
 
-   * ``classic``: classic pytest output.
-   * ``progress``: like classic pytest output, but with a progress indicator.
-   * ``count``: like progress, but shows progress as the number of tests completed instead of a percent.
+   * ``classic``: классический вывод pytest.
+   * ``progress``: как классический вывод pytest, но с индикатором прогресса.
+   * ``count``: как ``progress``, но показывает прогресс в виде количества выполненных тестов, а не в процентах.
 
-   The default is ``progress``, but you can fallback to ``classic`` if you prefer or
-   the new mode is causing unexpected problems:
+   По умолчанию используется ``progress``, но вы можете вернуться к ``classic``, если вы предпочитаете или
+   новый режим вызывает неожиданные проблемы:
 
    .. code-block:: ini
 
-        # content of pytest.ini
+        # листинг pytest.ini
         [pytest]
         console_output_style = classic
 
@@ -1175,52 +1175,52 @@ passed multiple times. The expected format is ``name=value``. For example::
 
 
 
-   Default encoding to use to decode text files with docstrings.
-   :ref:`See how pytest handles doctests <doctest>`.
+   Кодировка по умолчанию, используемая для декодирования текстовых файлов со строками документации.
+   :ref:`Посмотрите, как pytest обрабатывает doctests <doctest>`.
 
 
 .. confval:: doctest_optionflags
 
-   One or more doctest flag names from the standard ``doctest`` module.
-   :ref:`See how pytest handles doctests <doctest>`.
+   Одно или несколько имен флагов doctest из стандартного модуля ``doctest``.
+   :ref:`Посмотрите, как pytest обрабатывает doctests <doctest>`.
 
 
 .. confval:: empty_parameter_set_mark
 
 
 
-    Allows to pick the action for empty parametersets in parameterization
+    Позволяет выбрать действие для пустых наборов параметров в параметризации
 
-    * ``skip`` skips tests with an empty parameterset (default)
-    * ``xfail`` marks tests with an empty parameterset as xfail(run=False)
-    * ``fail_at_collect`` raises an exception if parametrize collects an empty parameter set
+    * ``skip`` пропускает тесты с пустым набором параметров (по умолчанию)
+    * ``xfail`` отмечает тесты с пустым набором параметров как xfail(run=False)
+    * ``fail_at_collect`` вызывает исключение, если параметризация собирает пустой набор параметров
 
     .. code-block:: ini
 
-      # content of pytest.ini
+      # листинг pytest.ini
       [pytest]
       empty_parameter_set_mark = xfail
 
     .. note::
 
-      The default value of this option is planned to change to ``xfail`` in future releases
-      as this is considered less error prone, see `#3155 <https://github.com/pytest-dev/pytest/issues/3155>`_
-      for more details.
+      Значение по умолчанию этой опции планируется изменить на ``xfail`` в будущих релизах
+      так как это считается менее подверженным ошибкам, см. `#3155 <https://github.com/pytest-dev/pytest/issues/3155>`_
+      для более подробной информации.
 
 
 .. confval:: faulthandler_timeout
 
-   Dumps the tracebacks of all threads if a test takes longer than ``X`` seconds to run (including
-   fixture setup and teardown). Implemented using the `faulthandler.dump_traceback_later`_ function,
-   so all caveats there apply.
+   Выгружает трассировку всех потоков, если тест выполняется более ``X`` секунд (включая
+   установку и удаление фикстур). Реализовано с помощью функции `faulthandler.dump_traceback_later`_,
+   поэтому все предостережения применимы.
 
    .. code-block:: ini
 
-        # content of pytest.ini
+        # листинг pytest.ini
         [pytest]
         faulthandler_timeout=5
 
-   For more information please refer to :ref:`faulthandler`.
+   Для получения дополнительной информации, пожалуйста, обратитесь к :ref:`faulthandler`.
 
 .. _`faulthandler.dump_traceback_later`: https://docs.python.org/3/library/faulthandler.html#faulthandler.dump_traceback_later
 
@@ -1229,30 +1229,30 @@ passed multiple times. The expected format is ``name=value``. For example::
 
 
 
-   Sets a list of filters and actions that should be taken for matched
-   warnings. By default all warnings emitted during the test session
-   will be displayed in a summary at the end of the test session.
+   Устанавливает список фильтров и действий, которые должны быть предприняты для совпавших
+   предупреждений. По умолчанию все предупреждения, выданные во время сеанса тестирования
+   будут отображаться в сводке в конце сеанса тестирования.
 
    .. code-block:: ini
 
-        # content of pytest.ini
+        # листинг pytest.ini
         [pytest]
         filterwarnings =
             error
             ignore::DeprecationWarning
 
-   This tells pytest to ignore deprecation warnings and turn all other warnings
-   into errors. For more information please refer to :ref:`warnings`.
+   Это указывает pytest игнорировать предупреждения об устаревании и превращать все остальные предупреждения
+   в ошибки. Более подробную информацию можно найти в :ref:`warnings`.
 
 
 .. confval:: junit_duration_report
 
     .. versionadded:: 4.1
 
-    Configures how durations are recorded into the JUnit XML report:
+    Настраивает способ записи продолжительности в отчет JUnit XML:
 
-    * ``total`` (the default): duration times reported include setup, call, and teardown times.
-    * ``call``: duration times reported include only call times, excluding setup and teardown.
+    * ``total`` (по умолчанию): указанное время включает время установки, вызова и очистки.
+    * ``call``: сообщаемое время продолжительности включает только время вызова, исключая настройку и очистку.
 
     .. code-block:: ini
 
@@ -1264,12 +1264,13 @@ passed multiple times. The expected format is ``name=value``. For example::
 
     .. versionadded:: 4.2
     .. versionchanged:: 6.1
-        Default changed to ``xunit2``.
+        Значение по умолчанию изменено на ``xunit2``.
 
-    Configures the format of the generated JUnit XML file. The possible options are:
+    Настраивает формат создаваемого XML-файла JUnit. Возможные варианты:
 
-    * ``xunit1`` (or ``legacy``): produces old style output, compatible with the xunit 1.0 format.
-    * ``xunit2``: produces `xunit 2.0 style output <https://github.com/jenkinsci/xunit-plugin/blob/xunit-2.3.2/src/main/resources/org/jenkinsci/plugins/xunit/types/model/xsd/junit-10.xsd>`__, which should be more compatible with latest Jenkins versions.  **This is the default**.
+    * ``xunit1`` (или ``legacy``): производит вывод в старом стиле, совместимый с форматом xunit 1.0.
+    * ``xunit2``: производит `вывод в стиле xunit 2.0 <https://github.com/jenkinsci/xunit-plugin/blob/xunit-2.3.2/src/main/resources/org/jenkinsci/plugins/xunit/types/model/xsd/junit-10.xsd>`__,
+      который должен быть более совместим с последними версиями Jenkins. **Значение по умолчанию**.
 
     .. code-block:: ini
 
@@ -1281,16 +1282,16 @@ passed multiple times. The expected format is ``name=value``. For example::
 
     .. versionadded:: 3.5
     .. versionchanged:: 5.4
-        ``log``, ``all``, ``out-err`` options added.
+        добавлены опции ``log``, ``all``, ``out-err``.
 
-    Configures if captured output should be written to the JUnit XML file. Valid values are:
+    Настраивает, следует ли записывать захваченный вывод в файл JUnit XML. Допустимые значения:
 
-    * ``log``: write only ``logging`` captured output.
-    * ``system-out``: write captured ``stdout`` contents.
-    * ``system-err``: write captured ``stderr`` contents.
-    * ``out-err``: write both captured ``stdout`` and ``stderr`` contents.
-    * ``all``: write captured ``logging``, ``stdout`` and ``stderr`` contents.
-    * ``no`` (the default): no captured output is written.
+    * ``log``: записывать только захваченный вывод ``logging``.
+    * ``system-out``: записать захваченное содержимое ``stdout``.
+    * ``system-err``: записать захваченное содержимое ``stderr``.
+    * ``out-err``: записать захваченное содержимое ``stdout`` и ``stderr``.
+    * ``all``: записать захваченное содержимое ``logging``, ``stdout`` и ``stderr``.
+    * ``no`` (по умолчанию): захваченный вывод не записывается.
 
     .. code-block:: ini
 
@@ -1302,8 +1303,8 @@ passed multiple times. The expected format is ``name=value``. For example::
 
     .. versionadded:: 4.6
 
-    If ``junit_logging != "no"``, configures if the captured output should be written
-    to the JUnit XML file for **passing** tests. Default is ``True``.
+    Если ``junit_logging != "no"``, настраивает, должен ли перехваченный вывод записываться
+    в XML-файл JUnit для **успешных** тестов. По умолчанию ``True``.
 
     .. code-block:: ini
 
@@ -1313,7 +1314,7 @@ passed multiple times. The expected format is ``name=value``. For example::
 
 .. confval:: junit_suite_name
 
-    To set the name of the root test suite xml item, you can configure the ``junit_suite_name`` option in your config file:
+    Чтобы задать имя корневого элемента xml тестового набора, вы можете настроить опцию ``junit_suite_name`` в вашем конфигурационном файле:
 
     .. code-block:: ini
 
@@ -1322,31 +1323,31 @@ passed multiple times. The expected format is ``name=value``. For example::
 
 .. confval:: log_auto_indent
 
-    Allow selective auto-indentation of multiline log messages.
+    Разрешить выборочный автоматический отступ для многострочных сообщений журнала.
 
-    Supports command line option ``--log-auto-indent [value]``
-    and config option ``log_auto_indent = [value]`` to set the
-    auto-indentation behavior for all logging.
+    Поддерживает опцию командной строки ``--log-auto-indent [value]``
+    и опцию конфигурации ``log_auto_indent = [value]`` для установки
+    авто-отступа для всех журналов.
 
-    ``[value]`` can be:
-        * True or "On" - Dynamically auto-indent multiline log messages
-        * False or "Off" or 0 - Do not auto-indent multiline log messages (the default behavior)
-        * [positive integer] - auto-indent multiline log messages by [value] spaces
+    ``[value]`` может быть:
+        * True или "On" - Многострочные сообщения журнала с динамическим автоматическим отступом
+        * False или "Off" или 0 - Не использовать автоматический отступ для многострочных сообщений журнала (поведение по умолчанию)
+        * [positive integer] - автоматический отступ многострочных сообщений журнала на [value] пробелов
 
     .. code-block:: ini
 
         [pytest]
         log_auto_indent = False
 
-    Supports passing kwarg ``extra={"auto_indent": [value]}`` to
-    calls to ``logging.log()`` to specify auto-indentation behavior for
-    a specific entry in the log. ``extra`` kwarg overrides the value specified
-    on the command line or in the config.
+    Поддерживает передачу kwarg ``extra={"auto_indent": [value]}`` в
+    в вызовы ``logging.log()`` для указания поведения авто-отступов для
+    конкретной записи в журнале. kwarg ``extra`` переопределяет значение, указанное
+    в командной строке или в конфигурации.
 
 .. confval:: log_cli
 
-    Enable log display during test run (also known as :ref:`"live logging" <live_logs>`).
-    The default is ``False``.
+    Включить отображение журнала во время тестового запуска (также известное как :ref:`"логирование в реальном времени" <live_logs>`).
+    По умолчанию значение ``False``.
 
     .. code-block:: ini
 
@@ -1357,42 +1358,42 @@ passed multiple times. The expected format is ``name=value``. For example::
 
 
 
-    Sets a :py:func:`time.strftime`-compatible string that will be used when formatting dates for live logging.
+    Устанавливает :py:func:`time.strftime`-совместимая строка, которая будет использоваться при форматировании дат для записи в реальном времени.
 
     .. code-block:: ini
 
         [pytest]
         log_cli_date_format = %Y-%m-%d %H:%M:%S
 
-    For more information, see :ref:`live_logs`.
+    Для получения дополнительной информации см. :ref:`live_logs`.
 
 .. confval:: log_cli_format
 
 
 
-    Sets a :py:mod:`logging`-compatible string used to format live logging messages.
+    Устанавливает совместимую с :py:mod:`logging` строку, используемую для форматирования сообщений журнала в реальном времени.
 
     .. code-block:: ini
 
         [pytest]
         log_cli_format = %(asctime)s %(levelname)s %(message)s
 
-    For more information, see :ref:`live_logs`.
+    Для получения дополнительной информации см. :ref:`live_logs`.
 
 
 .. confval:: log_cli_level
 
 
 
-    Sets the minimum log message level that should be captured for live logging. The integer value or
-    the names of the levels can be used.
+    Устанавливает минимальный уровень сообщений журнала, который должен быть захвачен для ведения журнала в реальном времени. Можно использовать целочисленное значение или
+    имена уровней.
 
     .. code-block:: ini
 
         [pytest]
         log_cli_level = INFO
 
-    For more information, see :ref:`live_logs`.
+    Для получения дополнительной информации см. :ref:`live_logs`.
 
 
 .. confval:: log_date_format
