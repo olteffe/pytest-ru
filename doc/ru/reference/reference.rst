@@ -20,7 +20,7 @@ pytest.approx
 pytest.fail
 ~~~~~~~~~~~
 
-**руководство**: :ref:`skipping`
+**Руководство**: :ref:`skipping`
 
 .. autofunction:: pytest.fail
 
@@ -59,7 +59,7 @@ pytest.param
 pytest.raises
 ~~~~~~~~~~~~~
 
-**Tutorial**: :ref:`assertraises`.
+**Руководство**: :ref:`assertraises`.
 
 .. autofunction:: pytest.raises(expected_exception: Exception [, *, match])
     :with: excinfo
@@ -67,7 +67,7 @@ pytest.raises
 pytest.deprecated_call
 ~~~~~~~~~~~~~~~~~~~~~~
 
-**Tutorial**: :ref:`ensuring_function_triggers`.
+**Руководство**: :ref:`ensuring_function_triggers`.
 
 .. autofunction:: pytest.deprecated_call()
     :with:
@@ -459,7 +459,7 @@ pytestconfig
 record_property
 ~~~~~~~~~~~~~~~~~~~
 
-**Tutorial**: :ref:`record_property example`.
+**Руководство**: :ref:`record_property example`.
 
 .. autofunction:: _pytest.junitxml.record_property()
 
@@ -960,10 +960,10 @@ pytest обрабатывает некоторые глобальные пере
 
 .. globalvar:: pytest_plugins
 
-**Tutorial**: :ref:`available installable plugins`
+**Руководство**: :ref:`available installable plugins`
 
-Can be declared at the **global** level in *test modules* and *conftest.py files* to register additional plugins.
-Can be either a ``str`` or ``Sequence[str]``.
+Может быть объявлено на **глобальном** уровне в *тестовых модулях* и *conftest.py файлах* для регистрации дополнительных плагинов.
+Может быть либо ``str``, либо ``Sequence[str]``.
 
 .. code-block:: python
 
@@ -1400,7 +1400,7 @@ Can be either a ``str`` or ``Sequence[str]``.
 
 
 
-    Sets a :py:func:`time.strftime`-compatible string that will be used when formatting dates for logging capture.
+    Устанавливает :py:func:`time.strftime`-совместимую строку, которая будет использоваться при форматировании дат для захвата в журнал.
 
     .. code-block:: ini
 
@@ -1414,8 +1414,8 @@ Can be either a ``str`` or ``Sequence[str]``.
 
 
 
-    Sets a file name relative to the ``pytest.ini`` file where log messages should be written to, in addition
-    to the other logging facilities that are active.
+    Задает имя файла относительно файла ``pytest.ini``, в который должны записываться сообщения журнала, в дополнение к
+    к другим активным средствам протоколирования.
 
     .. code-block:: ini
 
@@ -1429,7 +1429,7 @@ Can be either a ``str`` or ``Sequence[str]``.
 
 
 
-    Sets a :py:func:`time.strftime`-compatible string that will be used when formatting dates for the logging file.
+    Устанавливает :py:func:`time.strftime`-совместимую строку, которая будет использоваться при форматировании дат для файла журнала.
 
     .. code-block:: ini
 
@@ -1442,67 +1442,67 @@ Can be either a ``str`` or ``Sequence[str]``.
 
 
 
-    Sets a :py:mod:`logging`-compatible string used to format logging messages redirected to the logging file.
+    Устанавливает :py:mod:`logging`-совместимую строку, используемую для форматирования сообщений регистрации, перенаправляемых в файл регистрации.
 
     .. code-block:: ini
 
         [pytest]
         log_file_format = %(asctime)s %(levelname)s %(message)s
 
-    For more information, see :ref:`logging`.
+    Больше информации см. в :ref:`logging`.
 
 .. confval:: log_file_level
 
 
 
-    Sets the minimum log message level that should be captured for the logging file. The integer value or
-    the names of the levels can be used.
+    Устанавливает минимальный уровень сообщений журнала, который должен быть захвачен для файла журнала. Можно использовать целочисленное значение или
+    можно использовать имена уровней.
 
     .. code-block:: ini
 
         [pytest]
         log_file_level = INFO
 
-    For more information, see :ref:`logging`.
+    Больше информации см. в :ref:`logging`.
 
 
 .. confval:: log_format
 
 
 
-    Sets a :py:mod:`logging`-compatible string used to format captured logging messages.
+    Устанавливает :py:mod:`logging`-совместимую строку, используемую для форматирования перехваченных сообщений регистрации.
 
     .. code-block:: ini
 
         [pytest]
         log_format = %(asctime)s %(levelname)s %(message)s
 
-    For more information, see :ref:`logging`.
+    Больше информации см. в :ref:`logging`.
 
 
 .. confval:: log_level
 
 
 
-    Sets the minimum log message level that should be captured for logging capture. The integer value or
-    the names of the levels can be used.
+    Устанавливает минимальный уровень сообщений журнала, который должен быть захвачен для перехвата журнала. Можно использовать целочисленное значение или
+    можно использовать имена уровней.
 
     .. code-block:: ini
 
         [pytest]
         log_level = INFO
 
-    For more information, see :ref:`logging`.
+    Больше информации см. в :ref:`logging`.
 
 
 .. confval:: markers
 
-    When the ``--strict-markers`` or ``--strict`` command-line arguments are used,
-    only known markers - defined in code by core pytest or some plugin - are allowed.
+    При использовании аргументов командной строки ``--strict-markers`` или ``--strict``,
+    разрешены только известные маркеры - определенные в коде основным pytest или каким-либо плагином.
 
-    You can list additional markers in this setting to add them to the whitelist,
-    in which case you probably want to add ``--strict-markers`` to ``addopts``
-    to avoid future regressions:
+    Вы можете перечислить дополнительные маркеры в этом параметре, чтобы добавить их в белый список,
+    в этом случае вы, вероятно, захотите добавить ``--strict-markers`` в ``addopts``.
+    чтобы избежать будущих регрессий:
 
     .. code-block:: ini
 
@@ -1513,86 +1513,86 @@ Can be either a ``str`` or ``Sequence[str]``.
             serial
 
     .. note::
-        The use of ``--strict-markers`` is highly preferred. ``--strict`` was kept for
-        backward compatibility only and may be confusing for others as it only applies to
-        markers and not to other options.
+        Использование ``--strict-markers`` является весьма предпочтительным. ``--strict`` был сохранен только для
+        обратной совместимости и может сбивать с толку других, поскольку применяется только к
+        маркерам, а не к другим опциям.
 
 .. confval:: minversion
 
-   Specifies a minimal pytest version required for running tests.
+   Задает минимальную версию pytest, необходимую для запуска тестов.
 
    .. code-block:: ini
 
-        # content of pytest.ini
+        # листинг pytest.ini
         [pytest]
         minversion = 3.0  # will fail if we run with pytest-2.8
 
 
 .. confval:: norecursedirs
 
-   Set the directory basename patterns to avoid when recursing
-   for test discovery.  The individual (fnmatch-style) patterns are
-   applied to the basename of a directory to decide if to recurse into it.
-   Pattern matching characters::
+   Устанавливает шаблоны базовых имен каталогов, которые следует избегать при повторном поиске
+   для обнаружения тестов.  Отдельные шаблоны (в стиле fnmatch) применяются
+   к основному имени каталога, чтобы решить, следует ли в него обращаться.
+   Символы сопоставления шаблонов::
 
-        *       matches everything
-        ?       matches any single character
-        [seq]   matches any character in seq
-        [!seq]  matches any char not in seq
+        *       соответствует всему
+        ?       соответствует любому одиночному символу
+        [seq]   соответствует любому символу в seq
+        [!seq]  соответствует любому символу не в seq
 
-   Default patterns are ``'*.egg'``, ``'.*'``, ``'_darcs'``, ``'build'``,
+   Шаблоны по умолчанию: ``'*.egg'``, ``'*'``, ``'_darcs'``, ``'build'``,
    ``'CVS'``, ``'dist'``, ``'node_modules'``, ``'venv'``, ``'{arch}'``.
-   Setting a ``norecursedirs`` replaces the default.  Here is an example of
-   how to avoid certain directories:
+   Установка ``norecursedirs`` заменяет значение по умолчанию.  Вот пример того,
+   как избежать определенных каталогов:
 
    .. code-block:: ini
 
         [pytest]
         norecursedirs = .svn _build tmp*
 
-   This would tell ``pytest`` to not look into typical subversion or
-   sphinx-build directories or into any ``tmp`` prefixed directory.
+   Это указывает ``pytest`` не искать в типичных каталогах subversion или
+   sphinx-build или в любой каталог с префиксом ``tmp``.
 
-   Additionally, ``pytest`` will attempt to intelligently identify and ignore a
-   virtualenv by the presence of an activation script.  Any directory deemed to
-   be the root of a virtual environment will not be considered during test
-   collection unless ``‑‑collect‑in‑virtualenv`` is given.  Note also that
-   ``norecursedirs`` takes precedence over ``‑‑collect‑in‑virtualenv``; e.g. if
-   you intend to run tests in a virtualenv with a base directory that matches
-   ``'.*'`` you *must* override ``norecursedirs`` in addition to using the
-   ``‑‑collect‑in‑virtualenv`` flag.
+   Кроме того, ``pytest`` будет пытаться интеллектуально определить и игнорировать
+   virtualenv по наличию скрипта активации.  Любой каталог, считающийся
+   корнем виртуального окружения, не будет рассматриваться во время сбора тестов,
+   если не задан параметр ``‑‑collect‑in‑virtualenv``. Обратите также внимание, что
+   ``norecursedirs`` имеет приоритет над ``collect-in-virtualenv``; например, если
+   вы собираетесь запускать тесты в virtualenv с базовым каталогом, который соответствует
+   ``.*``, вы *должны* переопределить ``norecursedirs`` в дополнение к использованию опции
+   флага ``--collect-in-virtualenv``.
 
 
 .. confval:: python_classes
 
-   One or more name prefixes or glob-style patterns determining which classes
-   are considered for test collection. Search for multiple glob patterns by
-   adding a space between patterns. By default, pytest will consider any
-   class prefixed with ``Test`` as a test collection.  Here is an example of how
-   to collect tests from classes that end in ``Suite``:
+   Один или несколько префиксов имен или шаблонов в стиле glob, определяющих, какие классы
+   рассматриваются для сбора тестов. Для поиска нескольких шаблонов glob
+   добавляется пробел между шаблонами. По умолчанию pytest будет рассматривать любой
+   класс с префиксом ``Test`` в качестве коллекции тестов. Вот пример того, как
+   собирать тесты из классов, которые заканчиваются на ``Suite``:
 
    .. code-block:: ini
 
         [pytest]
         python_classes = *Suite
 
-   Note that ``unittest.TestCase`` derived classes are always collected
-   regardless of this option, as ``unittest``'s own collection framework is used
-   to collect those tests.
+   Обратите внимание, что производные классы ``unittest.TestCase`` всегда собираются
+   независимо от этой опции, так как используется собственный механизм сборки ``unittest``
+   для сбора этих тестов.
 
 
 .. confval:: python_files
 
-   One or more Glob-style file patterns determining which python files
-   are considered as test modules. Search for multiple glob patterns by
-   adding a space between patterns:
+   Один или несколько шаблонов файлов в стиле Glob, определяющих, какие файлы python
+   рассматриваются как тестовые модули. Поиск по нескольким шаблонам glob осуществляется путем
+   добавления пробела между шаблонами:
 
    .. code-block:: ini
 
         [pytest]
         python_files = test_*.py check_*.py example_*.py
 
-   Or one per line:
+   Или по одному в строке:
 
    .. code-block:: ini
 
@@ -1602,36 +1602,35 @@ Can be either a ``str`` or ``Sequence[str]``.
             check_*.py
             example_*.py
 
-   By default, files matching ``test_*.py`` and ``*_test.py`` will be considered
-   test modules.
+   По умолчанию, файлы, соответствующие ``test_*.py`` и ``*_test.py`` будут считаться
+   тестовыми модулями.
 
 
 .. confval:: python_functions
 
-   One or more name prefixes or glob-patterns determining which test functions
-   and methods are considered tests. Search for multiple glob patterns by
-   adding a space between patterns. By default, pytest will consider any
-   function prefixed with ``test`` as a test.  Here is an example of how
-   to collect test functions and methods that end in ``_test``:
+   Один или несколько префиксов имен или glob-шаблонов, определяющих, какие тестовые функции
+   и методы считаются тестами. Для поиска нескольких шаблонов glob
+   добавляется пробел между шаблонами. По умолчанию pytest будет считать тестом любую
+   функцию с префиксом ``test`` как тест.  Вот пример того, как
+   собирать тестовые функции и методы, которые заканчиваются на ``_test``:
 
    .. code-block:: ini
 
         [pytest]
         python_functions = *_test
 
-   Note that this has no effect on methods that live on a ``unittest
-   .TestCase`` derived class, as ``unittest``'s own collection framework is used
-   to collect those tests.
+   Обратите внимание, что это не влияет на методы, которые живут в ``unittest.TestCase`` производного класса,
+   так как используется собственная структура коллекции ``unittest`` для сбора этих тестов.
 
-   See :ref:`change naming conventions` for more detailed examples.
+   См. :ref:`change naming conventions` для более подробных примеров.
 
 
 .. confval:: required_plugins
 
-   A space separated list of plugins that must be present for pytest to run.
-   Plugins can be listed with or without version specifiers directly following
-   their name. Whitespace between different version specifiers is not allowed.
-   If any one of the plugins is not found, emit an error.
+   Список плагинов, которые должны присутствовать для запуска pytest, разделенный пробелами.
+   Плагины могут быть перечислены с указателями версии или без них непосредственно после
+   их именем. Пробелы между разными спецификаторами версий не допускаются.
+   Если какой-либо из плагинов не найден, выдается ошибка.
 
    .. code-block:: ini
 
@@ -1643,25 +1642,25 @@ Can be either a ``str`` or ``Sequence[str]``.
 
 
 
-   Sets list of directories that should be searched for tests when
-   no specific directories, files or test ids are given in the command line when
-   executing pytest from the :ref:`rootdir <rootdir>` directory.
-   Useful when all project tests are in a known location to speed up
-   test collection and to avoid picking up undesired tests by accident.
+   Задает список каталогов, в которых следует искать тесты, когда
+   в командной строке не указаны конкретные каталоги, файлы или идентификаторы тестов, когда
+   выполняется pytest из каталога :ref:`rootdir <rootdir>`.
+   Полезно, когда все тесты проекта находятся в известном месте, чтобы ускорить
+   сбор тестов и избежать случайной выборки нежелательных тестов.
 
    .. code-block:: ini
 
         [pytest]
         testpaths = testing doc
 
-   This tells pytest to only look for tests in ``testing`` and ``doc``
-   directories when executing from the root directory.
+   Это указывает pytest искать тесты только в каталогах ``testing`` и ``doc``
+   при выполнении из корневого каталога.
 
 
 .. confval:: usefixtures
 
-    List of fixtures that will be applied to all test functions; this is semantically the same to apply
-    the ``@pytest.mark.usefixtures`` marker to all test functions.
+    Список фикстур, которые будут применяться ко всем тестовым функциям; семантически это то же самое, что применять маркер
+    ``@pytest.mark.usefixtures`` ко всем тестовым функциям.
 
 
     .. code-block:: ini
@@ -1673,9 +1672,8 @@ Can be either a ``str`` or ``Sequence[str]``.
 
 .. confval:: xfail_strict
 
-    If set to ``True``, tests marked with ``@pytest.mark.xfail`` that actually succeed will by default fail the
-    test suite.
-    For more information, see :ref:`xfail strict tutorial`.
+    Если установлено значение ``True``, тесты, помеченные ``@pytest.mark.xfail``, которые на самом деле успешны, по умолчанию упадут.
+    Для получения дополнительной информации см. :ref:`xfail strict tutorial`.
 
 
     .. code-block:: ini
@@ -1689,290 +1687,287 @@ Can be either a ``str`` or ``Sequence[str]``.
 Command-line Flags
 ------------------
 
-All the command-line flags can be obtained by running ``pytest --help``::
+Все флаги командной строки можно получить, запустив ``pytest --help``::
 
     $ pytest --help
-    usage: pytest [options] [file_or_dir] [file_or_dir] [...]
+    использование: pytest [опции] [файл_или_директория] [файл_или_директория] [...]
 
-    positional arguments:
-      file_or_dir
+    позиционные аргументы:
+      файл_или_директория
 
-    general:
-      -k EXPRESSION         only run tests which match the given substring
-                            expression. An expression is a python evaluatable
-                            expression where all names are substring-matched
-                            against test names and their parent classes.
-                            Example: -k 'test_method or test_other' matches all
-                            test functions and classes whose name contains
-                            'test_method' or 'test_other', while -k 'not
-                            test_method' matches those that don't contain
-                            'test_method' in their names. -k 'not test_method
-                            and not test_other' will eliminate the matches.
-                            Additionally keywords are matched to classes and
-                            functions containing extra names in their
-                            'extra_keyword_matches' set, as well as functions
-                            which have names assigned directly to them. The
-                            matching is case-insensitive.
-      -m MARKEXPR           only run tests matching given mark expression.
-                            For example: -m 'mark1 and not mark2'.
-      --markers             show markers (builtin, plugin and per-project ones).
-      -x, --exitfirst       exit instantly on first error or failed test.
+    общие:
+      -k EXPRESSION         запускать только тесты, которые соответствуют заданному подстрочному
+                            выражение. Выражение - это вычисляемое в python
+                            выражение, в котором все имена сопоставляются с подстрокой
+                            с именами тестов и их родительских классов.
+                            Пример: -k 'test_method or test_other' соответствует всем
+                            тестовым функциям и классам, имя которых содержит
+                            'test_method' или 'test_other', в то время как -k 'not
+                            test_method" соответствует тем, которые не содержат
+                            'test_method' в своих именах. -k 'not test_method
+                            and not test_other" исключает совпадения.
+                            Дополнительно ключевые слова сопоставляются с классами и
+                            функциям, содержащим дополнительные имена в их
+                            'extra_keyword_matches', а также с функциями,
+                            которые имеют имена, присвоенные непосредственно им.
+                            Сопоставление не чувствительно к регистру.
+      -m MARKEXPR           запускать только тесты, соответствующие заданному отмеченному выражению.
+                            Например: -m 'mark1 and not mark2'.
+      --markers             показать маркеры (встроенные, подключаемые и индивидуальные для каждого проекта).
+      -x, --exitfirst       немедленно выйти при первой ошибке или упавшем тесте.
       --fixtures, --funcargs
-                            show available fixtures, sorted by plugin appearance
-                            (fixtures with leading '_' are only shown with '-v')
-      --fixtures-per-test   show fixtures per test
-      --pdb                 start the interactive Python debugger on errors or
+                            показать доступные фикстуры, отсортированные по видимости плагина
+                            (фикстуры с впереди стоящим '_' будут показаны только с '-v')
+      --fixtures-per-test   показать фикстуры для каждого испытания
+      --pdb                 запускать интерактивный отладчик Python при ошибках или при прерывании
                             KeyboardInterrupt.
       --pdbcls=modulename:classname
-                            start a custom interactive Python debugger on
-                            errors. For example:
+                            запускать пользовательский интерактивный отладчик Python при
+                            ошибки. Например:
                             --pdbcls=IPython.terminal.debugger:TerminalPdb
-      --trace               Immediately break when running each test.
-      --capture=method      per-test capturing method: one of fd|sys|no|tee-sys.
-      -s                    shortcut for --capture=no.
-      --runxfail            report the results of xfail tests as if they were
-                            not marked
-      --lf, --last-failed   rerun only the tests that failed at the last run (or
-                            all if none failed)
-      --ff, --failed-first  run all tests, but run the last failures first.
-                            This may re-order tests and thus lead to repeated
-                            fixture setup/teardown.
-      --nf, --new-first     run tests from new files first, then the rest of the
-                            tests sorted by file mtime
+      --trace               вызовет отладчик Python в начале каждого теста.
+      --capture=method      метод захвата теста: один из fd|sys|no|tee-sys.
+      -s                    сокращенный вариант для --capture=no.
+      --runxfail            сообщать результаты тестов xfail так, как если бы они были
+                            не помечены
+      --lf, --last-failed   повторно запускать только те тесты, которые упали при последнем запуске (или
+                            все, если все прошли)
+      --ff, --failed-first  запустить все тесты, но сначала запустить последние упавшие.
+                            Это может изменить порядок тестов и, следовательно, привести к повторному запуску
+                            фикстур setup/teardown.
+      --nf, --new-first     сначала запускать тесты из новых файлов, затем остальные
+                            тесты, отсортированные по mtime файла
       --cache-show=[CACHESHOW]
-                            show cache contents, don't perform collection or
-                            tests. Optional argument: glob (default: '*').
-      --cache-clear         remove all cache contents at start of test run.
+                            показать содержимое кэша, не выполнять сборку или
+                            проверки. Необязательный аргумент: glob (по умолчанию: '*').
+      --cache-clear         удалить все содержимое кеша при запуске теста.
       --lfnf={all,none}, --last-failed-no-failures={all,none}
-                            which tests to run with no previously (known)
-                            failures.
-      --sw, --stepwise      exit on test failure and continue from last failing
-                            test next time
+                            какие тесты запускать без ранее (известных)
+                            падений.
+      --sw, --stepwise      выйти при падении теста и продолжить с последнего упавшего теста в
+                            следующий раз
       --sw-skip, --stepwise-skip
-                            ignore the first failing test but stop on the next
-                            failing test
+                            игнорировать первый упавший тест, но останавливаться на следующем
+                            упавшем тесте
 
-    reporting:
-      --durations=N         show N slowest setup/test durations (N=0 for all).
-      --durations-min=N     Minimal duration in seconds for inclusion in slowest
-                            list. Default 0.005
-      -v, --verbose         increase verbosity.
-      --no-header           disable header
-      --no-summary          disable summary
-      -q, --quiet           decrease verbosity.
-      --verbosity=VERBOSE   set verbosity. Default is 0.
-      -r chars              show extra test summary info as specified by chars:
+    составление отчетов:
+      --durations=N         показать N самых медленных длительностей setup/test (N = 0 для всех).
+      --durations-min=N     Минимальная продолжительность в секундах для включения в список самых медленных.
+                            По умолчанию 0.005
+      -v, --verbose         увеличить объем вывода информации.
+      --no-header           отключить заголовок.
+      --no-summary          отключить сводку
+      -q, --quiet           уменьшение объема вывода информации.
+      --verbosity=VERBOSE   установка verbosity. По умолчанию 0.
+      -r chars              показать дополнительную краткую информацию о тесте, заданную символами:
                             (f)ailed, (E)rror, (s)kipped, (x)failed, (X)passed,
-                            (p)assed, (P)assed with output, (a)ll except passed
-                            (p/P), or (A)ll. (w)arnings are enabled by default
-                            (see --disable-warnings), 'N' can be used to reset
-                            the list. (default: 'fE').
+                            (p)assed, (P)assed с выходом, (a)ll кроме пройденного
+                            (p/P), или (A)ll. (w)arnings-предупреждения включены по умолчанию
+                            (см. --disable-warnings), 'N' может быть использовано для сброса
+                            списка(по умолчанию: 'fE').
       --disable-warnings, --disable-pytest-warnings
-                            disable warnings summary
-      -l, --showlocals      show locals in tracebacks (disabled by default).
-      --tb=style            traceback print mode
+                            отключить сводку предупреждений
+      -l, --showlocals      показывать локали в трассировке(отключено по умолчанию).
+      --tb=style            режим печати с отслеживанием
                             (auto/long/short/line/native/no).
       --show-capture={no,stdout,stderr,log,all}
-                            Controls how captured stdout/stderr/log is shown on
-                            failed tests. Default is 'all'.
-      --full-trace          don't cut any tracebacks (default is to cut).
-      --color=color         color terminal output (yes/no/auto).
+                            Управляет тем, как перехваченный stdout/stderr/log будет показан на
+                            упавших тестах. По умолчанию - 'all'.
+      --full-trace          не вырезать никаких трассировок (по умолчанию вырезано).
+      --color=color         цветной вывод терминала(yes/no/auto).
       --code-highlight={yes,no}
-                            Whether code should be highlighted (only if --color
-                            is also enabled)
-      --pastebin=mode       send failed|all info to bpaste.net pastebin service.
-      --junit-xml=path      create junit-xml style report file at given path.
-      --junit-prefix=str    prepend prefix to classnames in junit-xml output
+                            Следует ли выделять код (только если --color
+                            также включен)
+      --pastebin=mode       отправлять failed|all информацию в сервис bpaste.net.
+      --junit-xml=path      создание файл отчета в стиле junit-xml по заданному пути.
+      --junit-prefix=str    добавить префикс к именам классов в выходных данных junit-xml.
 
-    pytest-warnings:
+    pytest-предупреждения:
       -W PYTHONWARNINGS, --pythonwarnings=PYTHONWARNINGS
-                            set which warnings to report, see -W option of
-                            python itself.
-      --maxfail=num         exit after first num failures or errors.
-      --strict-config       any warnings encountered while parsing the `pytest`
-                            section of the configuration file raise errors.
-      --strict-markers      markers not registered in the `markers` section of
-                            the configuration file raise errors.
-      --strict              (deprecated) alias to --strict-markers.
-      -c file               load configuration from `file` instead of trying to
-                            locate one of the implicit configuration files.
+                            установить, о каких предупреждениях сообщать, см. опцию -W
+                            самого python.
+      --maxfail=num         выйти после num числа падений или ошибок.
+      --strict-config       любые предупреждения, возникающие при разборе раздела `pytest`
+                            в разделе конфигурационного файла, вызывающие ошибки.
+      --strict-markers      Маркеры, не зарегистрированные в разделе `markers`
+                            конфигурационного файла, вызывают ошибки.
+      --strict              (устарело) алиас для --strict-markers.
+      -c file               загружать конфигурацию из `file` вместо того, чтобы пытаться
+                            найти один из неявных конфигурационных файлов.
       --continue-on-collection-errors
-                            Force test execution even if collection errors
-                            occur.
-      --rootdir=ROOTDIR     Define root directory for tests. Can be relative
-                            path: 'root_dir', './root_dir',
-                            'root_dir/another_dir/'; absolute path:
-                            '/home/user/root_dir'; path with variables:
+                            Принудительное выполнение теста даже при ошибках сборки.
+      --rootdir=ROOTDIR     Определите корневой каталог для тестов. Может быть относительным путем:
+                            'root_dir', './root_dir',
+                            'root_dir/another_dir/'; абсолютным путем:
+                            '/home/user/root_dir'; путь с переменными:
                             '$HOME/root_dir'.
 
-    collection:
-      --collect-only, --co  only collect tests, don't execute them.
-      --pyargs              try to interpret all arguments as python packages.
-      --ignore=path         ignore path during collection (multi-allowed).
-      --ignore-glob=path    ignore path pattern during collection (multi-
-                            allowed).
+    сборка:
+      --collect-only, --co  только собирать тесты, не выполнять их.
+      --pyargs              попробовать интерпретировать все аргументы как пакеты python.
+      --ignore=path         игнорировать путь во время сборки (разрешено несколько).
+      --ignore-glob=path    игнорировать шаблон пути во время сборки(разрешено
+                            несколько).
       --deselect=nodeid_prefix
-                            deselect item (via node id prefix) during collection
-                            (multi-allowed).
-      --confcutdir=dir      only load conftest.py's relative to specified dir.
-      --noconftest          Don't load any conftest.py files.
-      --keep-duplicates     Keep duplicate tests.
+                            отменить выбор(через префикс идентификатора узла) во время сборки
+                            (разрешено несколько).
+      --confcutdir=dir      загружать только conftest.py относительно указанного каталога.
+      --noconftest          Не загружать любой файл conftest.py.
+      --keep-duplicates     Сохраняйть повторяющиеся тесты.
       --collect-in-virtualenv
-                            Don't ignore tests in a local virtualenv directory
+                            Не игнорировать тесты в локальном каталоге virtualenv
       --import-mode={prepend,append,importlib}
-                            prepend/append to sys.path when importing test
-                            modules and conftest files, default is to prepend.
-      --doctest-modules     run doctests in all .py modules
+                            добавление/дополнение к sys.path при импорте тестовых
+                            модулей и файлов conftest, по умолчанию - добавлять(prepend).
+      --doctest-modules     запустить doctests во всех модулях .py
       --doctest-report={none,cdiff,ndiff,udiff,only_first_failure}
-                            choose another output format for diffs on doctest
-                            failure
-      --doctest-glob=pat    doctests file matching pattern, default: test*.txt
+                            выберите другой формат вывода диффов doctest
+                            при падении
+      --doctest-glob=pat    шаблон соответствия файла doctests, по умолчанию: test*.txt
       --doctest-ignore-import-errors
-                            ignore doctest ImportErrors
+                            игнорировать ImportErrors doctest-а
       --doctest-continue-on-failure
-                            for a given doctest, continue to run after the first
-                            failure
+                            для данного doctest, продолжить выполнение после первого падения.
 
-    test session debugging and configuration:
-      --basetemp=dir        base temporary directory for this test run.(warning:
-                            this directory is removed if it exists)
-      -V, --version         display pytest version and information about
-                            plugins.When given twice, also display information
-                            about plugins.
-      -h, --help            show help message and configuration info
-      -p name               early-load given plugin module name or entry point
-                            (multi-allowed).
-                            To avoid loading of plugins, use the `no:` prefix,
-                            e.g. `no:doctest`.
-      --trace-config        trace considerations of conftest.py files.
-      --debug               store internal tracing debug information in
+    Отладка и настройка тестовой сессии:
+      --basetemp=dir        базовый временный каталог для этого тестового прогона(внимание:
+                            этот каталог удаляется, если он существует)
+      -V, --version         отображать версию pytest и информацию о плагинах.
+                            Если указано дважды, также отображать информацию
+                            о плагинах.
+      -h, --help            показать помощь и конфигурационную информацию
+      -p name               предварительная загрузка заданного имени модуля плагина или точки входа
+                            (разрешено несколько).
+                            Чтобы избежать загрузки плагинов, используйте префикс `no:`,
+                            например, `no:doctest`.
+      --trace-config        трассировка файлов conftest.py.
+      --debug               хранить информацию об отладке внутренней трассировки в
                             'pytestdebug.log'.
       -o OVERRIDE_INI, --override-ini=OVERRIDE_INI
-                            override ini option with "option=value" style, e.g.
+                            переопределить опцию ini со стилем "option=value", например:
                             `-o xfail_strict=True -o cache_dir=cache`.
-      --assert=MODE         Control assertion debugging tools.
-                            'plain' performs no assertion debugging.
-                            'rewrite' (the default) rewrites assert statements
-                            in test modules on import to provide assert
-                            expression information.
-      --setup-only          only setup fixtures, do not execute tests.
-      --setup-show          show setup of fixtures while executing tests.
-      --setup-plan          show what fixtures and tests would be executed but
-                            don't execute anything.
+      --assert=MODE         Управление инструментами отладки утверждений.
+                            'plain' не производит отладку утверждений.
+                            'rewrite' (по умолчанию) переписывает утверждения утверждений
+                            в тестовых модулях при импорте для предоставления информации об утверждениях
+                            информацию о выражении assert.
+      --setup-only          только настройка фикстур, тесты не выполняются.
+      --setup-show          показать настройку фикстур при выполнении тестов.
+      --setup-plan          показать, какие фикстуры и тесты будут выполнены, но
+                            ничего не выполнять.
 
-    logging:
-      --log-level=LEVEL     level of messages to catch/display.
-                            Not set by default, so it depends on the root/parent
-                            log handler's effective level, where it is "WARNING"
-                            by default.
+    логирование:
+      --log-level=LEVEL     уровень сообщений для перехвата/отображения.
+                            По умолчанию не установлено, поэтому зависит от корневого/родительского
+                            эффективного уровня обработчика журнала, где он равен "WARNING"
+                            по умолчанию.
       --log-format=LOG_FORMAT
-                            log format as used by the logging module.
+                            формат журнала, используемый модулем ведения журнала.
       --log-date-format=LOG_DATE_FORMAT
-                            log date format as used by the logging module.
+                            формат даты журнала, используемый модулем ведения журнала.
       --log-cli-level=LOG_CLI_LEVEL
-                            cli logging level.
+                            уровень ведения журнала cli.
       --log-cli-format=LOG_CLI_FORMAT
-                            log format as used by the logging module.
+                            формат журнала, используемый модулем ведения журнала.
       --log-cli-date-format=LOG_CLI_DATE_FORMAT
-                            log date format as used by the logging module.
-      --log-file=LOG_FILE   path to a file when logging will be written to.
+                            формат даты журнала, используемый модулем ведения журнала.
+      --log-file=LOG_FILE   путь к файлу, куда лог будет записан.
       --log-file-level=LOG_FILE_LEVEL
-                            log file logging level.
+                            уровень ведения файла лога.
       --log-file-format=LOG_FILE_FORMAT
-                            log format as used by the logging module.
+                            формат журнала, используемый модулем ведения журнала.
       --log-file-date-format=LOG_FILE_DATE_FORMAT
-                            log date format as used by the logging module.
+                            формат даты журнала, используемый модулем ведения журнала.
       --log-auto-indent=LOG_AUTO_INDENT
-                            Auto-indent multiline messages passed to the logging
-                            module. Accepts true|on, false|off or an integer.
+                            Авто отступ многострочных сообщений, передаваемых модулю протоколирования.
+                            Принимает значения true|on, false|off или целое число.
 
-    [pytest] ini-options in the first pytest.ini|tox.ini|setup.cfg file found:
+    [pytest] ini-опции в первом найденном файле pytest.ini|tox.ini|setup.cfg:
 
-      markers (linelist):   markers for test functions
+      markers (linelist):   маркеры для тестовой функции
       empty_parameter_set_mark (string):
-                            default marker for empty parametersets
-      norecursedirs (args): directory patterns to avoid for recursion
-      testpaths (args):     directories to search for tests when no files or
-                            directories are given in the command line.
+                            маркер по умолчанию для пустых наборов параметров
+      norecursedirs (args): шаблоны каталогов, которых следует избегать при рекурсии
+      testpaths (args):     каталоги для поиска тестов, когда нет файлов или
+                            каталогов, указанных в командной строке.
       filterwarnings (linelist):
-                            Each line specifies a pattern for
-                            warnings.filterwarnings. Processed after
+                            Каждая строка определяет шаблон для
+                            warnings.filterwarnings. Обрабатывается после
                             -W/--pythonwarnings.
-      usefixtures (args):   list of default fixtures to be used with this
-                            project
-      python_files (args):  glob-style file patterns for Python test module
-                            discovery
+      usefixtures (args):   список фикстур по умолчанию, которые будут использоваться с этим
+                            проектом
+      python_files (args):  шаблоны файлов в стиле glob для обнаружения тестового модуля Python
+                            модуля Python
       python_classes (args):
-                            prefixes or glob names for Python test class
-                            discovery
+                            префиксы или глобальные имена для обнаружения тестового
+                            класса Python
       python_functions (args):
-                            prefixes or glob names for Python test function and
-                            method discovery
+                            префиксы или глобальные имена для функции тестирования Python и
+                            обнаружения методов
       disable_test_id_escaping_and_forfeit_all_rights_to_community_support (bool):
-                            disable string escape non-ascii characters, might
-                            cause unwanted side effects(use at your own risk)
+                            отключить строковые escape-символы, отличные от ascii, могут вызвать нежелательные
+                            побочные эффекты (используйте на свой страх и риск)
       console_output_style (string):
-                            console output: "classic", or with additional
-                            progress information ("progress" (percentage) |
-                            "count").
-      xfail_strict (bool):  default for the strict parameter of xfail markers
-                            when not given explicitly (default: False)
+                            вывод в консоль: «классический» или с дополнительной информацией о ходе выполнения
+                            ("progress" (в процентах) | "count").
+      xfail_strict (bool):  по умолчанию для строгого параметра маркеров xfail,
+                            если он не указан явно (по умолчанию: False)
       enable_assertion_pass_hook (bool):
-                            Enables the pytest_assertion_pass hook.Make sure to
-                            delete any previously generated pyc cache files.
+                            Включает хук pytest_assertion_pass.Убедитесь, что
+                            удалили все ранее созданные файлы кэша .pyc.
       junit_suite_name (string):
-                            Test suite name for JUnit report
+                            Название набора тестов для отчета JUnit.
       junit_logging (string):
-                            Write captured log messages to JUnit report: one of
+                            Записывать захваченные сообщения журнала в отчет JUnit: одно из
                             no|log|system-out|system-err|out-err|all
       junit_log_passing_tests (bool):
-                            Capture log information for passing tests to JUnit
-                            report:
+                            Сбор информации журнала для прохождения тестов в JUnit
+                            отчет:
       junit_duration_report (string):
-                            Duration time to report: one of total|call
+                            Продолжительность отчета: одно из total|call
       junit_family (string):
-                            Emit XML for schema: one of legacy|xunit1|xunit2
+                            Выделить XML для схемы: один из legacy|xunit1|xunit2
       doctest_optionflags (args):
-                            option flags for doctests
+                            флаги опций для doctests
       doctest_encoding (string):
-                            encoding used for doctest files
-      cache_dir (string):   cache directory path.
-      log_level (string):   default value for --log-level
-      log_format (string):  default value for --log-format
+                            кодировка, используемая для файлов doctest
+      cache_dir (string):   путь к каталогу кеша.
+      log_level (string):   значение по умолчанию для --log-level
+      log_format (string):  значение по умолчанию для --log-format
       log_date_format (string):
-                            default value for --log-date-format
-      log_cli (bool):       enable log display during test run (also known as
-                            "live logging").
+                            значение по умолчанию для --log-date-format
+      log_cli (bool):       включить отображение журнала во время тестового запуска (также известно как
+                            "логирование в реальном времени").
       log_cli_level (string):
-                            default value for --log-cli-level
+                            значение по умолчанию для --log-cli-level
       log_cli_format (string):
-                            default value for --log-cli-format
+                            значение по умолчанию для --log-cli-format
       log_cli_date_format (string):
-                            default value for --log-cli-date-format
-      log_file (string):    default value for --log-file
+                            значение по умолчанию для --log-cli-date-format
+      log_file (string):    значение по умолчанию для --log-file
       log_file_level (string):
-                            default value for --log-file-level
+                            значение по умолчанию для --log-file-level
       log_file_format (string):
-                            default value for --log-file-format
+                            значение по умолчанию для --log-file-format
       log_file_date_format (string):
-                            default value for --log-file-date-format
+                            значение по умолчанию для --log-file-date-format
       log_auto_indent (string):
-                            default value for --log-auto-indent
+                            значение по умолчанию для --log-auto-indent
       faulthandler_timeout (string):
-                            Dump the traceback of all threads if a test takes
-                            more than TIMEOUT seconds to finish.
-      addopts (args):       extra command line options
-      minversion (string):  minimally required pytest version
+                            Выгрузка трассировки всех потоков, если для завершения теста
+                            требуется более TIMEOUT секунд.
+      addopts (args):       дополнительные параметры командной строки.
+      minversion (string):  минимально необходимая версия pytest.
       required_plugins (args):
-                            plugins that must be present for pytest to run
+                            необходимые плагины, которые должны присутствовать для запуска pytest.
 
-    environment variables:
-      PYTEST_ADDOPTS           extra command line options
-      PYTEST_PLUGINS           comma-separated plugins to load during startup
-      PYTEST_DISABLE_PLUGIN_AUTOLOAD set to disable plugin auto-loading
-      PYTEST_DEBUG             set to enable debug tracing of pytest's internals
+    переменные среды:
+      PYTEST_ADDOPTS           дополнительные параметры командной строки.
+      PYTEST_PLUGINS           плагины через запятую для загрузки во время запуска
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD установка, чтобы отключить автозагрузку плагина
+      PYTEST_DEBUG             установка, чтобы включить отслеживание отладки внутренних компонентов pytest
 
 
-    to see available markers type: pytest --markers
-    to see available fixtures type: pytest --fixtures
-    (shown according to specified file_or_dir or current dir if not specified; fixtures with leading '_' are only shown with the '-v' option
+    чтобы увидеть доступные типы маркеров: pytest --markers
+    чтобы увидеть доступные типы фикстур: pytest --fixtures
+    (отображается в соответствии с указанным file_or_dir или текущим каталогом, если не указано; фикстуры с впередистоящим '_' отображаются только с опцией '-v'
